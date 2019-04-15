@@ -1,0 +1,40 @@
+.CE_contextmenu {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  background-color: white;
+  border-radius: 2px;
+  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, 0.2);
+          box-shadow: 4px 4px 20px rgba(0, 0, 56, 0.2);
+}
+
+.CE_contextmenu > * {
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  min-height: 30px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 0 10px;
+  cursor: default;
+}
+
+.CE_contextmenu > *:not(:last-child) {
+  border-bottom: solid 1px rgba(0, 0, 0, 0.4);
+}
+
+.CE_contextmenu > *:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+/*# sourceMappingURL=style.css.map */

@@ -1,0 +1,164 @@
+@font-face {
+  font-family: 'carddesigner';
+  src: url('fonts/carddesigner.eot?1zcur4');
+  src: url('fonts/carddesigner.eot?1zcur4#iefix') format('embedded-opentype'),
+    url('fonts/carddesigner.ttf?1zcur4') format('truetype'),
+    url('fonts/carddesigner.woff?1zcur4') format('woff'),
+    url('fonts/carddesigner.svg?1zcur4#carddesigner') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.CE_icon {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'carddesigner' !important;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.star:before {
+  content: "\e921";
+}
+
+.layer-add:before {
+  content: "\e920";
+}
+
+.text-single-line:before {
+  content: "\e91b";
+}
+
+.align-center:before {
+  content: "\e90c";
+}
+
+.align-justify:before {
+  content: "\e90d";
+}
+
+.align-left:before {
+  content: "\e90e";
+}
+
+.align-right:before {
+  content: "\e90f";
+}
+
+.bold:before {
+  content: "\e91c";
+}
+
+.circle:before {
+  content: "\e91a";
+}
+
+.crop:before {
+  content: "\e910";
+}
+
+.delete:before {
+  content: "\e911";
+}
+
+.effects:before {
+  content: "\e900";
+}
+
+.hand:before {
+  content: "\e912";
+}
+
+.image:before {
+  content: "\e901";
+}
+
+.italic:before {
+  content: "\e91d";
+}
+
+.layers:before {
+  content: "\e902";
+}
+
+.minus:before {
+  content: "\e916";
+}
+
+.move:before {
+  content: "\e903";
+}
+
+.paragraph:before {
+  content: "\e91e";
+}
+
+.plus:before {
+  content: "\e915";
+}
+
+.rectangle:before {
+  content: "\e918";
+}
+
+.redo:before {
+  content: "\e914";
+}
+
+.select-down:before {
+  content: "\e904";
+}
+
+.selection:before {
+  content: "\e905";
+}
+
+.shapes:before {
+  content: "\e906";
+}
+
+.text:before {
+  content: "\e907";
+}
+
+.times:before {
+  content: "\e917";
+}
+
+.tools:before {
+  content: "\e908";
+}
+
+.triangle:before {
+  content: "\e919";
+}
+
+.underline:before {
+  content: "\e91f";
+}
+
+.undo:before {
+  content: "\e913";
+}
+
+.upload:before {
+  content: "\e909";
+}
+
+.zoom-in:before {
+  content: "\e90a";
+}
+
+.zoom-out:before {
+  content: "\e90b";
+}
+
+.strikethrough:before {
+  content: "\ea65";
+}
