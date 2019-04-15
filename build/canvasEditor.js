@@ -109,14 +109,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_toolsContainer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(13);
 /* harmony import */ var _css_main_main_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(16);
 /* harmony import */ var _css_main_main_css__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_css_main_main_css__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _css_freeContainer_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(27);
+/* harmony import */ var _css_freeContainer_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(21);
 /* harmony import */ var _css_freeContainer_style_css__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_css_freeContainer_style_css__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _css_inputs_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(29);
+/* harmony import */ var _css_inputs_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(23);
 /* harmony import */ var _css_inputs_style_css__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_css_inputs_style_css__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _css_contextmenu_style_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(31);
+/* harmony import */ var _css_contextmenu_style_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(25);
 /* harmony import */ var _css_contextmenu_style_css__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_css_contextmenu_style_css__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var q__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(33);
-/* harmony import */ var q__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(q__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _css_res_style_css__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(27);
+/* harmony import */ var _css_res_style_css__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_css_res_style_css__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var q__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(34);
+/* harmony import */ var q__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(q__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _components_contextmenu__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(15);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -124,6 +127,8 @@ function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread n
 function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+
 
 
 
@@ -143,15 +148,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function CanvasEditor(parentel, opts) {
   if (!parentel) return console.error('pranetel undefined!');
 
-  var picker = __webpack_require__(37);
+  var picker = __webpack_require__(38);
 
-  fabric.Object.prototype.set({
-    transparentCorners: false,
-    cornerColor: '#88f',
-    borderColor: '#88f',
-    cornerSize: 6
-  });
-  fabric.Object.prototype.onSelect = objectOnSelect;
   var mainWrapper = _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('div', {
     id: 'CE_wrapper'
   });
@@ -167,6 +165,54 @@ function CanvasEditor(parentel, opts) {
     showHEX: false,
     palette: 'PALETTE_MATERIAL_CHROME'
   });
+  var canvasContextMenuOptions = {
+    background: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
+      textContent: 'Background color'
+    }),
+    delte: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
+      textContent: 'Delete'
+    }),
+    paste: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
+      textContent: 'Paste'
+    })
+  };
+  var objectContextMenuOptions = {
+    arrange: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
+      textContent: 'Arrange',
+      children: [_html__WEBPACK_IMPORTED_MODULE_1___default.a.create('i', {
+        className: 'CE_icon select-down'
+      })]
+    }),
+    copy: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
+      textContent: 'Copy'
+    }),
+    cut: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
+      textContent: 'Cut'
+    }),
+    group: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
+      textContent: 'Group'
+    }),
+    lock: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
+      textContent: 'Lock'
+    })
+  };
+  var arrangeOptions = {
+    bringBackward: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
+      textContent: 'Bring forward'
+    }),
+    bringFront: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
+      textContent: 'Bring front'
+    }),
+    sendBackward: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
+      textContent: 'Send backward'
+    }),
+    sendBack: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
+      textContent: 'Send back'
+    })
+  };
+  var canvasContextMenu = Object(_components_contextmenu__WEBPACK_IMPORTED_MODULE_10__["contextMenu"])(Object.values(canvasContextMenuOptions));
+  var objectContextMenu = Object(_components_contextmenu__WEBPACK_IMPORTED_MODULE_10__["contextMenu"])(Object.values(objectContextMenuOptions));
+  var arrangeContextMenu = Object(_components_contextmenu__WEBPACK_IMPORTED_MODULE_10__["contextMenu"])(Object.values(arrangeOptions));
   var pages = {};
   /**
    * @type {fabric.Canvas}
@@ -333,10 +379,19 @@ function CanvasEditor(parentel, opts) {
   function loadJSON() {}
 
   function init() {
+    fabric.Object.prototype.set({
+      transparentCorners: false,
+      cornerColor: '#88f',
+      borderColor: '#88f',
+      cornerSize: 6
+    });
+    fabric.Object.prototype.onSelect = objectOnSelect;
+    fabric.Canvas.prototype.on('mouse:down', canvasContextMenuTrigger);
     mainWrapper.appendChild(canvasContainer);
     parentel.appendChild(mainWrapper);
     alltools = Object(_components_toolsContainer__WEBPACK_IMPORTED_MODULE_3__["toolsContainer"])();
     initTools();
+    initContextMenu();
     addPage();
     fixPagesContainerPosition();
     window.addEventListener('resize', fixPagesContainerPosition);
@@ -647,6 +702,32 @@ function CanvasEditor(parentel, opts) {
         activeCanvas.page.name = name;
       });
     })();
+  }
+
+  function initContextMenu() {
+    objectContextMenuOptions.arrange.addEventListener('click', arrangeOnClick);
+    /**
+     * 
+     * @param {MouseEvent} e 
+     */
+
+    function arrangeOnClick(e) {
+      /**
+       * @type {HTMLElement}
+       */
+      var el = this;
+      var elClient = el.getBoundingClientRect();
+      arrangeContextMenu.setPosition(elClient.right, elClient.top);
+    }
+  }
+  /**
+   * 
+   * @param {MouseEvent} e 
+   */
+
+
+  function canvasContextMenuTrigger(e) {
+    console.log('mouse click: ', e);
   }
 
   function fixPagesContainerPosition() {
@@ -33365,7 +33446,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(25)(content, options);
+var update = __webpack_require__(19)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -33376,9 +33457,6 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(18)(false);
-// Imports
-exports.i(__webpack_require__(19), "");
-
 // Module
 exports.push([module.i, "#CE_wrapper {\n  height: 100%;\n  width: 100%;\n  overflow: hidden;\n  position: relative;\n  background-color: #fcfcfc;\n}\n\n#CE_wrapper #CE_canvasContainer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container:not(:first-child) {\n  margin-left: 30px;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container {\n  margin: 15px;\n  -webkit-box-shadow: 2px 2px 1px 2px #0f0f0f;\n          box-shadow: 2px 2px 1px 2px #0f0f0f;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container.active {\n  -webkit-box-shadow: 2px 2px 1px 2px #250a6e;\n          box-shadow: 2px 2px 1px 2px #250a6e;\n}\n\n.CE_icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  width: 30px;\n  background: transparent;\n  border: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  font-size: 1em;\n}\n\n.CE_icon:active {\n  outline: none;\n  border: none;\n  -webkit-transform: scale(0.85);\n          transform: scale(0.85);\n}\n\n.CE_icon:focus {\n  outline: none;\n  border: solid 1px rgba(0, 0, 255, .3);\n}\n\n.CE_btn {\n  height: 40px;\n  border: none;\n  background-color: #68f;\n  color: white;\n  font-size: 1em;\n  text-transform: uppercase;\n}\n\n.CE_mask {\n  display: block;\n  position: fixed;\n  left: 0;\n  top: 0;\n  height: 100vh;\n  width: 100vw;\n}", ""]);
 
@@ -33479,74 +33557,6 @@ function toComment(sourceMap) {
 /* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(18)(false);
-// Imports
-var urlEscape = __webpack_require__(20);
-var ___CSS_LOADER_URL___0___ = urlEscape(__webpack_require__(21));
-var ___CSS_LOADER_URL___1___ = urlEscape(__webpack_require__(21) + "#iefix");
-var ___CSS_LOADER_URL___2___ = urlEscape(__webpack_require__(22));
-var ___CSS_LOADER_URL___3___ = urlEscape(__webpack_require__(23));
-var ___CSS_LOADER_URL___4___ = urlEscape(__webpack_require__(24) + "#carddesigner");
-
-// Module
-exports.push([module.i, "@font-face {\n  font-family: 'carddesigner';\n  src: url(" + ___CSS_LOADER_URL___0___ + ");\n  src: url(" + ___CSS_LOADER_URL___1___ + ") format('embedded-opentype'),\n    url(" + ___CSS_LOADER_URL___2___ + ") format('truetype'),\n    url(" + ___CSS_LOADER_URL___3___ + ") format('woff'),\n    url(" + ___CSS_LOADER_URL___4___ + ") format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n\n.CE_icon {\n  /* use !important to prevent issues with browser extensions that change fonts */\n  font-family: 'carddesigner' !important;\n  font-style: normal;\n  font-weight: normal;\n  -webkit-font-feature-settings: normal;\n          font-feature-settings: normal;\n  font-variant: normal;\n  text-transform: none;\n  line-height: 1;\n\n  /* Better Font Rendering =========== */\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\n.star:before {\n  content: \"\\e921\";\n}\n\n.layer-add:before {\n  content: \"\\e920\";\n}\n\n.text-single-line:before {\n  content: \"\\e91b\";\n}\n\n.align-center:before {\n  content: \"\\e90c\";\n}\n\n.align-justify:before {\n  content: \"\\e90d\";\n}\n\n.align-left:before {\n  content: \"\\e90e\";\n}\n\n.align-right:before {\n  content: \"\\e90f\";\n}\n\n.bold:before {\n  content: \"\\e91c\";\n}\n\n.circle:before {\n  content: \"\\e91a\";\n}\n\n.crop:before {\n  content: \"\\e910\";\n}\n\n.delete:before {\n  content: \"\\e911\";\n}\n\n.effects:before {\n  content: \"\\e900\";\n}\n\n.hand:before {\n  content: \"\\e912\";\n}\n\n.image:before {\n  content: \"\\e901\";\n}\n\n.italic:before {\n  content: \"\\e91d\";\n}\n\n.layers:before {\n  content: \"\\e902\";\n}\n\n.minus:before {\n  content: \"\\e916\";\n}\n\n.move:before {\n  content: \"\\e903\";\n}\n\n.paragraph:before {\n  content: \"\\e91e\";\n}\n\n.plus:before {\n  content: \"\\e915\";\n}\n\n.rectangle:before {\n  content: \"\\e918\";\n}\n\n.redo:before {\n  content: \"\\e914\";\n}\n\n.select-downIcon:before {\n  content: \"\\e904\";\n}\n\n.selection:before {\n  content: \"\\e905\";\n}\n\n.shapes:before {\n  content: \"\\e906\";\n}\n\n.text:before {\n  content: \"\\e907\";\n}\n\n.times:before {\n  content: \"\\e917\";\n}\n\n.tools:before {\n  content: \"\\e908\";\n}\n\n.triangle:before {\n  content: \"\\e919\";\n}\n\n.underline:before {\n  content: \"\\e91f\";\n}\n\n.undo:before {\n  content: \"\\e913\";\n}\n\n.upload:before {\n  content: \"\\e909\";\n}\n\n.zoom-in:before {\n  content: \"\\e90a\";\n}\n\n.zoom-out:before {\n  content: \"\\e90b\";\n}\n\n.strikethrough:before {\n  content: \"\\ea65\";\n}", ""]);
-
-
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function escape(url, needQuotes) {
-  if (typeof url !== 'string') {
-    return url;
-  } // If url is already wrapped in quotes, remove them
-
-
-  if (/^['"].*['"]$/.test(url)) {
-    url = url.slice(1, -1);
-  } // Should url be wrapped?
-  // See https://drafts.csswg.org/css-values-3/#urls
-
-
-  if (/["'() \t\n]/.test(url) || needQuotes) {
-    return '"' + url.replace(/"/g, '\\"').replace(/\n/g, '\\n') + '"';
-  }
-
-  return url;
-};
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "fonts/carddesigner.eot";
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "fonts/carddesigner.ttf";
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "fonts/carddesigner.woff";
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "fonts/carddesigner.svg";
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
 /*
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
@@ -33613,7 +33623,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(26);
+var	fixUrls = __webpack_require__(20);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -33948,7 +33958,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 26 */
+/* 20 */
 /***/ (function(module, exports) {
 
 
@@ -34043,6 +34053,111 @@ module.exports = function (css) {
 
 
 /***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(22);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(19)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(18)(false);
+// Module
+exports.push([module.i, ".CE_freeContainer_wrapper {\n  position: absolute;\n  min-height: 40px;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  left: 0;\n  top: 0;\n  border-radius: 2px;\n  overflow: hidden;\n  -webkit-box-shadow: 0 0 4px #313163;\n          box-shadow: 0 0 4px #313163;\n  background-color: white;\n}\n\n.CE_freeContainer_wrapper * {\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n\n.CE_freeContainer_wrapper > .CE_controls {\n  height: 30px;\n  width: 100%;\n  background-color: #97f;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n.CE_freeContainer_wrapper > .CE_controls.grab {\n  cursor: grab !important;\n  cursor: -webkit-grab !important;\n}\n\n.CE_freeContainer_wrapper > .CE_controls.grabbing {\n  cursor: grabbing !important;\n  cursor: -webkit-grabbing !important;\n}\n\n.CE_freeContainer_wrapper > .CE_controls > .CE_mover {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding-left: 5px;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  height: 100%;\n}\n\n.CE_freeContainer_wrapper > .CE_controls > .CE_mover::before {\n  color: white;\n  content: attr(data-title);\n}\n\n.CE_freeContainer_wrapper > .CE_controls .CE_icon {\n  color: white;\n}\n\n.CE_freeContainer_wrapper > .CE_controls .CE_icon:hover {\n  background-color: rgba(255, 255, 255, .2);\n}\n\n.CE_freeContainer_wrapper > .CE_body {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  min-height: 10px;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  padding: 0 5px 5px 5px;\n  min-width: 200px;\n  max-width: 400px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_saperator {\n  display: block;\n  width: calc(100% + 15px);\n  height: 30px;\n  border-bottom: solid 1px #999;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_saperator::before {\n  content: attr(\"data-title\");\n  font-size: 0.85em;\n}\n\n.CE_freeContainer_wrapper > .CE_body > div {\n  margin-top: 7.5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > div:not(:last-child) {\n  margin-bottom: 7.5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_row,\n.CE_freeContainer_wrapper > .CE_body > .CE_col {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_row > .CE_tool,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_row > .CE_tool.active,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.active {\n  background-color: #5374cc;\n  border-radius: 2px;\n  color: white;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_row {\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: row wrap;\n          flex-flow: row wrap;\n  -webkit-box-pack: space-evenly;\n      -ms-flex-pack: space-evenly;\n          justify-content: space-evenly;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_row > .CE_tool:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col {\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > select {\n  height: 40px;\n  max-width: 100%;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool:not(:first-child) {\n  margin-top: 10px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.CE_icon {\n  margin: auto;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.CE_icon:not(:first-child) {\n  margin-top: 5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.CE_icon:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > input {\n  height: 30px;\n  text-indent: 5px;\n  border: solid 1px #999;\n  border-radius: 2px;\n}\n\n.CE_freeContainer_wrapper > .CE_body .CE_bg-color {\n  border-radius: 4px;\n  background: -webkit-gradient(linear, left top, right bottom, from(#99f), color-stop(#9f9), to(#f99));\n  background: linear-gradient(to bottom right, #99f, #9f9, #f99);\n}\n\n.CE_freeContainer_wrapper > .CE_body .CE_stroke-color {\n  border-radius: 4px;\n  border: solid 2px #f97;\n}", ""]);
+
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(24);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(19)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(18)(false);
+// Module
+exports.push([module.i, ".CE_input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  position: relative;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  width: 100%;\n  height: 40px;\n}\n\n.CE_input:hover {\n  background-color: transparent !important;\n}\n\n.CE_input > .CE_fake-label {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding-left: 5px;\n  width: 50%;\n  white-space: nowrap;\n  overflow: hidden;\n}\n\n.CE_input > .CE_fake-label::after {\n  margin-left: 10px;\n  display: inline-block;\n  width: 30px;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  content: attr(data-value);\n}\n\n.CE_input > input {\n  margin: 0 0 0 auto;\n  height: 30px;\n  text-indent: 10px;\n  width: 50%;\n}", ""]);
+
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(26);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(19)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(18)(false);
+// Module
+exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  background-color: white;\n  border-radius: 2px;\n  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n          box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n}\n\n.CE_contextmenu > * {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  min-height: 30px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 10px;\n  cursor: default;\n}\n\n.CE_contextmenu > *:not(:last-child) {\n  border-bottom: solid 1px rgba(0, 0, 0, .4);\n}\n\n.CE_contextmenu > *:hover {\n  background-color: rgba(0, 0, 0, .2);\n}", ""]);
+
+
+
+/***/ }),
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -34061,7 +34176,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(25)(content, options);
+var update = __webpack_require__(19)(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -34072,8 +34187,16 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(18)(false);
+// Imports
+var urlEscape = __webpack_require__(29);
+var ___CSS_LOADER_URL___0___ = urlEscape(__webpack_require__(30));
+var ___CSS_LOADER_URL___1___ = urlEscape(__webpack_require__(30) + "#iefix");
+var ___CSS_LOADER_URL___2___ = urlEscape(__webpack_require__(31));
+var ___CSS_LOADER_URL___3___ = urlEscape(__webpack_require__(32));
+var ___CSS_LOADER_URL___4___ = urlEscape(__webpack_require__(33) + "#carddesigner");
+
 // Module
-exports.push([module.i, ".CE_freeContainer_wrapper {\n  position: absolute;\n  min-height: 40px;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  left: 0;\n  top: 0;\n  border-radius: 2px;\n  overflow: hidden;\n  -webkit-box-shadow: 0 0 4px #313163;\n          box-shadow: 0 0 4px #313163;\n  background-color: white;\n}\n\n.CE_freeContainer_wrapper * {\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n\n.CE_freeContainer_wrapper > .CE_controls {\n  height: 30px;\n  width: 100%;\n  background-color: #97f;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n.CE_freeContainer_wrapper > .CE_controls.grab {\n  cursor: grab !important;\n  cursor: -webkit-grab !important;\n}\n\n.CE_freeContainer_wrapper > .CE_controls.grabbing {\n  cursor: grabbing !important;\n  cursor: -webkit-grabbing !important;\n}\n\n.CE_freeContainer_wrapper > .CE_controls > .CE_mover {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding-left: 5px;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  height: 100%;\n}\n\n.CE_freeContainer_wrapper > .CE_controls > .CE_mover::before {\n  color: white;\n  content: attr(data-title);\n}\n\n.CE_freeContainer_wrapper > .CE_controls .CE_icon {\n  color: white;\n}\n\n.CE_freeContainer_wrapper > .CE_controls .CE_icon:hover {\n  background-color: rgba(255, 255, 255, .2);\n}\n\n.CE_freeContainer_wrapper > .CE_body {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  min-height: 10px;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  padding: 0 5px 5px 5px;\n  min-width: 200px;\n  max-width: 400px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_saperator {\n  display: block;\n  width: calc(100% + 15px);\n  height: 30px;\n  border-bottom: solid 1px #999;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_saperator::before {\n  content: attr(\"data-title\");\n  font-size: 0.85em;\n}\n\n.CE_freeContainer_wrapper > .CE_body > div {\n  margin-top: 7.5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > div:not(:last-child) {\n  margin-bottom: 7.5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_row,\n.CE_freeContainer_wrapper > .CE_body > .CE_col {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_row > .CE_tool,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_row > .CE_tool.active,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.active {\n  background-color: #5374cc;\n  border-radius: 2px;\n  color: white;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_row {\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: row wrap;\n          flex-flow: row wrap;\n  -webkit-box-pack: space-evenly;\n      -ms-flex-pack: space-evenly;\n          justify-content: space-evenly;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_row > .CE_tool:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col {\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > select {\n  height: 40px;\n  max-width: 100%;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool:not(:first-child) {\n  margin-top: 10px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.CE_icon {\n  margin: auto;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.CE_icon:not(:first-child) {\n  margin-top: 5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.CE_icon:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_col > input {\n  height: 30px;\n  text-indent: 5px;\n  border: solid 1px #999;\n  border-radius: 2px;\n}\n\n.CE_freeContainer_wrapper > .CE_body .CE_bg-color {\n  border-radius: 4px;\n  background: -webkit-gradient(linear, left top, right bottom, from(#99f), color-stop(#9f9), to(#f99));\n  background: linear-gradient(to bottom right, #99f, #9f9, #f99);\n}\n\n.CE_freeContainer_wrapper > .CE_body .CE_stroke-color {\n  border-radius: 4px;\n  border: solid 2px #f97;\n}", ""]);
+exports.push([module.i, "@font-face {\n  font-family: 'carddesigner';\n  src: url(" + ___CSS_LOADER_URL___0___ + ");\n  src: url(" + ___CSS_LOADER_URL___1___ + ") format('embedded-opentype'),\n    url(" + ___CSS_LOADER_URL___2___ + ") format('truetype'),\n    url(" + ___CSS_LOADER_URL___3___ + ") format('woff'),\n    url(" + ___CSS_LOADER_URL___4___ + ") format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n\n.CE_icon {\n  /* use !important to prevent issues with browser extensions that change fonts */\n  font-family: 'carddesigner' !important;\n  font-style: normal;\n  font-weight: normal;\n  -webkit-font-feature-settings: normal;\n          font-feature-settings: normal;\n  font-variant: normal;\n  text-transform: none;\n  line-height: 1;\n\n  /* Better Font Rendering =========== */\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\n.star:before {\n  content: \"\\e921\";\n}\n\n.layer-add:before {\n  content: \"\\e920\";\n}\n\n.text-single-line:before {\n  content: \"\\e91b\";\n}\n\n.align-center:before {\n  content: \"\\e90c\";\n}\n\n.align-justify:before {\n  content: \"\\e90d\";\n}\n\n.align-left:before {\n  content: \"\\e90e\";\n}\n\n.align-right:before {\n  content: \"\\e90f\";\n}\n\n.bold:before {\n  content: \"\\e91c\";\n}\n\n.circle:before {\n  content: \"\\e91a\";\n}\n\n.crop:before {\n  content: \"\\e910\";\n}\n\n.delete:before {\n  content: \"\\e911\";\n}\n\n.effects:before {\n  content: \"\\e900\";\n}\n\n.hand:before {\n  content: \"\\e912\";\n}\n\n.image:before {\n  content: \"\\e901\";\n}\n\n.italic:before {\n  content: \"\\e91d\";\n}\n\n.layers:before {\n  content: \"\\e902\";\n}\n\n.minus:before {\n  content: \"\\e916\";\n}\n\n.move:before {\n  content: \"\\e903\";\n}\n\n.paragraph:before {\n  content: \"\\e91e\";\n}\n\n.plus:before {\n  content: \"\\e915\";\n}\n\n.rectangle:before {\n  content: \"\\e918\";\n}\n\n.redo:before {\n  content: \"\\e914\";\n}\n\n.select-down:before {\n  content: \"\\e904\";\n}\n\n.selection:before {\n  content: \"\\e905\";\n}\n\n.shapes:before {\n  content: \"\\e906\";\n}\n\n.text:before {\n  content: \"\\e907\";\n}\n\n.times:before {\n  content: \"\\e917\";\n}\n\n.tools:before {\n  content: \"\\e908\";\n}\n\n.triangle:before {\n  content: \"\\e919\";\n}\n\n.underline:before {\n  content: \"\\e91f\";\n}\n\n.undo:before {\n  content: \"\\e913\";\n}\n\n.upload:before {\n  content: \"\\e909\";\n}\n\n.zoom-in:before {\n  content: \"\\e90a\";\n}\n\n.zoom-out:before {\n  content: \"\\e90b\";\n}\n\n.strikethrough:before {\n  content: \"\\ea65\";\n}", ""]);
 
 
 
@@ -34081,74 +34204,54 @@ exports.push([module.i, ".CE_freeContainer_wrapper {\n  position: absolute;\n  m
 /* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-
-var content = __webpack_require__(30);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
+"use strict";
 
 
+module.exports = function escape(url, needQuotes) {
+  if (typeof url !== 'string') {
+    return url;
+  } // If url is already wrapped in quotes, remove them
 
-var options = {"hmr":true}
 
-options.transform = transform
-options.insertInto = undefined;
+  if (/^['"].*['"]$/.test(url)) {
+    url = url.slice(1, -1);
+  } // Should url be wrapped?
+  // See https://drafts.csswg.org/css-values-3/#urls
 
-var update = __webpack_require__(25)(content, options);
 
-if(content.locals) module.exports = content.locals;
+  if (/["'() \t\n]/.test(url) || needQuotes) {
+    return '"' + url.replace(/"/g, '\\"').replace(/\n/g, '\\n') + '"';
+  }
 
-if(false) {}
+  return url;
+};
 
 /***/ }),
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(18)(false);
-// Module
-exports.push([module.i, ".CE_input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  position: relative;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  width: 100%;\n  height: 40px;\n}\n\n.CE_input:hover {\n  background-color: transparent !important;\n}\n\n.CE_input > .CE_fake-label {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding-left: 5px;\n  width: 50%;\n  white-space: nowrap;\n  overflow: hidden;\n}\n\n.CE_input > .CE_fake-label::after {\n  margin-left: 10px;\n  display: inline-block;\n  width: 30px;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  content: attr(data-value);\n}\n\n.CE_input > input {\n  margin: 0 0 0 auto;\n  height: 30px;\n  text-indent: 10px;\n  width: 50%;\n}", ""]);
-
-
+module.exports = __webpack_require__.p + "fonts/carddesigner.eot";
 
 /***/ }),
 /* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-
-var content = __webpack_require__(32);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(25)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
+module.exports = __webpack_require__.p + "fonts/carddesigner.ttf";
 
 /***/ }),
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(18)(false);
-// Module
-exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  background-color: white;\n  border-radius: 2px;\n  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n          box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n}\n\n.CE_contextmenu > * {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  min-height: 30px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 10px;\n  cursor: default;\n}\n\n.CE_contextmenu > *:not(:last-child) {\n  border-bottom: solid 1px rgba(0, 0, 0, .4);\n}\n\n.CE_contextmenu > *:hover {\n  background-color: rgba(0, 0, 0, .2);\n}", ""]);
-
-
+module.exports = __webpack_require__.p + "fonts/carddesigner.woff";
 
 /***/ }),
 /* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "fonts/carddesigner.svg";
+
+/***/ }),
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process, setImmediate) {// vim:ts=4:sts=4:sw=4:
@@ -36197,10 +36300,10 @@ return Q;
 
 });
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(34), __webpack_require__(35).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(35), __webpack_require__(36).setImmediate))
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -36390,7 +36493,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -36446,7 +36549,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(36);
+__webpack_require__(37);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -36460,7 +36563,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(3)))
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -36650,10 +36753,10 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(3), __webpack_require__(34)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(3), __webpack_require__(35)))
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!

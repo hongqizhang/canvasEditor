@@ -11,6 +11,7 @@ import './css/main/main.css';
 import './css/freeContainer/style.css';
 import './css/inputs/style.css';
 import './css/contextmenu/style.css';
+import './css/res/style.css';
 import {
   all
 } from 'q';
@@ -92,6 +93,7 @@ export function CanvasEditor(parentel, opts) {
   }
   let canvasContextMenu = contextMenu(Object.values(canvasContextMenuOptions));
   let objectContextMenu = contextMenu(Object.values(objectContextMenuOptions));
+  let arrangeContextMenu = contextMenu(Object.values(arrangeOptions));
 
   let pages = {};
   /**
@@ -263,12 +265,14 @@ export function CanvasEditor(parentel, opts) {
       cornerSize: 6
     });
     fabric.Object.prototype.onSelect = objectOnSelect;
+    fabric.Canvas.prototype.on('mouse:down', canvasContextMenuTrigger);
     mainWrapper.appendChild(canvasContainer);
     parentel.appendChild(mainWrapper);
 
     alltools = toolsContainer();
 
     initTools();
+    initContextMenu();
     addPage();
     fixPagesContainerPosition();
     window.addEventListener('resize', fixPagesContainerPosition);
@@ -406,6 +410,30 @@ export function CanvasEditor(parentel, opts) {
         activeCanvas.page.name = name;
       });
     })();
+  }
+
+  function initContextMenu(){
+    objectContextMenuOptions.arrange.addEventListener('click', arrangeOnClick);
+    /**
+     * 
+     * @param {MouseEvent} e 
+     */
+    function arrangeOnClick(e){
+      /**
+       * @type {HTMLElement}
+       */
+      let el = this;
+      let elClient = el.getBoundingClientRect();
+      arrangeContextMenu.setPosition(elClient.right, elClient.top);
+    }
+  }
+
+  /**
+   * 
+   * @param {MouseEvent} e 
+   */
+  function canvasContextMenuTrigger(e){
+    console.log('mouse click: ', e);
   }
 
   function fixPagesContainerPosition() {
