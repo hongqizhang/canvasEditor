@@ -180,8 +180,14 @@ function CanvasEditor(parentel, opts) {
     arrange: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
       textContent: 'Arrange',
       children: [_html__WEBPACK_IMPORTED_MODULE_1___default.a.create('i', {
-        className: 'CE_icon select-down'
-      })]
+        className: 'CE_icon select-down',
+        style: {
+          transform: 'rotate(-90deg)'
+        }
+      })],
+      attr: {
+        'data-expandable': 'true'
+      }
     }),
     copy: _html__WEBPACK_IMPORTED_MODULE_1___default.a.create('span', {
       textContent: 'Copy'
@@ -318,6 +324,8 @@ function CanvasEditor(parentel, opts) {
       activeCanvas = canvas;
     }
 
+    var element = canvas.getElement().parentElement;
+    element.addEventListener('contextmenu', canvasContextMenuTrigger);
     fixPagesContainerPosition();
     updateActiveContainer();
 
@@ -385,12 +393,12 @@ function CanvasEditor(parentel, opts) {
       borderColor: '#88f',
       cornerSize: 6
     });
-    fabric.Object.prototype.onSelect = objectOnSelect;
-    fabric.Canvas.prototype.on('mouse:down', canvasContextMenuTrigger);
+    fabric.Object.prototype.onSelect = objectOnSelect; // fabric.Canvas.prototype.on('mouse:down', canvasContextMenuTrigger);
+
     mainWrapper.appendChild(canvasContainer);
     parentel.appendChild(mainWrapper);
-    alltools = Object(_components_toolsContainer__WEBPACK_IMPORTED_MODULE_3__["toolsContainer"])();
-    initTools();
+    alltools = Object(_components_toolsContainer__WEBPACK_IMPORTED_MODULE_3__["toolsContainer"])(); // initTools();
+
     initContextMenu();
     addPage();
     fixPagesContainerPosition();
@@ -717,9 +725,26 @@ function CanvasEditor(parentel, opts) {
        */
       var el = this;
       var elClient = el.getBoundingClientRect();
-      arrangeContextMenu.setPosition(elClient.right, elClient.top);
+      arrangeContextMenu.show({
+        clientX: elClient.right,
+        clientY: elClient.top
+      });
     }
   }
+  /**
+   * 
+   * @param {Object} fabricEvent 
+   * @param {fabric.Object} fabricEvent.target
+   * @param {Object} fabricEvent.pointer
+   * @param {Number} fabricEvent.pointer.x
+   * @param {Number} fabricEvent.pointer.y
+   * @param {MouseEvent} fabricEvent.e
+   *
+  function canvasContextMenuTrigger(fabricEvent) {
+    fabricEvent.e.preventDefault();
+    console.log(activeCanvas);
+  }*/
+
   /**
    * 
    * @param {MouseEvent} e 
@@ -727,7 +752,13 @@ function CanvasEditor(parentel, opts) {
 
 
   function canvasContextMenuTrigger(e) {
-    console.log('mouse click: ', e);
+    e.preventDefault();
+
+    if (activeCanvas.getElement().parentElement === this && activeCanvas.getActiveObject()) {
+      objectContextMenu.show(e);
+    } else {
+      canvasContextMenu.show(e);
+    }
   }
 
   function fixPagesContainerPosition() {
@@ -32123,45 +32154,67 @@ module.exports = Array.isArray || function (arr) {
 /* 11 */
 /***/ (function(module, exports) {
 
-module.exports = {
-  /**
-   * @typedef {Object} elementExtended
-   * @property {function(eventList):void} removeEvents removes all events added to element
-   * @property {function():void} assignEvents reassign all events that are removed from element
-   * @property {function():void} bubble add bubble effect on click
-   */
+var _module$exports;
 
-  /**
-   * @typedef {HTMLElement & elementExtended} element
-   */
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+/**
+ * @typedef {Object} elementExtended
+ * @property {function(eventList):void} removeEvents removes all events added to element
+ * @property {function():void} assignEvents reassign all events that are removed from element
+ * @property {function():void} bubble add bubble effect on click
+ */
+
+/**
+ * @typedef {Object} createOptions
+ * @property {HTMLElement[] | HTMLAllCollection} children
+ * @property {Object} attr calls HTMLElement.setAttribute(String: name, String: value);
+ */
+
+/**
+ * @typedef {Object} inputNumber
+ * @property {Number|String} min Returns / Sets the min value of input.
+ * @property {Number|String} max Returns / Sets the max value of input.
+ * @property {String|Number} step Returns / Sets the increment and decrement step of input.
+ */
+
+/**
+ * @typedef {Object} inputCheckbox
+ * @property {Boolean} checked Returns / Sets the current state of the element when type is checkbox or radio.
+ * @property {Boolean} defaultChecked Returns / Sets the default state of a radio button or checkbox as originally 
+ * specified in HTML that created this object.
+ * @property {Boolean} indeterminate Returns whether the checkbox or radio button is in indeterminate state. For checkboxes, 
+ * the effect is that the appearance of the checkbox is obscured/greyed in some way as to indicate its state is indeterminate 
+ * (not checked but not unchecked). Does not affect the value of the checked attribute, and clicking the checkbox will set the value to false.
+ */
+
+/**
+ * @typedef {Object} inputImage
+ * @property {String} alt Returns / Sets the element's alt attribute, containing alternative text to use when type is image.
+ * @property {String} height  Returns / Sets the element's height attribute, which defines the height of the image displayed for the button, 
+ * if the value of type is image.
+ * @property {String} src Returns / Sets the element's src attribute, which specifies a URI for the location of an 
+ * image to display on the graphical submit button, if the value of type is image; otherwise it is ignored.
+ * @property {String} width Returns / Sets the document's width attribute, which defines the width of the image displayed for the button, 
+ * if the value of type is image.
+ */
+
+/**
+ * @typedef {Object} inputFile
+ * @property {String} accept Returns / Sets the element's accept attribute, containing comma-separated list of file types accepted by the 
+ * server when type is file.
+ * @property {FileList} files Returns/accepts a FileList object, which contains a list of File objects representing the files selected for upload.
+ */
+module.exports = (_module$exports = {
   /**
    * Create new HTML tag
    * @param {String} tag HTMl element tag name 
-   * @param {Object} [props] HTML element attributes and properties 
-   * @param {String} [props.textContent] HTML element inner text
-   * @param {String} [props.className] HTML element class
-   * @param {String} [props.id] HTML element id
-   * @param {Object} [props.tabIndex] HTML element tab index
-   * @param {Object} [props.style] HTML element inline style
-   * @param {String} [props.style.width] HTML element style width
-   * @param {String} [props.style.height] HTML element style height
-   * @param {String} [props.style.display] HTML element style display
-   * @param {String} [props.style.position] HTML element style position
-   * @param {String} [props.style.transform] HTML element style transform
-   * @param {String} [props.style.background] HTML element style background
-   * @param {String} [props.style.backgroundImage] HTML element style background-image
-   * @param {String} [props.style.backgroundColor] HTML element style background-color
-   * @param {String} [props.style.color] HTML element style background-color
-   * @param {Object} [props.attr] HTML element set attributes
-   * @param {String} [props.attr.role] HTML element set attribute role
-   * @param {String} [props.attr.value] HTML element set value
-   * @param {String} [props.src] Resource URI
-   * @param {Boolean} [props.contentEditable] make contentediable
-   * @param {HTMLElement[]} [props.children] append children to element
-   * @returns {element}
+   * @param {HTMLElement & createOptions} props
+   * @returns {HTMLElement & elementExtended}
    */
-  create: function create(tag, props) {
+  create: function create() {
+    var tag = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'div';
+    var props = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var html = this;
     var el = document.createElement(tag);
     var eventFunctions = [];
@@ -32216,12 +32269,22 @@ module.exports = {
     /**
      * 
      * @param {String} type A case-sensitive string representing the event type to listen for.
-     * @param {CallableFunction} listener The object which receives a notification (an object that implements the Event interface) when an event of the specified type occurs. This must be an object implementing the EventListener interface, or a JavaScript function. See The event listener callback for details on the callback itself.
+     * @param {CallableFunction} listener The object which receives a notification 
+     * (an object that implements the Event interface) when an event of the specified type occurs. 
+     * This must be an object implementing the EventListener interface, or a JavaScript function. 
+     * See The event listener callback for details on the callback itself.
      * @param {Object} [options] An options object that specifies characteristics about the event listener.
-     * @param {Boolean} [options.capture] A Boolean indicating that events of this type will be dispatched to the registered listener before being dispatched to any EventTarget beneath it in the DOM tree.
-     * @param {Boolean} [options.once] A Boolean indicating that the listener should be invoked at most once after being added. If true, the listener would be automatically removed when invoked.
-     * @param {Boolean} [options.passive] A Boolean which, if true, indicates that the function specified by listener will never call preventDefault(). If a passive listener does call preventDefault(), the user agent will do nothing other than generate a console warning. See Improving scrolling performance with passive listeners to learn more.
-     * @param {Boolean} [options.mozSystemGroup] "experimental" A Boolean indicating that the listener should be added to the system group. Available only in code running in XBL or in the chrome of the Firefox browser.
+     * @param {Boolean} [options.capture] A Boolean indicating that events of this type will be dispatched 
+     * to the registered listener before being dispatched to any EventTarget beneath it in the DOM tree.
+     * @param {Boolean} [options.once] A Boolean indicating that the listener should be invoked at most 
+     * once after being added. If true, the listener would be automatically removed when invoked.
+     * @param {Boolean} [options.passive] A Boolean which, if true, indicates that the function specified 
+     * by listener will never call preventDefault(). If a passive listener does call preventDefault(), 
+     * the user agent will do nothing other than generate a console warning. See Improving scrolling 
+     * performance with passive listeners to learn more.
+     * @param {Boolean} [options.mozSystemGroup] "experimental" A Boolean indicating that the listener 
+     * should be added to the system group. Available only in code running in XBL or in the chrome of the 
+     * Firefox browser.
      * @returns {void}
      */
 
@@ -32274,11 +32337,22 @@ module.exports = {
         }
       } else el[prop] = props[prop];
     }
+    /**
+     * @function
+     * @param {HTMLElement | HTMLAllCollection | HTMLElement[]} nodes
+     */
 
-    if (props && props.children && props.children.length > 0) {
-      for (var i = 0; i < props.children.length; ++i) {
-        el.appendChild(props.children[i]);
+
+    el.append = function (nodes) {
+      nodes = Array.isArray(nodes) ? nodes : [nodes];
+
+      for (var i = 0; i < nodes.length; ++i) {
+        el.appendChild(nodes[i]);
       }
+    };
+
+    if (props.children) {
+      el.append(props.children);
     }
 
     el.bubble = function bubble() {
@@ -32348,151 +32422,201 @@ module.exports = {
 
   /**
    * 
-   * @param {Object} props 
+   * @param {HTMLInputElement} props 
+   * @returns {HTMLInputElement}
    */
-  icon: function icon(props) {
-    var icon = this.create('span', props);
-
-    if (!icon.classList.contains('icon')) {
-      icon.classList.add('icon');
-    }
-
-    this.bubble(icon);
-    return icon;
+  input: function input() {
+    var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    props.type = 'text';
+    return this.create('input', props);
   },
 
   /**
    * 
-   * @param {Object} opts 
-   * @param {String} opts.title 
-   * @param {element} opts.element 
-   * @param {String} opts.direction 
-   * @param {Boolean} opts.watchChange
+   * @param {HTMLSpanElement} props 
+   * @returns {HTMLSpanElement} 
    */
-  toolTip: function toolTip(opts) {
-    if (!opts.element) return console.error('element is undefined');
-    if (!opts.direction) opts.direction = 'left';
-    var title = opts.title || opts.element.getAttribute('title') || opts.element.getAttribute('data-title') || '';
-    var toolTip = this.create('div', {
-      className: 'toolTip'
-    });
-    var toolTipPointer = this.create('span', {
-      className: 'toolTip-pointer'
-    });
-    var wrapper = this.create('div', {
-      className: 'toolTip-wrapper',
-      attr: {
-        "data-direction": opts.direction
+  span: function span() {
+    var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return this.create('span', props);
+  },
+
+  /**
+   * 
+   * @param {String} text 
+   * @param {HTMLButtonElement} [props] 
+   * @returns {HTMLButtonElement} 
+   */
+  button: function button() {
+    var text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var props = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    if (text) {
+      props.textContent = text;
+    }
+
+    return this.create('span', props);
+  },
+
+  /**
+   * 
+   * @param {HTMLDivElement} props 
+   * @returns {HTMLDivElement} 
+   */
+  div: function div() {
+    var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return this.create('div', props);
+  },
+
+  /**
+   * 
+   * @param {String} src 
+   * @param {String} alt 
+   * @param {HTMLImageElement} props 
+   * @returns {HTMLImageElement} 
+   */
+  img: function img() {
+    var src = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var alt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    var props = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    props.src = src;
+    props.alt = alt;
+    return this.create('img', props);
+  }
+}, _defineProperty(_module$exports, "img", function img() {
+  var href = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var child = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  var props = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  props.href = href;
+
+  if (child) {
+    props.children = [child];
+  }
+
+  return this.create('img', props);
+}), _defineProperty(_module$exports, "toolTip", function toolTip(opts) {
+  if (!opts.element) return console.error('element is undefined');
+  if (!opts.direction) opts.direction = 'left';
+  var title = opts.title || opts.element.getAttribute('title') || opts.element.getAttribute('data-title') || '';
+  var toolTip = this.create('div', {
+    className: 'toolTip'
+  });
+  var toolTipPointer = this.create('span', {
+    className: 'toolTip-pointer'
+  });
+  var wrapper = this.create('div', {
+    className: 'toolTip-wrapper',
+    attr: {
+      "data-direction": opts.direction
+    }
+  });
+  var text = this.create('span', {
+    textContent: title,
+    className: 'text'
+  });
+  /**
+   * @type {MutationObserver}
+   */
+
+  var observer;
+  toolTip.appendChild(toolTipPointer);
+  toolTip.appendChild(text);
+  wrapper.appendChild(toolTip);
+  document.head.appendChild(this.create('style', {
+    textContent: ".toolTip-wrapper {\n        position: fixed;\n        width: -webkit-fit-content;\n        width: -moz-fit-content;\n        width: fit-content;\n        pointer-events: none;\n        z-index: 999;\n      }\n\n      .toolTip-wrapper .toolTip {\n        width: -webkit-fit-content;\n        width: -moz-fit-content;\n        width: fit-content;\n        height: -webkit-fit-content;\n        height: -moz-fit-content;\n        height: fit-content;\n        background-color: #99f;\n        -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);\n                box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);\n        padding: 10px;\n        border-radius: 4px;\n        -webkit-animation: spring 100ms ease 1;\n                animation: spring 100ms ease 1;\n        width: fit-content;\n        max-width: 220px;\n      }\n\n      .toolTip-wrapper .toolTip > .text {\n        z-index: 1;\n        display: block;\n        color: white;\n        font-family: Arial,\n      Helvetica,\n      sans-serif;\n        white-space: pre-line;\n      }\n\n      .toolTip-wrapper .toolTip > .toolTip-pointer {\n        z-index: -1;\n        position: absolute;\n        -webkit-transform-origin: center;\n                transform-origin: center;\n        height: 15px;\n        width: 15px;\n        background-color: #99f;\n      }\n\n      @-webkit-keyframes spring {\n        0% {\n          -webkit-transform: scale(0.8);\n                  transform: scale(0.8);\n        }\n        80% {\n          -webkit-transform: scale(1.2);\n                  transform: scale(1.2);\n        }\n        100% {\n          -webkit-transform: scale(1);\n                  transform: scale(1);\n        }\n      }\n\n      @keyframes spring {\n        0% {\n          -webkit-transform: scale(0.8);\n                  transform: scale(0.8);\n        }\n        80% {\n          -webkit-transform: scale(1.2);\n                  transform: scale(1.2);\n        }\n        100% {\n          -webkit-transform: scale(1);\n                  transform: scale(1);\n        }\n      }"
+  }));
+  opts.element.onmouseenter = mouseEnter;
+  opts.element.onmouseleave = mouseLeave;
+
+  function mouseEnter() {
+    var elClient = opts.element.getBoundingClientRect();
+
+    if (opts.direction) {
+      if (opts.direction === 'left') {
+        wrapper.style.left = elClient.left + 'px';
+        wrapper.style.top = elClient.top + elClient.height / 2 + 'px';
+        toolTipPointer.style.right = "0";
+        toolTipPointer.style.top = "50%";
+        toolTipPointer.style.transform = 'translate3d(50%, -50%, 0) rotate(45deg)';
+        wrapper.style.transform = 'translate3d(-100%, -50%, 0px)';
       }
-    });
-    var text = this.create('span', {
-      textContent: title,
-      className: 'text'
-    });
-    /**
-     * @type {MutationObserver}
-     */
 
-    var observer;
-    toolTip.appendChild(toolTipPointer);
-    toolTip.appendChild(text);
-    wrapper.appendChild(toolTip);
-    document.head.appendChild(this.create('style', {
-      textContent: ".toolTip-wrapper {\n        position: fixed;\n        width: -webkit-fit-content;\n        width: -moz-fit-content;\n        width: fit-content;\n        pointer-events: none;\n        z-index: 999;\n      }\n\n      .toolTip-wrapper .toolTip {\n        width: -webkit-fit-content;\n        width: -moz-fit-content;\n        width: fit-content;\n        height: -webkit-fit-content;\n        height: -moz-fit-content;\n        height: fit-content;\n        background-color: #99f;\n        -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);\n                box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);\n        padding: 10px;\n        border-radius: 4px;\n        -webkit-animation: spring 100ms ease 1;\n                animation: spring 100ms ease 1;\n        width: fit-content;\n        max-width: 220px;\n      }\n\n      .toolTip-wrapper .toolTip > .text {\n        z-index: 1;\n        display: block;\n        color: white;\n        font-family: Arial,\n      Helvetica,\n      sans-serif;\n        white-space: pre-line;\n      }\n\n      .toolTip-wrapper .toolTip > .toolTip-pointer {\n        z-index: -1;\n        position: absolute;\n        -webkit-transform-origin: center;\n                transform-origin: center;\n        height: 15px;\n        width: 15px;\n        background-color: #99f;\n      }\n\n      @-webkit-keyframes spring {\n        0% {\n          -webkit-transform: scale(0.8);\n                  transform: scale(0.8);\n        }\n        80% {\n          -webkit-transform: scale(1.2);\n                  transform: scale(1.2);\n        }\n        100% {\n          -webkit-transform: scale(1);\n                  transform: scale(1);\n        }\n      }\n\n      @keyframes spring {\n        0% {\n          -webkit-transform: scale(0.8);\n                  transform: scale(0.8);\n        }\n        80% {\n          -webkit-transform: scale(1.2);\n                  transform: scale(1.2);\n        }\n        100% {\n          -webkit-transform: scale(1);\n                  transform: scale(1);\n        }\n      }"
-    }));
-    opts.element.onmouseenter = mouseEnter;
-    opts.element.onmouseleave = mouseLeave;
-
-    function mouseEnter() {
-      var elClient = opts.element.getBoundingClientRect();
-
-      if (opts.direction) {
-        if (opts.direction === 'left') {
-          wrapper.style.left = elClient.left + 'px';
-          wrapper.style.top = elClient.top + elClient.height / 2 + 'px';
-          toolTipPointer.style.right = "0";
-          toolTipPointer.style.top = "50%";
-          toolTipPointer.style.transform = 'translate3d(50%, -50%, 0) rotate(45deg)';
-          wrapper.style.transform = 'translate3d(-100%, -50%, 0px)';
-        }
-
-        if (opts.direction === 'right') {
-          wrapper.style.left = elClient.right + 'px';
-          wrapper.style.top = elClient.top + elClient.height / 2 + 'px';
-          toolTipPointer.style.left = "0";
-          toolTipPointer.style.top = "50%";
-          toolTipPointer.style.transform = 'translate3d(-50%, -50%, 0) rotate(45deg)';
-          wrapper.style.transform = 'translate3d(0%, -50%, 0px)';
-        }
-
-        if (opts.direction === 'top') {
-          wrapper.style.left = elClient.left + elClient.width / 2 + 'px';
-          wrapper.style.top = elClient.top + 'px';
-          toolTipPointer.style.left = "50%";
-          toolTipPointer.style.bottom = "0";
-          toolTipPointer.style.transform = 'translate3d(-50%, 50%, 0) rotate(45deg)';
-          wrapper.style.transform = 'translate3d(-50%, -100%, 0px)';
-        }
-
-        if (opts.direction === 'bottom') {
-          wrapper.style.left = elClient.left + elClient.width / 2 + 'px';
-          wrapper.style.top = elClient.bottom + 'px';
-          toolTipPointer.style.left = "50%";
-          toolTipPointer.style.top = "0";
-          toolTipPointer.style.transform = 'translate3d(-50%, -50%, 0) rotate(45deg)';
-          wrapper.style.transform = 'translate3d(-50%, 0%, 0px)';
-        }
+      if (opts.direction === 'right') {
+        wrapper.style.left = elClient.right + 'px';
+        wrapper.style.top = elClient.top + elClient.height / 2 + 'px';
+        toolTipPointer.style.left = "0";
+        toolTipPointer.style.top = "50%";
+        toolTipPointer.style.transform = 'translate3d(-50%, -50%, 0) rotate(45deg)';
+        wrapper.style.transform = 'translate3d(0%, -50%, 0px)';
       }
 
-      if (opts.watchChange) {
-        observer = new MutationObserver(function (changes, observer) {
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
+      if (opts.direction === 'top') {
+        wrapper.style.left = elClient.left + elClient.width / 2 + 'px';
+        wrapper.style.top = elClient.top + 'px';
+        toolTipPointer.style.left = "50%";
+        toolTipPointer.style.bottom = "0";
+        toolTipPointer.style.transform = 'translate3d(-50%, 50%, 0) rotate(45deg)';
+        wrapper.style.transform = 'translate3d(-50%, -100%, 0px)';
+      }
 
-          try {
-            for (var _iterator2 = changes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var change = _step2.value;
+      if (opts.direction === 'bottom') {
+        wrapper.style.left = elClient.left + elClient.width / 2 + 'px';
+        wrapper.style.top = elClient.bottom + 'px';
+        toolTipPointer.style.left = "50%";
+        toolTipPointer.style.top = "0";
+        toolTipPointer.style.transform = 'translate3d(-50%, -50%, 0) rotate(45deg)';
+        wrapper.style.transform = 'translate3d(-50%, 0%, 0px)';
+      }
+    }
 
-              if (change.type === 'attributes') {
-                text.textContent = opts.element.getAttribute('title') || opts.element.getAttribute('data-title');
-              }
-            }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-                _iterator2["return"]();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
+    if (opts.watchChange) {
+      observer = new MutationObserver(function (changes, observer) {
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = changes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var change = _step2.value;
+
+            if (change.type === 'attributes') {
+              text.textContent = opts.element.getAttribute('title') || opts.element.getAttribute('data-title');
             }
           }
-        });
-        observer.observe(opts.element, {
-          attributes: true
-        });
-      }
-
-      document.body.appendChild(wrapper);
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+              _iterator2["return"]();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
+        }
+      });
+      observer.observe(opts.element, {
+        attributes: true
+      });
     }
 
-    function mouseLeave() {
-      if (!toolTip.parentElement) return;
-      document.body.removeChild(wrapper);
-
-      if (opts.watchChange && observer) {
-        observer.disconnect;
-      }
-    }
-
-    opts.element.removeAttribute('title');
+    document.body.appendChild(wrapper);
   }
-};
+
+  function mouseLeave() {
+    if (!toolTip.parentElement) return;
+    document.body.removeChild(wrapper);
+
+    if (opts.watchChange && observer) {
+      observer.disconnect;
+    }
+  }
+
+  opts.element.removeAttribute('title');
+}), _module$exports);
 
 /***/ }),
 /* 12 */
@@ -32794,96 +32918,97 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _freeContainer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(12);
 /* harmony import */ var _inputs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(14);
 /* harmony import */ var _contextmenu__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 
 /**
+ * @typedef {Object} textOptions
+ * @property {HTMLElement} addText
+ * @property {HTMLElement} fontSize
+ * @property {HTMLElement} fontStyle
+ * @property {HTMLElement} fontFamily
+ * @property {HTMLElement} fontWeight
+ */
+
+/**
+ * @typedef {Object} tools
+ * @property {HTMLElement & textOptions} text
+ * @property {HTMLElement} shapes
+ * @property {HTMLElement} image
+ * @property {HTMLElement} page
+ * @property {HTMLElement} object
+ */
+
+/**
+ * @typedef {Object} textStyle
+ * @property {HTMLElement} underline
+ * @property {HTMLElement} italic
+ * @property {HTMLElement} strikethrough
+ */
+
+/**
+ * @typedef {Object} page
+ * @property {HTMLElement} pageName
+ * @property {HTMLElement} pageWidth
+ * @property {HTMLElement} pageHeight
+ * @property {HTMLElement} addPage
+ */
+
+/**
  * @typedef {Object} toolsContainer
- * @property {Object} tools
- * @property {HTMLElement} tools.addPage
- * @property {HTMLElement} tools.circle
- * @property {HTMLElement} tools.rectangle
- * @property {HTMLElement} tools.triangle
- * @property {HTMLElement} tools.addText
- * @property {Object} pageSettings
- * @property {HTMLInputElement} pageSettings.pageName
- * @property {HTMLInputElement} pageSettings.pageHeight
- * @property {HTMLInputElement} pageSettings.pageWidth
- * @property {Object} commonSettings
- * @property {HTMLElement} commonSettings.bgColor
- * @property {HTMLElement} commonSettings.strokeColor
- * @property {HTMLElement} commonSettings.opacity
- * @property {Object} textSettings
- * @property {HTMLSelectElement} textSettings.fontFamily
- * @property {basicInput} textSettings.fontSize
- * @property {HTMLSelectElement} textSettings.fontWeight
- * @property {Object} textStyle
- * @property {HTMLElement} textStyle.italic
- * @property {HTMLElement} textStyle.underLine
- * @property {HTMLElement} textStyle.strikethrough
  */
 
 function toolsContainer() {
-  var toolsGroup = {
-    text: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-      tabIndex: 0,
-      className: 'CE_tool CE_icon text'
+  /**
+   * @type {HTMLDivElement}
+   */
+  var root = CE_wrapper;
+  var wrapper = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('div', {
+    id: 'CE_tools-wrapper'
+  });
+  var container = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('div', {
+    id: 'CE_tools-container'
+  });
+  /**
+   * @type {tools}
+   */
+
+  var mainTools = {
+    text: null,
+    shapes: null,
+    image: null,
+    page: null,
+    object: null,
+    backgroundColor: null,
+    strokeColor: null
+  };
+  /**
+   * @type {page}
+   */
+
+  var page = {
+    pageName: _html__WEBPACK_IMPORTED_MODULE_0___default.a.input({
+      type: 'text',
+      value: 'page-1',
+      placeholder: 'page name'
     }),
-    shapes: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-      tabIndex: 0,
-      className: 'CE_tool CE_icon shapes'
+    pageHeight: _html__WEBPACK_IMPORTED_MODULE_0___default.a.input({
+      type: 'number',
+      value: '500',
+      placeholder: 'h'
     }),
-    image: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-      tabIndex: 0,
-      className: 'CE_tool CE_icon image'
+    pageWidth: _html__WEBPACK_IMPORTED_MODULE_0___default.a.input({
+      type: 'number',
+      value: '500',
+      placeholder: 'w'
     }),
-    grab: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-      tabIndex: 0,
-      className: 'CE_tool CE_icon hand'
-    }),
-    addPage: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-      className: 'CE_tool CE_icon layer-add'
+    addPage: _html__WEBPACK_IMPORTED_MODULE_0___default.a.button(null, {
+      className: 'CE_tool CE_btn',
+      textContent: 'add page'
     })
   };
-  var pageSettings = {
-    pageName: Object(_inputs__WEBPACK_IMPORTED_MODULE_2__["basicInput"])({
-      label: 'Page name',
-      inputProps: {
-        placeholder: 'in px',
-        value: 'page 1'
-      }
-    }),
-    pageHeight: Object(_inputs__WEBPACK_IMPORTED_MODULE_2__["basicInput"])({
-      label: 'Page height',
-      inputProps: {
-        placeholder: 'in px',
-        type: 'number',
-        min: 100,
-        value: 500
-      }
-    }),
-    pageWidth: Object(_inputs__WEBPACK_IMPORTED_MODULE_2__["basicInput"])({
-      label: 'Page width',
-      inputProps: {
-        placeholder: 'in px',
-        type: 'number',
-        min: 100,
-        value: 500
-      }
-    })
-  };
-  var commonSettings = {
-    bgColor: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-      className: 'CE_tool CE_icon CE_bg-color'
-    }),
-    strokeColor: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-      className: 'CE_tool CE_icon CE_stroke-color'
-    }),
+  var object = {
     opacity: Object(_inputs__WEBPACK_IMPORTED_MODULE_2__["slider"])({
       label: 'opacity',
       min: 0,
@@ -32892,277 +33017,65 @@ function toolsContainer() {
       value: 1
     })
   };
-  var textSettings = {
+  var textOptions = {
     fontFamily: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('select', {
       className: 'CE_tool'
     }),
     fontWeight: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('select', {
       className: 'CE_tool'
     }),
-    fontSize: Object(_inputs__WEBPACK_IMPORTED_MODULE_2__["basicInput"])({
-      label: 'Font size',
-      inputProps: {
+    fontSize: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('label', {
+      children: [icon('font-size'), _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('input', {
         type: 'number',
-        min: '0',
-        placeholder: 'font size',
         value: 40
-      }
+      })]
     }),
     addText: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('button', {
       className: 'CE_tool CE_btn',
       textContent: 'add text'
     })
+    /**
+     * @type {textStyle}
+     */
+
   };
   var textStyle = {
-    underLine: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-      className: 'CE_tool CE_icon underline'
-    }),
-    italic: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-      className: 'CE_tool CE_icon italic'
-    }),
-    strikethrough: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-      className: 'CE_tool CE_icon strikethrough'
-    })
+    underline: null,
+    italic: null,
+    strikethrough: null
   };
   var shapes = {
-    circle: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('div', {
-      children: [_html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-        className: 'CE_icon circle'
-      }), _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-        textContent: 'Add circle'
-      })]
-    }),
-    rectangle: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('div', {
-      children: [_html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-        className: 'CE_icon rectangle'
-      }), _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-        textContent: 'Add rectagle'
-      })]
-    }),
-    triangle: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('div', {
-      children: [_html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-        className: 'CE_icon triangle'
-      }), _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
-        textContent: 'Add triangle'
-      })]
-    })
+    circle: icon('circle', 'Add circle', true),
+    rectangle: icon('rectangle', 'Add rectangle', true),
+    triangle: icon('triangle', 'Add triangle', true)
   };
   var imageOptions = {
-    openImage: function image() {
-      var label = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('label', {
-        textContent: 'Add image'
-      });
-      var fileInput = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('input', {
+    openImage: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('label', {
+      children: [icon('image', 'Open an image', true), _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('input', {
         type: 'file',
+        accept: 'image/x-png, image/jpeg',
         style: {
           display: 'none'
         }
-      });
-      label.appendChild(fileInput);
-      return label;
-    }(),
+      })]
+    }),
     loadSVG: _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
       textContent: 'Load SVG file'
     })
   };
-  var container = Object(_freeContainer__WEBPACK_IMPORTED_MODULE_1__["freeContainer"])({
-    disableCloseBtn: true,
-    title: 'Tools'
-  });
-  var cm_shapes = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_3__["contextMenu"])(objToArray(shapes));
-  var cm_imageOptions = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_3__["contextMenu"])(objToArray(imageOptions));
+  var cm_shapes = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_3__["contextMenu"])(Object.values(shapes));
+  var cm_imageOptions = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_3__["contextMenu"])(Object.values(imageOptions));
   var defaultFontFamilies = ['Arial', 'Helvetica', 'Courier New', 'Courier', 'Times New Roman', 'Times'];
   var defaultFontWeight = ['lighter', 'normal', 'bold', 'bolder', 100, 200, 300, 400, 500, 600, 700, 800, 900];
-  var container_1 = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('div', {
-    className: 'CE_row'
-  });
-  var container_2 = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('div', {
-    className: 'CE_col'
-  });
-  var container_3 = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('div', {
-    className: 'CE_row'
-  });
-  var container_4 = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('div', {
-    className: 'CE_col'
-  });
-  var container_5 = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('div', {
-    className: 'CE_row'
-  });
+  init();
 
-  var tools = _objectSpread({}, shapes, imageOptions, {
-    addPage: toolsGroup.addPage,
-    addText: textSettings.addText
-  });
-
-  for (var _i = 0, _defaultFontFamilies = defaultFontFamilies; _i < _defaultFontFamilies.length; _i++) {
-    var font = _defaultFontFamilies[_i];
-    var option = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('option', {
-      textContent: font,
-      value: font
-    });
-    textSettings.fontFamily.appendChild(option);
-  }
-
-  for (var _i2 = 0, _defaultFontWeight = defaultFontWeight; _i2 < _defaultFontWeight.length; _i2++) {
-    var weight = _defaultFontWeight[_i2];
-
-    var _option = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('option', {
-      textContent: weight,
-      value: weight
-    });
-
-    textSettings.fontWeight.appendChild(_option);
-  }
-
-  container.setVisiblity(true);
-  textSettings.addText.bubble();
-  toolsGroup.shapes.addEventListener('click', cm_shapes.show);
-  toolsGroup.image.addEventListener('click', cm_imageOptions.show);
-  toolsGroup.text.addEventListener('click', function expandContainer() {
-    newContainer.bind(this)('Text', [container_5, container_4]);
-  });
-  var tmp_toolsGroup_1 = objToArray(toolsGroup);
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = tmp_toolsGroup_1[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var el = _step.value;
-      container_1.appendChild(el);
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-        _iterator["return"]();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-
-  var tmp_pageSettings = objToArray(pageSettings);
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
-
-  try {
-    for (var _iterator2 = tmp_pageSettings[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var _el = _step2.value;
-      container_2.appendChild(_el);
-    }
-  } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-        _iterator2["return"]();
-      }
-    } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
-      }
-    }
-  }
-
-  var tmp_commonSettings = objToArray(commonSettings);
-  var _iteratorNormalCompletion3 = true;
-  var _didIteratorError3 = false;
-  var _iteratorError3 = undefined;
-
-  try {
-    for (var _iterator3 = tmp_commonSettings[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-      var _el2 = _step3.value;
-      container_3.appendChild(_el2);
-    }
-  } catch (err) {
-    _didIteratorError3 = true;
-    _iteratorError3 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-        _iterator3["return"]();
-      }
-    } finally {
-      if (_didIteratorError3) {
-        throw _iteratorError3;
-      }
-    }
-  }
-
-  var tmp_textSettings = objToArray(textSettings);
-  var _iteratorNormalCompletion4 = true;
-  var _didIteratorError4 = false;
-  var _iteratorError4 = undefined;
-
-  try {
-    for (var _iterator4 = tmp_textSettings[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-      var _el3 = _step4.value;
-      container_4.appendChild(_el3);
-    }
-  } catch (err) {
-    _didIteratorError4 = true;
-    _iteratorError4 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-        _iterator4["return"]();
-      }
-    } finally {
-      if (_didIteratorError4) {
-        throw _iteratorError4;
-      }
-    }
-  }
-
-  var tmp_textStyle = objToArray(textStyle);
-  var _iteratorNormalCompletion5 = true;
-  var _didIteratorError5 = false;
-  var _iteratorError5 = undefined;
-
-  try {
-    for (var _iterator5 = tmp_textStyle[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-      var _el4 = _step5.value;
-      container_5.appendChild(_el4);
-    }
-  } catch (err) {
-    _didIteratorError5 = true;
-    _iteratorError5 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
-        _iterator5["return"]();
-      }
-    } finally {
-      if (_didIteratorError5) {
-        throw _iteratorError5;
-      }
-    }
-  }
-
-  container.addItems([container_1, container_2, container_3]);
-
-  function objToArray(obj) {
-    var tmpArray = [];
-
-    for (var key in obj) {
-      var el = obj[key];
-      el = el.container || el;
-
-      if (!el.classList.contains('CE_tool')) {
-        el.classList.add('CE_tool');
-      }
-
-      tmpArray.push(el);
-    }
-
-    return tmpArray;
+  function init() {
+    arrayToOptions(defaultFontFamilies, textOptions.fontFamily);
+    arrayToOptions(defaultFontWeight, textOptions.fontWeight);
+    iconsFromObject(mainTools, textStyle);
+    wrapper.append(container);
+    container.append(Object.values(mainTools));
+    root.appendChild(wrapper);
   }
 
   function newContainer(title, tools) {
@@ -33179,14 +33092,90 @@ function toolsContainer() {
       container.del();
     };
   }
+  /**
+   * 
+   * @param {String[]} options 
+   * @param {HTMLElement} selectElement 
+   */
 
-  return {
-    tools: tools,
-    pageSettings: pageSettings,
-    commonSettings: commonSettings,
-    textSettings: textSettings,
-    textStyle: textStyle
-  };
+
+  function arrayToOptions(options, selectElement) {
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = options[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var option = _step.value;
+        var optionElement = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('option', {
+          textContent: option,
+          value: option
+        });
+        selectElement.appendChild(optionElement);
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+          _iterator["return"]();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+  }
+  /**
+   * @param {String} iconname
+   * @param {String} [text]
+   * @param {Boolean} [pos] if true text is positioned first and icon is positioned second
+   */
+
+
+  function icon(iconname, text, pos) {
+    if (text && pos) {
+      return _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
+        textContent: text,
+        children: [icon(iconname)]
+      });
+    } else if (text) {
+      var el = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
+        children: [icon(iconname)]
+      });
+      el.appendChild(document.createTextNode(text));
+      return el;
+    } else {
+      return _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
+        className: 'CE_tool CE_icon ' + iconname
+      });
+    }
+  }
+  /**
+   * @param {Object} array
+   * @param {Object} [args]
+   */
+
+
+  function iconsFromObject(array) {
+    form(array);
+
+    if (arguments.length > 1) {
+      for (var i = 1; i < arguments.length; ++i) {
+        form(arguments[i]);
+      }
+    }
+
+    function form(ar) {
+      for (var key in ar) {
+        ar[key] = icon(key);
+      }
+    }
+  }
+
+  return {};
 }
 
 /***/ }),
@@ -33332,10 +33321,16 @@ function contextMenu() {
   var x = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
   var y = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
   var cm = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('div', {
-    className: 'CE_contextmenu'
+    className: 'CE_contextmenu',
+    oncontextmenu: function oncontextmenu() {
+      return false;
+    }
   });
   var mask = _html__WEBPACK_IMPORTED_MODULE_0___default.a.create('span', {
     className: 'CE_mask',
+    oncontextmenu: function oncontextmenu() {
+      return false;
+    },
     onclick: hide
   });
   setPosition(x, y);
@@ -33350,18 +33345,31 @@ function contextMenu() {
   }
   /**
    * 
-   * @param {MouseEvent} e 
+   * @param {MouseEvent} [e] 
    */
 
 
-  function show(e) {
-    if (e.clientX && e.clientY) {
+  function show() {
+    var e = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+    if (e && e.clientX && e.clientY) {
       setPosition(e.clientX, e.clientY);
     }
 
     if (!cm.parentElement) {
       document.body.appendChild(mask);
       document.body.appendChild(cm);
+      var cmClient = cm.getBoundingClientRect();
+
+      if (cmClient.x + cmClient.width > innerWidth) {
+        cmClient.x -= cmClient.width;
+      }
+
+      if (cmClient.y + cmClient.height > innerHeight) {
+        cmClient.y -= cmClient.height;
+      }
+
+      setPosition(cmClient.x, cmClient.y);
     }
   }
 
@@ -33371,6 +33379,11 @@ function contextMenu() {
       document.body.removeChild(cm);
     }
   }
+  /**
+   * 
+   * @param {HTMLElement[]|HTMLElement|HTMLAllCollection} items 
+   */
+
 
   function addItems(items) {
     if (!items) return;
@@ -33384,6 +33397,7 @@ function contextMenu() {
         for (var _iterator = items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var item = _step.value;
           cm.appendChild(item);
+          hideOnClick(item);
         }
       } catch (err) {
         _didIteratorError = true;
@@ -33401,6 +33415,18 @@ function contextMenu() {
       }
     } else {
       cm.appendChild(items);
+      hideOnClick(items);
+    }
+    /**
+     * 
+     * @param {HTMLElement} item 
+     */
+
+
+    function hideOnClick(item) {
+      if (!item.getAttribute('data-expandable')) {
+        item.addEventListener('click', hide);
+      }
     }
   }
 
@@ -33458,7 +33484,7 @@ if(false) {}
 
 exports = module.exports = __webpack_require__(18)(false);
 // Module
-exports.push([module.i, "#CE_wrapper {\n  height: 100%;\n  width: 100%;\n  overflow: hidden;\n  position: relative;\n  background-color: #fcfcfc;\n}\n\n#CE_wrapper #CE_canvasContainer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container:not(:first-child) {\n  margin-left: 30px;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container {\n  margin: 15px;\n  -webkit-box-shadow: 2px 2px 1px 2px #0f0f0f;\n          box-shadow: 2px 2px 1px 2px #0f0f0f;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container.active {\n  -webkit-box-shadow: 2px 2px 1px 2px #250a6e;\n          box-shadow: 2px 2px 1px 2px #250a6e;\n}\n\n.CE_icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  width: 30px;\n  background: transparent;\n  border: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  font-size: 1em;\n}\n\n.CE_icon:active {\n  outline: none;\n  border: none;\n  -webkit-transform: scale(0.85);\n          transform: scale(0.85);\n}\n\n.CE_icon:focus {\n  outline: none;\n  border: solid 1px rgba(0, 0, 255, .3);\n}\n\n.CE_btn {\n  height: 40px;\n  border: none;\n  background-color: #68f;\n  color: white;\n  font-size: 1em;\n  text-transform: uppercase;\n}\n\n.CE_mask {\n  display: block;\n  position: fixed;\n  left: 0;\n  top: 0;\n  height: 100vh;\n  width: 100vw;\n}", ""]);
+exports.push([module.i, "#CE_wrapper {\n  height: 100%;\n  width: 100%;\n  overflow: hidden;\n  position: relative;\n  background-color: #fcfcfc;\n}\n\n#CE_wrapper #CE_tools-wrapper {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column wrap;\n          flex-flow: column wrap;\n  height: 100%;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  padding: 5px;\n  background-color: #584e53;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column wrap;\n          flex-flow: column wrap;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > * {\n  background-color: #363134;\n  color: white;\n  height: 40px;\n  width: 40px;\n  margin-top: 5px;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *:hover {\n  background-color: #222122;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.object::before {\n  content: \"\\e921\";\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.backgroundColor {\n  background-color: #ccf;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.strokeColor {\n  border: solid 4px #ccf;\n}\n\n#CE_wrapper #CE_canvasContainer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container:not(:first-child) {\n  margin-left: 30px;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container {\n  margin: 15px;\n  -webkit-box-shadow: 2px 2px 1px 2px #0f0f0f;\n          box-shadow: 2px 2px 1px 2px #0f0f0f;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container.active {\n  -webkit-box-shadow: 2px 2px 1px 2px #250a6e;\n          box-shadow: 2px 2px 1px 2px #250a6e;\n}\n\n.CE_icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  width: 30px;\n  background: transparent;\n  border: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  font-size: 1em;\n}\n\n.CE_icon:active {\n  outline: none;\n  border: none;\n  -webkit-transform: scale(0.85);\n          transform: scale(0.85);\n}\n\n.CE_icon:focus {\n  outline: none;\n  border: solid 1px rgba(0, 0, 255, .3);\n}\n\n.CE_btn {\n  height: 40px;\n  border: none;\n  background-color: #68f;\n  color: white;\n  font-size: 1em;\n  text-transform: uppercase;\n}\n\n.CE_mask {\n  display: block;\n  position: fixed;\n  left: 0;\n  top: 0;\n  height: 100vh;\n  width: 100vw;\n}", ""]);
 
 
 
@@ -34153,7 +34179,7 @@ if(false) {}
 
 exports = module.exports = __webpack_require__(18)(false);
 // Module
-exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  background-color: white;\n  border-radius: 2px;\n  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n          box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n}\n\n.CE_contextmenu > * {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  min-height: 30px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 10px;\n  cursor: default;\n}\n\n.CE_contextmenu > *:not(:last-child) {\n  border-bottom: solid 1px rgba(0, 0, 0, .4);\n}\n\n.CE_contextmenu > *:hover {\n  background-color: rgba(0, 0, 0, .2);\n}", ""]);
+exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  background-color: white;\n  -webkit-transition: all 100ms ease;\n  transition: all 100ms ease;\n  -webkit-transform-origin: top;\n          transform-origin: top;\n  -webkit-animation: animateCm 100ms ease 1;\n          animation: animateCm 100ms ease 1;\n  border-radius: 2px;\n  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n          box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n}\n\n.CE_contextmenu > * {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  min-width: 200px;\n  min-height: 30px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 10px;\n  font-size: 0.8em;\n  font-weight: 500;\n  cursor: default;\n}\n\n.CE_contextmenu > *:not(:last-child) {\n  border-bottom: solid 1px rgba(0, 0, 0, .4);\n}\n\n.CE_contextmenu > *:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n@-webkit-keyframes animateCm {\n  0% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}\n\n@keyframes animateCm {\n  0% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 1;\n  }\n}", ""]);
 
 
 
@@ -34196,7 +34222,7 @@ var ___CSS_LOADER_URL___3___ = urlEscape(__webpack_require__(32));
 var ___CSS_LOADER_URL___4___ = urlEscape(__webpack_require__(33) + "#carddesigner");
 
 // Module
-exports.push([module.i, "@font-face {\n  font-family: 'carddesigner';\n  src: url(" + ___CSS_LOADER_URL___0___ + ");\n  src: url(" + ___CSS_LOADER_URL___1___ + ") format('embedded-opentype'),\n    url(" + ___CSS_LOADER_URL___2___ + ") format('truetype'),\n    url(" + ___CSS_LOADER_URL___3___ + ") format('woff'),\n    url(" + ___CSS_LOADER_URL___4___ + ") format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n\n.CE_icon {\n  /* use !important to prevent issues with browser extensions that change fonts */\n  font-family: 'carddesigner' !important;\n  font-style: normal;\n  font-weight: normal;\n  -webkit-font-feature-settings: normal;\n          font-feature-settings: normal;\n  font-variant: normal;\n  text-transform: none;\n  line-height: 1;\n\n  /* Better Font Rendering =========== */\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\n.star:before {\n  content: \"\\e921\";\n}\n\n.layer-add:before {\n  content: \"\\e920\";\n}\n\n.text-single-line:before {\n  content: \"\\e91b\";\n}\n\n.align-center:before {\n  content: \"\\e90c\";\n}\n\n.align-justify:before {\n  content: \"\\e90d\";\n}\n\n.align-left:before {\n  content: \"\\e90e\";\n}\n\n.align-right:before {\n  content: \"\\e90f\";\n}\n\n.bold:before {\n  content: \"\\e91c\";\n}\n\n.circle:before {\n  content: \"\\e91a\";\n}\n\n.crop:before {\n  content: \"\\e910\";\n}\n\n.delete:before {\n  content: \"\\e911\";\n}\n\n.effects:before {\n  content: \"\\e900\";\n}\n\n.hand:before {\n  content: \"\\e912\";\n}\n\n.image:before {\n  content: \"\\e901\";\n}\n\n.italic:before {\n  content: \"\\e91d\";\n}\n\n.layers:before {\n  content: \"\\e902\";\n}\n\n.minus:before {\n  content: \"\\e916\";\n}\n\n.move:before {\n  content: \"\\e903\";\n}\n\n.paragraph:before {\n  content: \"\\e91e\";\n}\n\n.plus:before {\n  content: \"\\e915\";\n}\n\n.rectangle:before {\n  content: \"\\e918\";\n}\n\n.redo:before {\n  content: \"\\e914\";\n}\n\n.select-down:before {\n  content: \"\\e904\";\n}\n\n.selection:before {\n  content: \"\\e905\";\n}\n\n.shapes:before {\n  content: \"\\e906\";\n}\n\n.text:before {\n  content: \"\\e907\";\n}\n\n.times:before {\n  content: \"\\e917\";\n}\n\n.tools:before {\n  content: \"\\e908\";\n}\n\n.triangle:before {\n  content: \"\\e919\";\n}\n\n.underline:before {\n  content: \"\\e91f\";\n}\n\n.undo:before {\n  content: \"\\e913\";\n}\n\n.upload:before {\n  content: \"\\e909\";\n}\n\n.zoom-in:before {\n  content: \"\\e90a\";\n}\n\n.zoom-out:before {\n  content: \"\\e90b\";\n}\n\n.strikethrough:before {\n  content: \"\\ea65\";\n}", ""]);
+exports.push([module.i, "@font-face {\n  font-family: 'carddesigner';\n  src: url(" + ___CSS_LOADER_URL___0___ + ");\n  src: url(" + ___CSS_LOADER_URL___1___ + ") format('embedded-opentype'),\n    url(" + ___CSS_LOADER_URL___2___ + ") format('truetype'),\n    url(" + ___CSS_LOADER_URL___3___ + ") format('woff'),\n    url(" + ___CSS_LOADER_URL___4___ + ") format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n\n.CE_icon {\n  /* use !important to prevent issues with browser extensions that change fonts */\n  font-family: 'carddesigner' !important;\n  speak: none;\n  font-style: normal;\n  font-weight: normal;\n  -webkit-font-feature-settings: normal;\n          font-feature-settings: normal;\n  font-variant: normal;\n  text-transform: none;\n  line-height: 1;\n\n  /* Better Font Rendering =========== */\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\n.star:before {\n  content: \"\\e921\";\n}\n\n.layer-add:before {\n  content: \"\\e920\";\n}\n\n.text-single-line:before {\n  content: \"\\e91b\";\n}\n\n.align-center:before {\n  content: \"\\e90c\";\n}\n\n.align-justify:before {\n  content: \"\\e90d\";\n}\n\n.align-left:before {\n  content: \"\\e90e\";\n}\n\n.align-right:before {\n  content: \"\\e90f\";\n}\n\n.bold:before {\n  content: \"\\e91c\";\n}\n\n.circle:before {\n  content: \"\\e91a\";\n}\n\n.crop:before {\n  content: \"\\e910\";\n}\n\n.delete:before {\n  content: \"\\e911\";\n}\n\n.effects:before {\n  content: \"\\e900\";\n}\n\n.hand:before {\n  content: \"\\e912\";\n}\n\n.image:before {\n  content: \"\\e901\";\n}\n\n.italic:before {\n  content: \"\\e91d\";\n}\n\n.layers:before {\n  content: \"\\e902\";\n}\n\n.minus:before {\n  content: \"\\e916\";\n}\n\n.move:before {\n  content: \"\\e903\";\n}\n\n.paragraph:before {\n  content: \"\\e91e\";\n}\n\n.plus:before {\n  content: \"\\e915\";\n}\n\n.rectangle:before {\n  content: \"\\e918\";\n}\n\n.redo:before {\n  content: \"\\e914\";\n}\n\n.select-down:before {\n  content: \"\\e904\";\n}\n\n.selection:before {\n  content: \"\\e905\";\n}\n\n.shapes:before {\n  content: \"\\e906\";\n}\n\n.text:before {\n  content: \"\\e907\";\n}\n\n.times:before {\n  content: \"\\e917\";\n}\n\n.tools:before {\n  content: \"\\e908\";\n}\n\n.triangle:before {\n  content: \"\\e919\";\n}\n\n.underline:before {\n  content: \"\\e91f\";\n}\n\n.undo:before {\n  content: \"\\e913\";\n}\n\n.upload:before {\n  content: \"\\e909\";\n}\n\n.zoom-in:before {\n  content: \"\\e90a\";\n}\n\n.zoom-out:before {\n  content: \"\\e90b\";\n}\n\n.page:before {\n  content: \"\\e924\";\n}\n\n.checkbox-unchecked:before {\n  content: \"\\ea53\";\n}\n\n.radio-unchecked:before {\n  content: \"\\ea56\";\n}\n\n.font-size:before {\n  content: \"\\ea61\";\n}\n\n.strikethrough:before {\n  content: \"\\ea65\";\n}", ""]);
 
 
 

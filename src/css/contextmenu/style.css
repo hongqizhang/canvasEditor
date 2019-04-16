@@ -10,6 +10,12 @@
       -ms-flex-direction: column;
           flex-direction: column;
   background-color: white;
+  -webkit-transition: all 100ms ease;
+  transition: all 100ms ease;
+  -webkit-transform-origin: top;
+          transform-origin: top;
+  -webkit-animation: animateCm 100ms ease 1;
+          animation: animateCm 100ms ease 1;
   border-radius: 2px;
   -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, 0.2);
           box-shadow: 4px 4px 20px rgba(0, 0, 56, 0.2);
@@ -19,6 +25,7 @@
   height: -webkit-fit-content;
   height: -moz-fit-content;
   height: fit-content;
+  min-width: 200px;
   min-height: 30px;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -27,6 +34,8 @@
       -ms-flex-align: center;
           align-items: center;
   padding: 0 10px;
+  font-size: 0.8em;
+  font-weight: 500;
   cursor: default;
 }
 
@@ -36,5 +45,23 @@
 
 .CE_contextmenu > *:hover {
   background-color: rgba(0, 0, 0, 0.2);
+}
+
+@-webkit-keyframes animateCm {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes animateCm {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 /*# sourceMappingURL=style.css.map */

@@ -5,6 +5,51 @@
   position: relative;
   background-color: rgb(252, 252, 252);
 
+  #CE_tools-wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-flow: column wrap;
+    height: 100%;
+    width: fit-content;
+    padding: 5px;
+    background-color: #584e53;
+
+    #CE_tools-container {
+      width: fit-content;
+      height: 100%;
+      display: flex;
+      flex-flow: column wrap;
+
+      >* {
+        background-color: #363134;
+        color: white;
+        height: 40px;
+        width: 40px;
+        margin-top: 5px;
+        border-radius: 4px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #222122;
+        }
+
+        &.object::before {
+          content: "\e921";
+        }
+
+        &.backgroundColor {
+          background-color: #ccf;
+        }
+
+        &.strokeColor {
+          border: solid 4px #ccf;
+        }
+      }
+    }
+  }
+
   #CE_canvasContainer {
     position: absolute;
     left: 0;

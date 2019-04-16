@@ -5,16 +5,22 @@
   display: flex;
   flex-direction: column;
   background-color: white;
+  transition: all 100ms ease;
+  transform-origin: top;
+  animation: animateCm 100ms ease 1;
 
   border-radius: 2px;
   box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);
 
   >* {
     height: fit-content;
+    min-width: 200px;
     min-height: 30px;
     display: flex;
     align-items: center;
     padding: 0 10px;
+    font-size: 0.8em;
+    font-weight: 500;
     cursor: default;
 
     &:not(:last-child) {
@@ -24,5 +30,15 @@
     &:hover {
       background-color: rgba(0, 0, 0, 0.2);
     }
+  }
+}
+
+@keyframes animateCm {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
   }
 }

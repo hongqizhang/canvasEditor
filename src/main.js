@@ -60,9 +60,15 @@ export function CanvasEditor(parentel, opts) {
       textContent: 'Arrange',
       children: [
         html.create('i', {
-          className: 'CE_icon select-down'
+          className: 'CE_icon select-down',
+          style: {
+            transform: 'rotate(-90deg)'
+          }
         })
-      ]
+      ],
+      attr: {
+        'data-expandable': 'true'
+      }
     }),
     copy: html.create('span', {
       textContent: 'Copy'
@@ -209,6 +215,9 @@ export function CanvasEditor(parentel, opts) {
       activeCanvas = canvas;
     }
 
+    let element = canvas.getElement().parentElement;
+    element.addEventListener('contextmenu', canvasContextMenuTrigger);
+
     fixPagesContainerPosition();
     updateActiveContainer();
 
@@ -265,13 +274,13 @@ export function CanvasEditor(parentel, opts) {
       cornerSize: 6
     });
     fabric.Object.prototype.onSelect = objectOnSelect;
-    fabric.Canvas.prototype.on('mouse:down', canvasContextMenuTrigger);
+    // fabric.Canvas.prototype.on('mouse:down', canvasContextMenuTrigger);
     mainWrapper.appendChild(canvasContainer);
     parentel.appendChild(mainWrapper);
 
     alltools = toolsContainer();
 
-    initTools();
+    // initTools();
     initContextMenu();
     addPage();
     fixPagesContainerPosition();
@@ -412,28 +421,50 @@ export function CanvasEditor(parentel, opts) {
     })();
   }
 
-  function initContextMenu(){
+  function initContextMenu() {
     objectContextMenuOptions.arrange.addEventListener('click', arrangeOnClick);
     /**
      * 
      * @param {MouseEvent} e 
      */
-    function arrangeOnClick(e){
+    function arrangeOnClick(e) {
       /**
        * @type {HTMLElement}
        */
       let el = this;
       let elClient = el.getBoundingClientRect();
-      arrangeContextMenu.setPosition(elClient.right, elClient.top);
+      arrangeContextMenu.show({
+        clientX: elClient.right,
+        clientY: elClient.top
+      });
     }
   }
 
   /**
    * 
+   * @param {Object} fabricEvent 
+   * @param {fabric.Object} fabricEvent.target
+   * @param {Object} fabricEvent.pointer
+   * @param {Number} fabricEvent.pointer.x
+   * @param {Number} fabricEvent.pointer.y
+   * @param {MouseEvent} fabricEvent.e
+   *
+  function canvasContextMenuTrigger(fabricEvent) {
+    fabricEvent.e.preventDefault();
+    console.log(activeCanvas);
+  }*/
+
+  /**
+   * 
    * @param {MouseEvent} e 
    */
-  function canvasContextMenuTrigger(e){
-    console.log('mouse click: ', e);
+  function canvasContextMenuTrigger(e) {
+    e.preventDefault();
+    if (activeCanvas.getElement().parentElement === this && activeCanvas.getActiveObject()) {
+      objectContextMenu.show(e);
+    } else {
+      canvasContextMenu.show(e);
+    }
   }
 
   function fixPagesContainerPosition() {

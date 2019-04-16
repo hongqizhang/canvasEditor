@@ -11,87 +11,90 @@ import {
 } from './contextmenu';
 
 /**
+ * @typedef {Object} textOptions
+ * @property {HTMLElement} addText
+ * @property {HTMLElement} fontSize
+ * @property {HTMLElement} fontStyle
+ * @property {HTMLElement} fontFamily
+ * @property {HTMLElement} fontWeight
+ */
+
+/**
+ * @typedef {Object} tools
+ * @property {HTMLElement & textOptions} text
+ * @property {HTMLElement} shapes
+ * @property {HTMLElement} image
+ * @property {HTMLElement} page
+ * @property {HTMLElement} object
+ */
+
+/**
+ * @typedef {Object} textStyle
+ * @property {HTMLElement} underline
+ * @property {HTMLElement} italic
+ * @property {HTMLElement} strikethrough
+ */
+
+/**
+ * @typedef {Object} page
+ * @property {HTMLElement} pageName
+ * @property {HTMLElement} pageWidth
+ * @property {HTMLElement} pageHeight
+ * @property {HTMLElement} addPage
+ */
+
+/**
  * @typedef {Object} toolsContainer
- * @property {Object} tools
- * @property {HTMLElement} tools.addPage
- * @property {HTMLElement} tools.circle
- * @property {HTMLElement} tools.rectangle
- * @property {HTMLElement} tools.triangle
- * @property {HTMLElement} tools.addText
- * @property {Object} pageSettings
- * @property {HTMLInputElement} pageSettings.pageName
- * @property {HTMLInputElement} pageSettings.pageHeight
- * @property {HTMLInputElement} pageSettings.pageWidth
- * @property {Object} commonSettings
- * @property {HTMLElement} commonSettings.bgColor
- * @property {HTMLElement} commonSettings.strokeColor
- * @property {HTMLElement} commonSettings.opacity
- * @property {Object} textSettings
- * @property {HTMLSelectElement} textSettings.fontFamily
- * @property {basicInput} textSettings.fontSize
- * @property {HTMLSelectElement} textSettings.fontWeight
- * @property {Object} textStyle
- * @property {HTMLElement} textStyle.italic
- * @property {HTMLElement} textStyle.underLine
- * @property {HTMLElement} textStyle.strikethrough
  */
 
 export function toolsContainer() {
-  let toolsGroup = {
-    text: html.create('span', {
-      tabIndex: 0,
-      className: 'CE_tool CE_icon text'
-    }),
-    shapes: html.create('span', {
-      tabIndex: 0,
-      className: 'CE_tool CE_icon shapes'
-    }),
-    image: html.create('span', {
-      tabIndex: 0,
-      className: 'CE_tool CE_icon image'
-    }),
-    grab: html.create('span', {
-      tabIndex: 0,
-      className: 'CE_tool CE_icon hand'
-    }),
-    addPage: html.create('span', {
-      className: 'CE_tool CE_icon layer-add'
-    })
+  /**
+   * @type {HTMLDivElement}
+   */
+  let root = CE_wrapper;
+  let wrapper = html.create('div', {
+    id: 'CE_tools-wrapper'
+  });
+  let container = html.create('div', {
+    id: 'CE_tools-container'
+  });
+  /**
+   * @type {tools}
+   */
+  let mainTools = {
+    text: null,
+    shapes: null,
+    image: null,
+    page: null,
+    object: null,
+    backgroundColor: null,
+    strokeColor: null
   };
-  let pageSettings = {
-    pageName: basicInput({
-      label: 'Page name',
-      inputProps: {
-        placeholder: 'in px',
-        value: 'page 1'
-      }
+  /**
+   * @type {page}
+   */
+  let page = {
+    pageName: html.input({
+      type: 'text',
+      value: 'page-1',
+      placeholder: 'page name'
     }),
-    pageHeight: basicInput({
-      label: 'Page height',
-      inputProps: {
-        placeholder: 'in px',
-        type: 'number',
-        min: 100,
-        value: 500
-      }
+    pageHeight: html.input({
+      type: 'number',
+      value: '500',
+      placeholder: 'h'
     }),
-    pageWidth: basicInput({
-      label: 'Page width',
-      inputProps: {
-        placeholder: 'in px',
-        type: 'number',
-        min: 100,
-        value: 500
-      }
+    pageWidth: html.input({
+      type: 'number',
+      value: '500',
+      placeholder: 'w'
+    }),
+    addPage: html.button(null, {
+      className: 'CE_tool CE_btn',
+      textContent: 'add page'
     }),
   };
-  let commonSettings = {
-    bgColor: html.create('span', {
-      className: 'CE_tool CE_icon CE_bg-color'
-    }),
-    strokeColor: html.create('span', {
-      className: 'CE_tool CE_icon CE_stroke-color'
-    }),
+  let object = {
     opacity: slider({
       label: 'opacity',
       min: 0,
@@ -100,187 +103,75 @@ export function toolsContainer() {
       value: 1
     })
   }
-  let textSettings = {
+  let textOptions = {
     fontFamily: html.create('select', {
       className: 'CE_tool'
     }),
     fontWeight: html.create('select', {
       className: 'CE_tool'
     }),
-    fontSize: basicInput({
-      label: 'Font size',
-      inputProps: {
-        type: 'number',
-        min: '0',
-        placeholder: 'font size',
-        value: 40
-      }
+    fontSize: html.create('label', {
+      children: [
+        icon('font-size'),
+        html.create('input', {
+          type: 'number',
+          value: 40
+        })
+      ]
     }),
     addText: html.create('button', {
       className: 'CE_tool CE_btn',
       textContent: 'add text'
     })
   }
+  /**
+   * @type {textStyle}
+   */
   let textStyle = {
-    underLine: html.create('span', {
-      className: 'CE_tool CE_icon underline'
-    }),
-    italic: html.create('span', {
-      className: 'CE_tool CE_icon italic'
-    }),
-    strikethrough: html.create('span', {
-      className: 'CE_tool CE_icon strikethrough'
-    })
+    underline: null,
+    italic: null,
+    strikethrough: null
   }
   let shapes = {
-    circle: html.create('div', {
-      children: [
-        html.create('span', {
-          className: 'CE_icon circle'
-        }),
-        html.create('span', {
-          textContent: 'Add circle'
-        })
-      ]
-    }),
-    rectangle: html.create('div', {
-      children: [
-        html.create('span', {
-          className: 'CE_icon rectangle'
-        }),
-        html.create('span', {
-          textContent: 'Add rectagle'
-        })
-      ]
-    }),
-    triangle: html.create('div', {
-      children: [
-        html.create('span', {
-          className: 'CE_icon triangle'
-        }),
-        html.create('span', {
-          textContent: 'Add triangle'
-        })
-      ]
-    })
+    circle: icon('circle', 'Add circle', true),
+    rectangle: icon('rectangle', 'Add rectangle', true),
+    triangle: icon('triangle', 'Add triangle', true)
   }
   let imageOptions = {
-    openImage: (function image() {
-      let label = html.create('label', {
-        textContent: 'Add image'
-      });
-      let fileInput = html.create('input', {
-        type: 'file',
-        style: {
-          display: 'none'
-        }
-      });
-      label.appendChild(fileInput);
-      return label;
-    })(),
+    openImage: html.create('label', {
+      children: [
+        icon('image', 'Open an image', true),
+        html.create('input', {
+          type: 'file',
+          accept: 'image/x-png, image/jpeg',
+          style: {
+            display: 'none'
+          }
+        })
+      ]
+    }),
     loadSVG: html.create('span', {
       textContent: 'Load SVG file'
     })
   }
-  let container = freeContainer({
-    disableCloseBtn: true,
-    title: 'Tools'
-  });
-  let cm_shapes = contextMenu(objToArray(shapes));
-  let cm_imageOptions = contextMenu(objToArray(imageOptions));
+  let cm_shapes = contextMenu(Object.values(shapes));
+  let cm_imageOptions = contextMenu(Object.values(imageOptions));
 
   let defaultFontFamilies = ['Arial', 'Helvetica', 'Courier New', 'Courier', 'Times New Roman', 'Times'];
   let defaultFontWeight = ['lighter', 'normal', 'bold', 'bolder', 100, 200, 300, 400, 500, 600, 700, 800, 900];
 
-  let container_1 = html.create('div', {
-    className: 'CE_row'
-  });
-  let container_2 = html.create('div', {
-    className: 'CE_col'
-  });
-  let container_3 = html.create('div', {
-    className: 'CE_row'
-  });
-  let container_4 = html.create('div', {
-    className: 'CE_col'
-  });
-  let container_5 = html.create('div', {
-    className: 'CE_row'
-  });
+  init();
 
-  let tools = {
-    ...shapes,
-    ...imageOptions,
-    addPage: toolsGroup.addPage,
-    addText: textSettings.addText
-  };
+  function init() {
+    arrayToOptions(defaultFontFamilies, textOptions.fontFamily);
+    arrayToOptions(defaultFontWeight, textOptions.fontWeight);
+    iconsFromObject(mainTools, textStyle);
 
-  for (let font of defaultFontFamilies) {
-    let option = html.create('option', {
-      textContent: font,
-      value: font
-    });
-
-    textSettings.fontFamily.appendChild(option);
+    wrapper.append(container);
+    container.append(Object.values(mainTools));
+    root.appendChild(wrapper);
   }
 
-  for (let weight of defaultFontWeight) {
-    let option = html.create('option', {
-      textContent: weight,
-      value: weight
-    });
-
-    textSettings.fontWeight.appendChild(option);
-  }
-
-  container.setVisiblity(true);
-  textSettings.addText.bubble();
-
-  toolsGroup.shapes.addEventListener('click', cm_shapes.show)
-  toolsGroup.image.addEventListener('click', cm_imageOptions.show)
-
-  toolsGroup.text.addEventListener('click', function expandContainer() {
-    newContainer.bind(this)('Text', [container_5, container_4]);
-  })
-
-  let tmp_toolsGroup_1 = objToArray(toolsGroup);
-  for (let el of tmp_toolsGroup_1) {
-    container_1.appendChild(el);
-  }
-  let tmp_pageSettings = objToArray(pageSettings);
-  for (let el of tmp_pageSettings) {
-    container_2.appendChild(el);
-  }
-  let tmp_commonSettings = objToArray(commonSettings);
-  for (let el of tmp_commonSettings) {
-    container_3.appendChild(el);
-  }
-  let tmp_textSettings = objToArray(textSettings);
-  for (let el of tmp_textSettings) {
-    container_4.appendChild(el);
-  }
-  let tmp_textStyle = objToArray(textStyle);
-  for (let el of tmp_textStyle) {
-    container_5.appendChild(el);
-  }
-
-  container.addItems([container_1, container_2, container_3]);
-
-
-  function objToArray(obj) {
-    let tmpArray = [];
-
-    for (let key in obj) {
-      let el = obj[key];
-      el = el.container || el;
-      if (!el.classList.contains('CE_tool')) {
-        el.classList.add('CE_tool');
-      }
-      tmpArray.push(el);
-    }
-
-    return tmpArray;
-  }
 
   function newContainer(title, tools) {
     this.style.pointerEvents = 'none';
@@ -294,11 +185,68 @@ export function toolsContainer() {
     }
   }
 
-  return {
-    tools,
-    pageSettings,
-    commonSettings,
-    textSettings,
-    textStyle
+  /**
+   * 
+   * @param {String[]} options 
+   * @param {HTMLElement} selectElement 
+   */
+  function arrayToOptions(options, selectElement) {
+    for (let option of options) {
+      let optionElement = html.create('option', {
+        textContent: option,
+        value: option
+      });
+
+      selectElement.appendChild(optionElement);
+    }
   }
+
+  /**
+   * @param {String} iconname
+   * @param {String} [text]
+   * @param {Boolean} [pos] if true text is positioned first and icon is positioned second
+   */
+  function icon(iconname, text, pos) {
+    if (text && pos) {
+      return html.create('span', {
+        textContent: text,
+        children: [
+          icon(iconname)
+        ]
+      })
+    } else if (text) {
+      let el = html.create('span', {
+        children: [
+          icon(iconname)
+        ]
+      });
+      el.appendChild(document.createTextNode(text));
+      return el;
+    } else {
+      return html.create('span', {
+        className: 'CE_tool CE_icon ' + iconname
+      });
+    }
+  }
+
+  /**
+   * @param {Object} array
+   * @param {Object} [args]
+   */
+  function iconsFromObject(array) {
+    form(array);
+    if (arguments.length > 1) {
+      for (let i = 1; i < arguments.length; ++i) {
+        form(arguments[i]);
+      }
+    }
+
+    function form(ar) {
+      for (let key in ar) {
+        ar[key] = icon(key)
+      }
+    }
+  }
+
+  return {}
 }

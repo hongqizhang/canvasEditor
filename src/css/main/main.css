@@ -6,6 +6,65 @@
   background-color: #fcfcfc;
 }
 
+#CE_wrapper #CE_tools-wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: column wrap;
+          flex-flow: column wrap;
+  height: 100%;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 5px;
+  background-color: #584e53;
+}
+
+#CE_wrapper #CE_tools-wrapper #CE_tools-container {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: column wrap;
+          flex-flow: column wrap;
+}
+
+#CE_wrapper #CE_tools-wrapper #CE_tools-container > * {
+  background-color: #363134;
+  color: white;
+  height: 40px;
+  width: 40px;
+  margin-top: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#CE_wrapper #CE_tools-wrapper #CE_tools-container > *:hover {
+  background-color: #222122;
+}
+
+#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.object::before {
+  content: "\e921";
+}
+
+#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.backgroundColor {
+  background-color: #ccf;
+}
+
+#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.strokeColor {
+  border: solid 4px #ccf;
+}
+
 #CE_wrapper #CE_canvasContainer {
   position: absolute;
   left: 0;
