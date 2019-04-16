@@ -167,9 +167,28 @@ export function toolsContainer() {
     arrayToOptions(defaultFontWeight, textOptions.fontWeight);
     iconsFromObject(mainTools, textStyle);
 
+    let textStyleContainer = html.div({
+      className: 'CE_tool CE_row',
+      children: Object.values(textStyle)
+    });
+    let textOptionsAr = Object.values(textOptions);
+    textOptionsAr.push(textStyleContainer)
+    let pageOptionsContainer = newContainer('Page', Object.values(page));
+    let textOptionsContainer = newContainer('Text', textOptionsAr);
+
+    mainTools.page.addEventListener('click', );
+
     wrapper.append(container);
     container.append(Object.values(mainTools));
     root.appendChild(wrapper);
+
+    /**
+     * 
+     * @param {freeContainer} container 
+     */
+    function toggleFreeContainer(container){
+      
+    }
   }
 
 

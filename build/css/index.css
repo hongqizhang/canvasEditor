@@ -24,8 +24,20 @@ body {
 }
 
 header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   height: 40px;
   width: 100%;
   background-color: #2e4963;
+}
+
+header h1 {
+  padding: 0 10px;
+  font-size: 1.2em;
+  color: white;
 }
 /*# sourceMappingURL=index.css.map */

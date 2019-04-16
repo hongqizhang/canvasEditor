@@ -13,9 +13,6 @@ import './css/inputs/style.css';
 import './css/contextmenu/style.css';
 import './css/res/style.css';
 import {
-  all
-} from 'q';
-import {
   contextMenu
 } from './components/contextmenu';
 
