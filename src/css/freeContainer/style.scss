@@ -66,6 +66,11 @@
     min-width: 200px;
     max-width: 400px;
 
+    &.CE_col,
+    &.CE_row {
+      padding-top: 5px;
+    }
+
     >.CE_saperator {
       display: block;
       width: calc(100% + 15px);
@@ -86,6 +91,8 @@
       margin-bottom: 7.5px;
     }
 
+    &.CE_row,
+    &.CE_col,
     >.CE_row,
     >.CE_col {
       display: flex;
@@ -101,6 +108,7 @@
       }
     }
 
+    &.CE_row,
     >.CE_row {
       flex-flow: row wrap;
       justify-content: space-evenly;
@@ -112,6 +120,7 @@
       }
     }
 
+    &.CE_col,
     >.CE_col {
       flex-direction: column;
 
@@ -157,6 +166,23 @@
     .CE_stroke-color {
       border-radius: 4px;
       border: solid 2px #f97;
+    }
+  }
+
+  .CE_inline_input {
+    display: flex;
+    align-items: center;
+    height: 30px;
+
+    * {
+      width: fit-content;
+      text-align: center;
+    }
+
+    input {
+      flex: 1;
+      width: 40px;
+      height: 100%;
     }
   }
 }

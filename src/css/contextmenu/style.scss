@@ -5,9 +5,7 @@
   display: flex;
   flex-direction: column;
   background-color: white;
-  transition: all 100ms ease;
   transform-origin: top;
-  animation: animateCm 100ms ease 1;
 
   border-radius: 2px;
   box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);
@@ -31,14 +29,18 @@
       background-color: rgba(0, 0, 0, 0.2);
     }
   }
-}
 
-@keyframes animateCm {
-  0% {
-    opacity: 0;
-  }
+  .CE_icon_text {
+    span {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
 
-  100% {
-    opacity: 1;
+      .CE_icon {
+        margin: 0;
+        width: 30px;
+      }
+    }
   }
 }

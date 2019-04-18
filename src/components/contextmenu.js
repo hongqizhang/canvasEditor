@@ -1,4 +1,4 @@
-import html from '../html';
+import * as html from 'html-element-js';
 
 /**
  * 
@@ -14,9 +14,13 @@ export function contextMenu(children = null, x = 0, y = 0) {
   });
   let mask = html.create('span', {
     className: 'CE_mask',
-    oncontextmenu: () => false,
+    oncontextmenu: show,
     onclick: hide
   });
+  let position = {
+    x: 0,
+    y: 0
+  }
 
   setPosition(x, y);
   addItems(children);
@@ -35,24 +39,26 @@ export function contextMenu(children = null, x = 0, y = 0) {
    */
   function show(e = null) {
     if (e && e.clientX && e.clientY) {
-      setPosition(e.clientX, e.clientY)
+      if (e.preventDefault) e.preventDefault();
+      position.x = e.clientX;
+      position.y = e.clientY;
     }
 
     if (!cm.parentElement) {
       document.body.appendChild(mask);
       document.body.appendChild(cm);
-
-      let cmClient = cm.getBoundingClientRect();
-      if (cmClient.x + cmClient.width > innerWidth) {
-        cmClient.x -= cmClient.width;
-      }
-
-      if (cmClient.y + cmClient.height > innerHeight) {
-        cmClient.y -= cmClient.height;
-      }
-
-      setPosition(cmClient.x, cmClient.y);
     }
+
+    let cmClient = cm.getBoundingClientRect();
+    if (position.x + cmClient.width > innerWidth) {
+      position.x -= cmClient.width;
+    }
+
+    if (position.y + cmClient.height > innerHeight) {
+      position.y -= cmClient.height;
+    }
+
+    setPosition(position.x, position.y);
   }
 
   function hide() {
@@ -97,6 +103,8 @@ export function contextMenu(children = null, x = 0, y = 0) {
   }
 
   function setPosition(x, y) {
+    position.x = x;
+    position.y = y;
     cm.style.transform = `translate(${x}px, ${y}px)`;
   }
 

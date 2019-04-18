@@ -1,6 +1,6 @@
 #CE_wrapper {
-  height: 100%;
   width: 100%;
+  height: 100%;
   overflow: hidden;
   position: relative;
   background-color: rgb(252, 252, 252);
@@ -10,11 +10,25 @@
     left: 0;
     top: 0;
     display: flex;
-    flex-flow: column wrap;
-    height: 100%;
+    flex-flow: row wrap;
     width: fit-content;
+    height: 100%;
     padding: 5px;
+    margin: 0;
     background-color: #584e53;
+    box-sizing: border-box;
+
+    #CE_container-wrapper {
+      width: fit-content;
+      display: flex;
+      flex-flow: column wrap;
+      padding-top: 5px;
+
+      >.CE_freeContainer_wrapper {
+        position: static;
+        margin: 0 0 5px 5px;
+      }
+    }
 
     #CE_tools-container {
       width: fit-content;
@@ -40,6 +54,8 @@
         }
 
         &.backgroundColor {
+          box-sizing: border-box;
+          padding: 10px;
           background-color: #ccf;
         }
 
@@ -93,11 +109,18 @@
     outline: none;
     border: solid 1px rgba(0, 0, 255, 0.3);
   }
+
+  &.active {
+    background-color: rgba(0, 0, 255, 0.3) !important;
+  }
 }
 
 .CE_btn {
   height: 40px;
   border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: #68f;
   color: white;
   font-size: 1em;
@@ -111,4 +134,20 @@
   top: 0;
   height: 100vh;
   width: 100vw;
+}
+
+.CE_highlight {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: solid 4px rgb(218, 218, 142);
+    box-sizing: border-box;
+  }
 }

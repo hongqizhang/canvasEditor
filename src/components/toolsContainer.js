@@ -1,11 +1,7 @@
-import html from '../html';
+import * as html from 'html-element-js';
 import {
   freeContainer
 } from './freeContainer';
-import {
-  basicInput,
-  slider
-} from './inputs';
 import {
   contextMenu
 } from './contextmenu';
@@ -20,12 +16,16 @@ import {
  */
 
 /**
- * @typedef {Object} tools
+ * @typedef {Object} mainTools
  * @property {HTMLElement & textOptions} text
  * @property {HTMLElement} shapes
  * @property {HTMLElement} image
  * @property {HTMLElement} page
  * @property {HTMLElement} object
+ * @property {HTMLElement} selection
+ * @property {HTMLElement} hand
+ * @property {HTMLElement} backgroundColor
+ * @property {HTMLElement} strokeColor
  */
 
 /**
@@ -37,10 +37,10 @@ import {
 
 /**
  * @typedef {Object} page
- * @property {HTMLElement} pageName
- * @property {HTMLElement} pageWidth
- * @property {HTMLElement} pageHeight
- * @property {HTMLElement} addPage
+ * @property {HTMLElement} page.pageName
+ * @property {HTMLElement} page.pageWidth
+ * @property {HTMLElement} page.pageHeight
+ * @property {HTMLElement} page.addPage
  */
 
 /**
@@ -55,53 +55,79 @@ export function toolsContainer() {
   let wrapper = html.create('div', {
     id: 'CE_tools-wrapper'
   });
+  let containerWrapper = html.div({
+    id: 'CE_container-wrapper'
+  });
   let container = html.create('div', {
     id: 'CE_tools-container'
   });
-  /**
-   * @type {tools}
-   */
   let mainTools = {
+    /**
+     * @type {HTMLElement}
+     */
     text: null,
+    /**
+     * @type {HTMLElement}
+     */
     shapes: null,
+    /**
+     * @type {HTMLElement}
+     */
     image: null,
+    /**
+     * @type {HTMLElement}
+     */
     page: null,
+    /**
+     * @type {HTMLElement}
+     */
     object: null,
+    /**
+     * @type {HTMLElement}
+     */
+    selection: null,
+    /**
+     * @type {HTMLElement}
+     */
+    hand: null,
+    /**
+     * @type {HTMLElement}
+     */
     backgroundColor: null,
-    strokeColor: null
+    /**
+     * @type {HTMLElement}
+     */
+    strokeColor: null,
   };
-  /**
-   * @type {page}
-   */
   let page = {
     pageName: html.input({
+      className: 'CE_tool',
       type: 'text',
       value: 'page-1',
       placeholder: 'page name'
     }),
     pageHeight: html.input({
+      className: 'CE_tool',
       type: 'number',
       value: '500',
       placeholder: 'h'
     }),
     pageWidth: html.input({
+      className: 'CE_tool',
       type: 'number',
       value: '500',
       placeholder: 'w'
     }),
     addPage: html.button(null, {
       className: 'CE_tool CE_btn',
-      textContent: 'add page'
+      textContent: 'add new page'
     }),
   };
   let object = {
-    opacity: slider({
-      label: 'opacity',
-      min: 0,
-      max: 1,
-      step: 0.1,
-      value: 1
-    })
+    /**
+     * @type {htmlSlider}
+     */
+    opacity: null
   }
   let textOptions = {
     fontFamily: html.create('select', {
@@ -111,6 +137,7 @@ export function toolsContainer() {
       className: 'CE_tool'
     }),
     fontSize: html.create('label', {
+      className: 'CE_inline_input CE_tool',
       children: [
         icon('font-size'),
         html.create('input', {
@@ -119,28 +146,35 @@ export function toolsContainer() {
         })
       ]
     }),
-    addText: html.create('button', {
+    addText: html.button(null, {
       className: 'CE_tool CE_btn',
       textContent: 'add text'
     })
   }
-  /**
-   * @type {textStyle}
-   */
   let textStyle = {
+    /**
+     * @type {HTMLElement}
+     */
     underline: null,
+    /**
+     * @type {HTMLElement}
+     */
     italic: null,
+    /**
+     * @type {HTMLElement}
+     */
     strikethrough: null
   }
   let shapes = {
-    circle: icon('circle', 'Add circle', true),
-    rectangle: icon('rectangle', 'Add rectangle', true),
-    triangle: icon('triangle', 'Add triangle', true)
+    circle: icon('circle', 'Add circle'),
+    rectangle: icon('rectangle', 'Add rectangle'),
+    triangle: icon('triangle', 'Add triangle')
   }
   let imageOptions = {
     openImage: html.create('label', {
+      className: 'CE_icon_text',
       children: [
-        icon('image', 'Open an image', true),
+        icon('image', 'Open an image'),
         html.create('input', {
           type: 'file',
           accept: 'image/x-png, image/jpeg',
@@ -150,10 +184,9 @@ export function toolsContainer() {
         })
       ]
     }),
-    loadSVG: html.create('span', {
-      textContent: 'Load SVG file'
-    })
+    loadSVG: icon('image1', 'Load SVG file')
   }
+
   let cm_shapes = contextMenu(Object.values(shapes));
   let cm_imageOptions = contextMenu(Object.values(imageOptions));
 
@@ -167,34 +200,72 @@ export function toolsContainer() {
     arrayToOptions(defaultFontWeight, textOptions.fontWeight);
     iconsFromObject(mainTools, textStyle);
 
+    mainTools.selection.classList.add('active');
+
     let textStyleContainer = html.div({
       className: 'CE_tool CE_row',
       children: Object.values(textStyle)
     });
     let textOptionsAr = Object.values(textOptions);
     textOptionsAr.push(textStyleContainer)
-    let pageOptionsContainer = newContainer('Page', Object.values(page));
-    let textOptionsContainer = newContainer('Text', textOptionsAr);
 
-    mainTools.page.addEventListener('click', );
+    mainTools.page.addEventListener('click', pageonclick);
+    mainTools.text.addEventListener('click', textonclick);
+    mainTools.shapes.addEventListener('click', cm_shapes.show);
+    mainTools.image.addEventListener('click', cm_imageOptions.show);
+
+    mainTools.hand.addEventListener('click', updateActiveTool);
+    mainTools.selection.addEventListener('click', updateActiveTool);
 
     wrapper.append(container);
+    wrapper.append(containerWrapper);
     container.append(Object.values(mainTools));
     root.appendChild(wrapper);
 
-    /**
-     * 
-     * @param {freeContainer} container 
-     */
-    function toggleFreeContainer(container){
-      
+
+    function pageonclick() {
+      let dimension = html.div({
+        className: 'CE_inline_input CE_tool',
+        children: [
+          html.span({
+            textContent: 'w: '
+          }),
+          page.pageWidth,
+          html.span({
+            textContent: 'h: '
+          }),
+          page.pageHeight
+        ]
+      });
+      newContainer.bind(this)('Page', [page.pageName, dimension, page.addPage], 'CE_col');
+    }
+
+    function textonclick() {
+      newContainer.bind(this)('Text', textOptionsAr, 'CE_col');
+    }
+
+    function updateActiveTool() {
+      /**
+       * @type {HTMLElement}
+       */
+      let el = this;
+
+      let activeel = html.get('.CE_icon.active');
+      if (activeel) activeel.classList.remove('active');
+      el.classList.add('active');
     }
   }
 
 
-  function newContainer(title, tools) {
-    this.style.pointerEvents = 'none';
-    let container = freeContainer();
+  function newContainer(title, tools, className) {
+    if (this && this.style) this.style.pointerEvents = 'none';
+    let container = freeContainer({
+      parentElement: containerWrapper,
+      drop: wrapper
+    });
+    if (className) {
+      container.DOMElements.body.classList.add(className);
+    }
     container.setTitle(title)
     container.setVisiblity(true);
     container.addItems(tools);
@@ -224,6 +295,7 @@ export function toolsContainer() {
    * @param {String} iconname
    * @param {String} [text]
    * @param {Boolean} [pos] if true text is positioned first and icon is positioned second
+   * @returns {HTMLElement}
    */
   function icon(iconname, text, pos) {
     if (text && pos) {
@@ -267,5 +339,24 @@ export function toolsContainer() {
     }
   }
 
-  return {}
+  return {
+    tools: {
+      ...shapes,
+      ...imageOptions,
+      addPage: page.addPage,
+      addText: textOptions.addText,
+      backgroundColor: mainTools.backgroundColor,
+      strokeColor: mainTools.strokeColor
+    },
+    textSettings: {
+      ...textOptions,
+      ...textStyle
+    },
+    pageSettings: {
+      ...page
+    },
+    objectSettings: {
+      ...object
+    }
+  }
 }

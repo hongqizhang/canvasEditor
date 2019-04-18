@@ -1,5 +1,5 @@
 import 'fabric';
-import html from './html';
+// import html from './html';
 import {
   freeContainer
 } from './components/freeContainer';
@@ -15,6 +15,8 @@ import './css/res/style.css';
 import {
   contextMenu
 } from './components/contextmenu';
+
+import * as html from 'html-element-js';
 
 /**
  * 
@@ -32,15 +34,8 @@ export function CanvasEditor(parentel, opts) {
   let canvasContainer = html.create('div', {
     id: 'CE_canvasContainer'
   });
-  let colorPickerContainer = freeContainer({
-    parentElement: mainWrapper,
-    title: 'Color picker'
-  });
-  let colorPicker = picker.createPicker(colorPickerContainer.DOMElements.body, {
-    showHSL: false,
-    showHEX: false,
-    palette: 'PALETTE_MATERIAL_CHROME'
-  });
+  let colorPickerContainer = null;
+  let colorPicker = null;
   let canvasContextMenuOptions = {
     background: html.create('span', {
       textContent: 'Background color'
@@ -277,20 +272,32 @@ export function CanvasEditor(parentel, opts) {
 
     alltools = toolsContainer();
 
-    // initTools();
+    initTools();
     initContextMenu();
     addPage();
     fixPagesContainerPosition();
     window.addEventListener('resize', fixPagesContainerPosition);
+    let containerWrapper = html.get('#CE_container-wrapper');
+    let wrapper = html.get('#CE_tools-wrapper');
+    colorPickerContainer = freeContainer({
+      parentElement: containerWrapper,
+      drop: wrapper,
+      title: 'Color picker'
+    });
+
+    colorPicker = picker.createPicker(colorPickerContainer.DOMElements.body, {
+      showHSL: false,
+      showHEX: false,
+      palette: 'PALETTE_MATERIAL_CHROME'
+    });
   }
 
   function initTools() {
     let {
       tools,
-      textStyle,
       textSettings,
       pageSettings,
-      commonSettings
+      objectSettings
     } = alltools;
 
     (function initPrimitiveTools() {
@@ -302,6 +309,29 @@ export function CanvasEditor(parentel, opts) {
 
       let uploadedImage = tools.openImage.querySelector('input');
       uploadedImage.addEventListener('change', handleImage);
+
+      tools.backgroundColor.addEventListener('click', () => {
+        colorPickerContainer.setTitle('Color picker - fill');
+        colorPickerContainer.setVisiblity(true);
+        colorPicker.onchange = function (e) {
+          let activeObjects = activeCanvas.getActiveObjects();
+          let hexColor = e.rgbhex;
+          for (let activeObject of activeObjects) {
+            applyStyle(activeObject, 'fill', hexColor);
+          }
+        }
+      });
+      tools.strokeColor.addEventListener('click', () => {
+        colorPickerContainer.setTitle('Color picker - stroke');
+        colorPickerContainer.setVisiblity(true);
+        colorPicker.onchange = function (e) {
+          let activeObjects = activeCanvas.getActiveObjects();
+          let hexColor = e.rgbhex;
+          for (let activeObject of activeObjects) {
+            applyStyle(activeObject, 'stroke', hexColor);
+          }
+        }
+      });
     })();
 
     (function initTextSettings() {
@@ -313,7 +343,7 @@ export function CanvasEditor(parentel, opts) {
           applyStyle(activeObject, 'fontFamily', fontFamily);
         }
       });
-      textSettings.fontSize.input.addEventListener('input', function () {
+      textSettings.fontSize.addEventListener('input', function () {
         let fontSize = this.value;
         let activeObjects = activeCanvas.getActiveObjects();
         for (let activeObject of activeObjects) {
@@ -329,10 +359,7 @@ export function CanvasEditor(parentel, opts) {
           applyStyle(activeObject, 'fontWeight', fontWeight);
         }
       });
-    })();
-
-    (function initTextStyle() {
-      textStyle.underLine.addEventListener('click', function () {
+      textSettings.underline.addEventListener('click', function () {
         let activeObjects = activeCanvas.getActiveObjects();
         for (let activeObject of activeObjects) {
           if (activeObject.type !== 'textbox') continue;
@@ -345,7 +372,7 @@ export function CanvasEditor(parentel, opts) {
           }
         }
       });
-      textStyle.italic.addEventListener('click', function () {
+      textSettings.italic.addEventListener('click', function () {
         let activeObjects = activeCanvas.getActiveObjects();
         for (let activeObject of activeObjects) {
           if (activeObject.type !== 'textbox') continue;
@@ -358,7 +385,7 @@ export function CanvasEditor(parentel, opts) {
           }
         }
       });
-      textStyle.strikethrough.addEventListener('click', function () {
+      textSettings.strikethrough.addEventListener('click', function () {
         let activeObjects = activeCanvas.getActiveObjects();
         for (let activeObject of activeObjects) {
           if (activeObject.type !== 'textbox') continue;
@@ -373,45 +400,20 @@ export function CanvasEditor(parentel, opts) {
       });
     })();
 
-    (function initCommonSettings() {
-      commonSettings.bgColor.addEventListener('click', () => {
-        colorPickerContainer.setTitle('Color picker - fill');
-        colorPickerContainer.setVisiblity(true);
-        colorPicker.onchange = function (e) {
-          let activeObjects = activeCanvas.getActiveObjects();
-          let hexColor = e.rgbhex;
-          for (let activeObject of activeObjects) {
-            applyStyle(activeObject, 'fill', hexColor);
-          }
-        }
-      });
-      commonSettings.strokeColor.addEventListener('click', () => {
-        colorPickerContainer.setTitle('Color picker - stroke');
-        colorPickerContainer.setVisiblity(true);
-        colorPicker.onchange = function (e) {
-          let activeObjects = activeCanvas.getActiveObjects();
-          let hexColor = e.rgbhex;
-          for (let activeObject of activeObjects) {
-            applyStyle(activeObject, 'stroke', hexColor);
-          }
-        }
-      });
-    })();
-
     (function initPageSettings() {
-      pageSettings.pageHeight.input.addEventListener('blur', function () {
+      pageSettings.pageHeight.addEventListener('blur', function () {
         let height = parseFloat(this.value);
         activeCanvas.setHeight(height);
         activeCanvas.renderAll();
         fixPagesContainerPosition();
       });
-      pageSettings.pageWidth.input.addEventListener('blur', function () {
+      pageSettings.pageWidth.addEventListener('blur', function () {
         let width = parseFloat(this.value);
         activeCanvas.setWidth(width);
         activeCanvas.renderAll();
         fixPagesContainerPosition();
       });
-      pageSettings.pageName.input.addEventListener('blur', function () {
+      pageSettings.pageName.addEventListener('blur', function () {
         let name = this.value;
         activeCanvas.page.name = name;
       });
@@ -512,9 +514,8 @@ export function CanvasEditor(parentel, opts) {
   function objectOnSelect() {
     setTimeout(() => {
       let activeObject = activeCanvas.getActiveObject();
-      let textStyle = alltools.textStyle;
       let textSettings = alltools.textSettings;
-      let commonSettings = alltools.commonSettings;
+      let objectSettings = alltools.objectSettings;
       if (!activeObject) return;
 
       if (activeObject.type === 'textbox') {
@@ -527,26 +528,26 @@ export function CanvasEditor(parentel, opts) {
         let fontWeight = object.fontWeight;
 
         if (object.underline) {
-          textStyle.underLine.classList.add('active');
+          textSettings.underline.classList.add('active');
         } else {
-          textStyle.underLine.classList.remove('active');
+          textSettings.underline.classList.remove('active');
         }
 
         if (object.fontStyle === 'italic') {
-          textStyle.italic.classList.add('active');
+          textSettings.italic.classList.add('active');
         } else {
-          textStyle.italic.classList.remove('active');
+          textSettings.italic.classList.remove('active');
         }
 
         if (object.linethrough) {
-          textStyle.strikethrough.classList.add('active');
+          textSettings.strikethrough.classList.add('active');
         } else {
-          textStyle.strikethrough.classList.remove('active');
+          textSettings.strikethrough.classList.remove('active');
         }
 
         textSettings.fontFamily.value = fontFamily;
         textSettings.fontWeight.value = fontWeight;
-        textSettings.fontSize.input.value = fontSize;
+        textSettings.fontSize.value = fontSize;
       }
 
 

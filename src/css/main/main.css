@@ -1,6 +1,6 @@
 #CE_wrapper {
-  height: 100%;
   width: 100%;
+  height: 100%;
   overflow: hidden;
   position: relative;
   background-color: #fcfcfc;
@@ -13,16 +13,38 @@
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: row wrap;
+          flex-flow: row wrap;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  height: 100%;
+  padding: 5px;
+  margin: 0;
+  background-color: #584e53;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+#CE_wrapper #CE_tools-wrapper #CE_container-wrapper {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
       -ms-flex-flow: column wrap;
           flex-flow: column wrap;
-  height: 100%;
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-  padding: 5px;
-  background-color: #584e53;
+  padding-top: 5px;
+}
+
+#CE_wrapper #CE_tools-wrapper #CE_container-wrapper > .CE_freeContainer_wrapper {
+  position: static;
+  margin: 0 0 5px 5px;
 }
 
 #CE_wrapper #CE_tools-wrapper #CE_tools-container {
@@ -58,6 +80,9 @@
 }
 
 #CE_wrapper #CE_tools-wrapper #CE_tools-container > *.backgroundColor {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
   background-color: #ccf;
 }
 
@@ -120,9 +145,22 @@
   border: solid 1px rgba(0, 0, 255, 0.3);
 }
 
+.CE_icon.active {
+  background-color: rgba(0, 0, 255, 0.3) !important;
+}
+
 .CE_btn {
   height: 40px;
   border: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   background-color: #68f;
   color: white;
   font-size: 1em;
@@ -136,5 +174,22 @@
   top: 0;
   height: 100vh;
   width: 100vw;
+}
+
+.CE_highlight {
+  position: relative;
+}
+
+.CE_highlight::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: solid 4px #dada8e;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
 }
 /*# sourceMappingURL=main.css.map */

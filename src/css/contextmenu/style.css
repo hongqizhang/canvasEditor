@@ -10,12 +10,8 @@
       -ms-flex-direction: column;
           flex-direction: column;
   background-color: white;
-  -webkit-transition: all 100ms ease;
-  transition: all 100ms ease;
   -webkit-transform-origin: top;
           transform-origin: top;
-  -webkit-animation: animateCm 100ms ease 1;
-          animation: animateCm 100ms ease 1;
   border-radius: 2px;
   -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, 0.2);
           box-shadow: 4px 4px 20px rgba(0, 0, 56, 0.2);
@@ -47,21 +43,22 @@
   background-color: rgba(0, 0, 0, 0.2);
 }
 
-@-webkit-keyframes animateCm {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+.CE_contextmenu .CE_icon_text span {
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
-@keyframes animateCm {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+.CE_contextmenu .CE_icon_text span .CE_icon {
+  margin: 0;
+  width: 30px;
 }
 /*# sourceMappingURL=style.css.map */

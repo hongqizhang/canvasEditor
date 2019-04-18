@@ -1,4 +1,4 @@
-import html from '../html';
+import * as html from 'html-element-js';
 import {
   freeContainer
 } from './freeContainer';
