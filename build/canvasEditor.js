@@ -147,6 +147,9 @@ function CanvasEditor(parentel, opts) {
 
   var picker = __webpack_require__(35);
 
+  var clickCatchMask = html_element_js__WEBPACK_IMPORTED_MODULE_9__["div"]({
+    className: 'CE_click-catch-mask'
+  });
   var mainWrapper = html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('div', {
     id: 'CE_wrapper'
   });
@@ -321,13 +324,7 @@ function CanvasEditor(parentel, opts) {
 
     function updateActiveCanvas() {
       if (activeCanvas === canvas) return;
-
-      if (activeCanvas) {
-        activeCanvas.discardActiveObject();
-        activeCanvas.requestRenderAll();
-      }
-
-      ;
+      deselectObjects();
       activeCanvas = canvas;
       var height = activeCanvas.getHeight();
       var width = activeCanvas.getWidth();
@@ -337,6 +334,15 @@ function CanvasEditor(parentel, opts) {
       pageSettings.pageWidth.value = width;
       pageSettings.pageName.value = pageName;
     }
+  }
+
+  function deselectObjects() {
+    if (activeCanvas) {
+      activeCanvas.discardActiveObject();
+      activeCanvas.requestRenderAll();
+    }
+
+    ;
   }
 
   function saveAsPng() {}
@@ -386,7 +392,9 @@ function CanvasEditor(parentel, opts) {
     fabric.Object.prototype.onSelect = objectOnSelect; // fabric.Canvas.prototype.on('mouse:down', canvasContextMenuTrigger);
 
     mainWrapper.appendChild(canvasContainer);
+    mainWrapper.appendChild(clickCatchMask);
     parentel.appendChild(mainWrapper);
+    clickCatchMask.addEventListener('click', deselectObjects);
     /**
      * @type {tools}
      */
@@ -34106,7 +34114,7 @@ if(false) {}
 
 exports = module.exports = __webpack_require__(15)(false);
 // Module
-exports.push([module.i, "#CE_wrapper {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  position: relative;\n  background-color: #fcfcfc;\n}\n\n#CE_wrapper #CE_tools-wrapper {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: row wrap;\n          flex-flow: row wrap;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  padding: 5px;\n  margin: 0;\n  background-color: #584e53;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column wrap;\n          flex-flow: column wrap;\n  padding-top: 5px;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper > .CE_freeContainer_wrapper {\n  position: static;\n  margin: 0 0 5px 5px;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column wrap;\n          flex-flow: column wrap;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > * {\n  background-color: #363134;\n  color: white;\n  height: 40px;\n  width: 40px;\n  margin-top: 5px;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *:hover {\n  background-color: #222122;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.object::before {\n  content: \"\\e921\";\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.backgroundColor {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  padding: 10px;\n  background-color: #ccf;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.strokeColor {\n  border: solid 4px #ccf;\n}\n\n#CE_wrapper #CE_canvasContainer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container:not(:first-child) {\n  margin-left: 30px;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container {\n  margin: 15px;\n  -webkit-box-shadow: 2px 2px 1px 2px #0f0f0f;\n          box-shadow: 2px 2px 1px 2px #0f0f0f;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container.active {\n  -webkit-box-shadow: 2px 2px 1px 2px #250a6e;\n          box-shadow: 2px 2px 1px 2px #250a6e;\n}\n\n.CE_icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  width: 30px;\n  background: transparent;\n  border: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  font-size: 1em;\n}\n\n.CE_icon:active {\n  outline: none;\n  border: none;\n  -webkit-transform: scale(0.85);\n          transform: scale(0.85);\n}\n\n.CE_icon:focus {\n  outline: none;\n  border: solid 1px rgba(0, 0, 255, .3);\n}\n\n.CE_icon.active {\n  background-color: rgba(0, 0, 255, .3) !important;\n}\n\n.CE_btn {\n  height: 40px;\n  border: none;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  background-color: #68f;\n  color: white;\n  font-size: 1em;\n  text-transform: uppercase;\n}\n\n.CE_mask {\n  display: block;\n  position: fixed;\n  left: 0;\n  top: 0;\n  height: 100vh;\n  width: 100vw;\n}\n\n.CE_highlight {\n  position: relative;\n}\n\n.CE_highlight::after {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(0, 0, 0, .3);\n  border: solid 4px #dada8e;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}", ""]);
+exports.push([module.i, "#CE_wrapper {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  position: relative;\n  background-color: #fcfcfc;\n}\n\n#CE_wrapper .CE_click-catch-mask {\n  z-index: 0;\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  width: 100%;\n}\n\n#CE_wrapper #CE_tools-wrapper {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: row wrap;\n          flex-flow: row wrap;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  padding: 5px;\n  margin: 0;\n  background-color: #584e53;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column wrap;\n          flex-flow: column wrap;\n  padding-top: 5px;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper > .CE_freeContainer_wrapper {\n  position: static;\n  margin: 0 0 5px 5px;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column wrap;\n          flex-flow: column wrap;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > * {\n  background-color: #363134;\n  color: white;\n  height: 40px;\n  width: 40px;\n  margin-top: 5px;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *:hover {\n  background-color: #222122;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.object::before {\n  content: \"\\e921\";\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.backgroundColor {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  padding: 10px;\n  background-color: #ccf;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.strokeColor {\n  border: solid 4px #ccf;\n}\n\n#CE_wrapper #CE_canvasContainer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  z-index: 1;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container:not(:first-child) {\n  margin-left: 30px;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container {\n  margin: 15px;\n  -webkit-box-shadow: 2px 2px 1px 2px #0f0f0f;\n          box-shadow: 2px 2px 1px 2px #0f0f0f;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container.active {\n  -webkit-box-shadow: 2px 2px 1px 2px #250a6e;\n          box-shadow: 2px 2px 1px 2px #250a6e;\n}\n\n.CE_icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  width: 30px;\n  background: transparent;\n  border: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  font-size: 1em;\n}\n\n.CE_icon:active {\n  outline: none;\n  border: none;\n  -webkit-transform: scale(0.85);\n          transform: scale(0.85);\n}\n\n.CE_icon:focus {\n  outline: none;\n  border: solid 1px rgba(0, 0, 255, .3);\n}\n\n.CE_icon.active {\n  background-color: rgba(0, 0, 255, .3) !important;\n}\n\n.CE_btn {\n  height: 40px;\n  border: none;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  background-color: #68f;\n  color: white;\n  font-size: 1em;\n  text-transform: uppercase;\n}\n\n.CE_mask {\n  display: block;\n  position: fixed;\n  left: 0;\n  top: 0;\n  height: 100vh;\n  width: 100vw;\n  z-index: 999;\n}\n\n.CE_highlight {\n  position: relative;\n}\n\n.CE_highlight::after {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(0, 0, 0, .3);\n  border: solid 4px #dada8e;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}", ""]);
 
 
 
@@ -34211,7 +34219,7 @@ if(false) {}
 
 exports = module.exports = __webpack_require__(15)(false);
 // Module
-exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  background-color: white;\n  -webkit-transform-origin: top;\n          transform-origin: top;\n  border-radius: 2px;\n  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n          box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n}\n\n.CE_contextmenu > * {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  min-width: 200px;\n  min-height: 30px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 10px;\n  font-size: 0.8em;\n  font-weight: 500;\n  cursor: default;\n}\n\n.CE_contextmenu > *:not(:last-child) {\n  border-bottom: solid 1px rgba(0, 0, 0, .4);\n}\n\n.CE_contextmenu > *:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_contextmenu .CE_icon_text span {\n  width: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: row;\n          flex-direction: row;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.CE_contextmenu .CE_icon_text span .CE_icon {\n  margin: 0;\n  width: 30px;\n}", ""]);
+exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  background-color: white;\n  -webkit-transform-origin: top;\n          transform-origin: top;\n  z-index: 999;\n  border-radius: 2px;\n  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n          box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n}\n\n.CE_contextmenu > * {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  min-width: 200px;\n  min-height: 30px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 10px;\n  font-size: 0.8em;\n  font-weight: 500;\n  cursor: default;\n}\n\n.CE_contextmenu > *:not(:last-child) {\n  border-bottom: solid 1px rgba(0, 0, 0, .4);\n}\n\n.CE_contextmenu > *:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_contextmenu .CE_icon_text span {\n  width: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: row;\n          flex-direction: row;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.CE_contextmenu .CE_icon_text span .CE_icon {\n  margin: 0;\n  width: 30px;\n}", ""]);
 
 
 

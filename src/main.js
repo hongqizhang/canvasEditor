@@ -28,6 +28,9 @@ export function CanvasEditor(parentel, opts) {
 
   const picker = require('a-color-picker');
 
+  let clickCatchMask = html.div({
+    className: 'CE_click-catch-mask'
+  });
   let mainWrapper = html.create('div', {
     id: 'CE_wrapper'
   });
@@ -215,10 +218,7 @@ export function CanvasEditor(parentel, opts) {
 
     function updateActiveCanvas() {
       if (activeCanvas === canvas) return;
-      if (activeCanvas) {
-        activeCanvas.discardActiveObject();
-        activeCanvas.requestRenderAll();
-      };
+      deselectObjects();
       activeCanvas = canvas;
 
       let height = activeCanvas.getHeight();
@@ -231,6 +231,13 @@ export function CanvasEditor(parentel, opts) {
       pageSettings.pageWidth.value = width;
       pageSettings.pageName.value = pageName;
     }
+  }
+
+  function deselectObjects() {
+    if (activeCanvas) {
+      activeCanvas.discardActiveObject();
+      activeCanvas.requestRenderAll();
+    };
   }
 
   function saveAsPng() {
@@ -268,7 +275,10 @@ export function CanvasEditor(parentel, opts) {
     fabric.Object.prototype.onSelect = objectOnSelect;
     // fabric.Canvas.prototype.on('mouse:down', canvasContextMenuTrigger);
     mainWrapper.appendChild(canvasContainer);
+    mainWrapper.appendChild(clickCatchMask);
     parentel.appendChild(mainWrapper);
+
+    clickCatchMask.addEventListener('click', deselectObjects);
 
     /**
      * @type {tools}

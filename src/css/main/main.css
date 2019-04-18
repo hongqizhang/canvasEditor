@@ -6,6 +6,15 @@
   background-color: #fcfcfc;
 }
 
+#CE_wrapper .CE_click-catch-mask {
+  z-index: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+}
+
 #CE_wrapper #CE_tools-wrapper {
   position: absolute;
   left: 0;
@@ -97,6 +106,7 @@
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  z-index: 1;
 }
 
 #CE_wrapper #CE_canvasContainer > .canvas-container:not(:first-child) {
@@ -174,6 +184,7 @@
   top: 0;
   height: 100vh;
   width: 100vw;
+  z-index: 999;
 }
 
 .CE_highlight {
