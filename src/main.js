@@ -227,9 +227,9 @@ export function CanvasEditor(parentel, opts) {
 
       let pageSettings = alltools.pageSettings;
 
-      pageSettings.pageHeight.input.value = height;
-      pageSettings.pageWidth.input.value = width;
-      pageSettings.pageName.input.value = pageName;
+      pageSettings.pageHeight.value = height;
+      pageSettings.pageWidth.value = width;
+      pageSettings.pageName.value = pageName;
     }
   }
 
@@ -270,6 +270,9 @@ export function CanvasEditor(parentel, opts) {
     mainWrapper.appendChild(canvasContainer);
     parentel.appendChild(mainWrapper);
 
+    /**
+     * @type {tools}
+     */
     alltools = toolsContainer();
 
     initTools();
@@ -307,8 +310,7 @@ export function CanvasEditor(parentel, opts) {
       tools.triangle.addEventListener('click', () => addTriangle());
       tools.addText.addEventListener('click', () => addText());
 
-      let uploadedImage = tools.openImage.querySelector('input');
-      uploadedImage.addEventListener('change', handleImage);
+      tools.openImage.addEventListener('change', handleImage);
 
       tools.backgroundColor.addEventListener('click', () => {
         colorPickerContainer.setTitle('Color picker - fill');

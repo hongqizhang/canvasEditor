@@ -105,17 +105,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var fabric__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(fabric__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _components_freeContainer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
 /* harmony import */ var _components_toolsContainer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(18);
-/* harmony import */ var _css_main_main_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(21);
+/* harmony import */ var _css_main_main_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(20);
 /* harmony import */ var _css_main_main_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_css_main_main_css__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _css_freeContainer_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(23);
+/* harmony import */ var _css_freeContainer_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(22);
 /* harmony import */ var _css_freeContainer_style_css__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_css_freeContainer_style_css__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _css_inputs_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(25);
+/* harmony import */ var _css_inputs_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(24);
 /* harmony import */ var _css_inputs_style_css__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_css_inputs_style_css__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _css_contextmenu_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(27);
+/* harmony import */ var _css_contextmenu_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(26);
 /* harmony import */ var _css_contextmenu_style_css__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_css_contextmenu_style_css__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _css_res_style_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(29);
+/* harmony import */ var _css_res_style_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(28);
 /* harmony import */ var _css_res_style_css__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_css_res_style_css__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _components_contextmenu__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(20);
+/* harmony import */ var _components_contextmenu__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(19);
 /* harmony import */ var html_element_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(12);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
@@ -145,7 +145,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function CanvasEditor(parentel, opts) {
   if (!parentel) return console.error('pranetel undefined!');
 
-  var picker = __webpack_require__(36);
+  var picker = __webpack_require__(35);
 
   var mainWrapper = html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('div', {
     id: 'CE_wrapper'
@@ -333,9 +333,9 @@ function CanvasEditor(parentel, opts) {
       var width = activeCanvas.getWidth();
       var pageName = activeCanvas.page.name;
       var pageSettings = alltools.pageSettings;
-      pageSettings.pageHeight.input.value = height;
-      pageSettings.pageWidth.input.value = width;
-      pageSettings.pageName.input.value = pageName;
+      pageSettings.pageHeight.value = height;
+      pageSettings.pageWidth.value = width;
+      pageSettings.pageName.value = pageName;
     }
   }
 
@@ -387,6 +387,10 @@ function CanvasEditor(parentel, opts) {
 
     mainWrapper.appendChild(canvasContainer);
     parentel.appendChild(mainWrapper);
+    /**
+     * @type {tools}
+     */
+
     alltools = Object(_components_toolsContainer__WEBPACK_IMPORTED_MODULE_2__["toolsContainer"])();
     initTools();
     initContextMenu();
@@ -430,8 +434,7 @@ function CanvasEditor(parentel, opts) {
       tools.addText.addEventListener('click', function () {
         return addText();
       });
-      var uploadedImage = tools.openImage.querySelector('input');
-      uploadedImage.addEventListener('change', handleImage);
+      tools.openImage.addEventListener('change', handleImage);
       tools.backgroundColor.addEventListener('click', function () {
         colorPickerContainer.setTitle('Color picker - fill');
         colorPickerContainer.setVisiblity(true);
@@ -33544,8 +33547,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toolsContainer", function() { return toolsContainer; });
 /* harmony import */ var html_element_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(12);
 /* harmony import */ var _freeContainer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
-/* harmony import */ var _inputs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(19);
-/* harmony import */ var _contextmenu__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(20);
+/* harmony import */ var _contextmenu__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(19);
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -33553,46 +33555,43 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
-
 /**
- * @typedef {Object} textOptions
+ * @typedef {Object} tools
+ * @property {HTMLElement} addPage
  * @property {HTMLElement} addText
- * @property {HTMLElement} fontSize
- * @property {HTMLElement} fontStyle
- * @property {HTMLElement} fontFamily
- * @property {HTMLElement} fontWeight
- */
-
-/**
- * @typedef {Object} mainTools
- * @property {HTMLElement & textOptions} text
- * @property {HTMLElement} shapes
- * @property {HTMLElement} image
- * @property {HTMLElement} page
- * @property {HTMLElement} object
- * @property {HTMLElement} selection
- * @property {HTMLElement} hand
+ * @property {HTMLElement} circle
+ * @property {HTMLElement} rectangle
+ * @property {HTMLElement} triangle
  * @property {HTMLElement} backgroundColor
  * @property {HTMLElement} strokeColor
+ * @property {HTMLInputElement} openImage
+ * @property {HTMLInputElement} loadSVG
  */
 
 /**
- * @typedef {Object} textStyle
- * @property {HTMLElement} underline
- * @property {HTMLElement} italic
- * @property {HTMLElement} strikethrough
+ * @typedef {Object} textSettings
+ * @property {HTMLSelectElement} fontFamily 
+ * @property {HTMLSelectElement} fontWeight 
+ * @property {HTMLInputElement} fontSize 
  */
 
 /**
- * @typedef {Object} page
- * @property {HTMLElement} page.pageName
- * @property {HTMLElement} page.pageWidth
- * @property {HTMLElement} page.pageHeight
- * @property {HTMLElement} page.addPage
+ * @typedef {Object} pageSettings
+ * @property {HTMLInputElement} pageName
+ * @property {HTMLInputElement} pageHeight
+ * @property {HTMLInputElement} pageWidth
  */
 
 /**
  * @typedef {Object} toolsContainer
+ * @property {tools} tools
+ * @property {pageSettings} pageSettings
+ * @property {textSettings} textSettings
+ */
+
+/**
+ * @function
+ * @returns {toolsContainer}
  */
 
 function toolsContainer() {
@@ -33738,8 +33737,8 @@ function toolsContainer() {
     }),
     loadSVG: icon('image1', 'Load SVG file')
   };
-  var cm_shapes = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_3__["contextMenu"])(Object.values(shapes));
-  var cm_imageOptions = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_3__["contextMenu"])(Object.values(imageOptions));
+  var cm_shapes = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_2__["contextMenu"])(Object.values(shapes));
+  var cm_imageOptions = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_2__["contextMenu"])(Object.values(imageOptions));
   var defaultFontFamilies = ['Arial', 'Helvetica', 'Courier New', 'Courier', 'Times New Roman', 'Times'];
   var defaultFontWeight = ['lighter', 'normal', 'bold', 'bolder', 100, 200, 300, 400, 500, 600, 700, 800, 900];
   init();
@@ -33904,9 +33903,12 @@ function toolsContainer() {
       addPage: page.addPage,
       addText: textOptions.addText,
       backgroundColor: mainTools.backgroundColor,
-      strokeColor: mainTools.strokeColor
+      strokeColor: mainTools.strokeColor,
+      openImage: imageOptions.openImage.querySelector('input')
     }),
-    textSettings: _objectSpread({}, textOptions, textStyle),
+    textSettings: _objectSpread({}, textOptions, textStyle, {
+      fontSize: textOptions.fontSize.querySelector('input')
+    }),
     pageSettings: _objectSpread({}, page),
     objectSettings: _objectSpread({}, object)
   };
@@ -33914,125 +33916,6 @@ function toolsContainer() {
 
 /***/ }),
 /* 19 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "basicInput", function() { return basicInput; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "slider", function() { return slider; });
-/* harmony import */ var html_element_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(12);
-
-/**
- * @typedef {Object} basicInput
- * @property {HTMLElement} container 
- * @property {HTMLEInputlement} input 
- * @property {HTMLElement} label 
- */
-
-/**
- * 
- * @param {Object} opts 
- * @returns {basicInput}
- */
-
-function basicInput(opts) {
-  var container = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('div', {
-    className: 'CE_input'
-  });
-  var fakeLabel = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('span', {
-    className: 'CE_fake-label',
-    textContent: opts && opts.label ? opts.label : ''
-  });
-  var input = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('input', opts && opts.inputProps ? opts.inputProps : {
-    type: 'text'
-  });
-  container.appendChild(fakeLabel);
-  container.appendChild(input);
-
-  if (!(opts && opts.stopExecution)) {
-    input.addEventListener('focus', inputFocus);
-    input.addEventListener('blur', inputBlur);
-  }
-
-  if (opts && opts.inputProps && opts.inputProps.value) {
-    container.classList.add('focused');
-  }
-
-  function inputFocus() {
-    var container = this.parentElement;
-
-    if (!container.classList.contains('focused')) {
-      container.classList.add('focused');
-    }
-
-    if (!container.classList.contains('highlight')) {
-      container.classList.add('highlight');
-    }
-  }
-
-  function inputBlur() {
-    var container = this.parentElement;
-
-    if (this.value === '') {
-      if (container.classList.contains('focused')) {
-        container.classList.remove('focused');
-      }
-    }
-
-    if (container.classList.contains('highlight')) {
-      container.classList.remove('highlight');
-    }
-  }
-
-  return {
-    container: container,
-    input: input,
-    label: fakeLabel
-  };
-}
-
-function slider(opts) {
-  var min = opts && opts.min || 0;
-  var max = opts && opts.max || 100;
-  var step = opts && opts.step || 10;
-  var value = opts && opts.value || 50;
-
-  var _basicInput = basicInput({
-    label: opts && opts.label || '',
-    stopExecution: true,
-    inputProps: {
-      type: 'range',
-      min: min,
-      max: max,
-      step: step,
-      value: value
-    }
-  }),
-      container = _basicInput.container,
-      label = _basicInput.label,
-      input = _basicInput.input;
-
-  container.setAttribute('data-min', min);
-  container.setAttribute('data-max', max);
-  label.setAttribute('data-value', value);
-  input.addEventListener('input', changeLableValue);
-
-  function changeLableValue() {
-    var value = this.value;
-    label.setAttribute('data-value', value || 0);
-  }
-
-  return {
-    container: container,
-    label: label,
-    input: input
-  };
-}
-
-
-
-/***/ }),
-/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -34193,11 +34076,11 @@ function contextMenu() {
 }
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(22);
+var content = __webpack_require__(21);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -34218,7 +34101,7 @@ if(content.locals) module.exports = content.locals;
 if(false) {}
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(15)(false);
@@ -34228,11 +34111,11 @@ exports.push([module.i, "#CE_wrapper {\n  width: 100%;\n  height: 100%;\n  overf
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(24);
+var content = __webpack_require__(23);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -34253,7 +34136,7 @@ if(content.locals) module.exports = content.locals;
 if(false) {}
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(15)(false);
@@ -34263,11 +34146,11 @@ exports.push([module.i, ".CE_freeContainer_wrapper {\n  position: absolute;\n  m
 
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(26);
+var content = __webpack_require__(25);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -34288,7 +34171,7 @@ if(content.locals) module.exports = content.locals;
 if(false) {}
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(15)(false);
@@ -34298,11 +34181,11 @@ exports.push([module.i, ".CE_input {\n  display: -webkit-box;\n  display: -ms-fl
 
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(28);
+var content = __webpack_require__(27);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -34323,7 +34206,7 @@ if(content.locals) module.exports = content.locals;
 if(false) {}
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(15)(false);
@@ -34333,11 +34216,11 @@ exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  to
 
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(30);
+var content = __webpack_require__(29);
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -34358,17 +34241,17 @@ if(content.locals) module.exports = content.locals;
 if(false) {}
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(15)(false);
 // Imports
-var urlEscape = __webpack_require__(31);
-var ___CSS_LOADER_URL___0___ = urlEscape(__webpack_require__(32));
-var ___CSS_LOADER_URL___1___ = urlEscape(__webpack_require__(32) + "#iefix");
-var ___CSS_LOADER_URL___2___ = urlEscape(__webpack_require__(33));
-var ___CSS_LOADER_URL___3___ = urlEscape(__webpack_require__(34));
-var ___CSS_LOADER_URL___4___ = urlEscape(__webpack_require__(35) + "#carddesigner");
+var urlEscape = __webpack_require__(30);
+var ___CSS_LOADER_URL___0___ = urlEscape(__webpack_require__(31));
+var ___CSS_LOADER_URL___1___ = urlEscape(__webpack_require__(31) + "#iefix");
+var ___CSS_LOADER_URL___2___ = urlEscape(__webpack_require__(32));
+var ___CSS_LOADER_URL___3___ = urlEscape(__webpack_require__(33));
+var ___CSS_LOADER_URL___4___ = urlEscape(__webpack_require__(34) + "#carddesigner");
 
 // Module
 exports.push([module.i, "@font-face {\n  font-family: 'carddesigner';\n  src: url(" + ___CSS_LOADER_URL___0___ + ");\n  src: url(" + ___CSS_LOADER_URL___1___ + ") format('embedded-opentype'),\n    url(" + ___CSS_LOADER_URL___2___ + ") format('truetype'),\n    url(" + ___CSS_LOADER_URL___3___ + ") format('woff'),\n    url(" + ___CSS_LOADER_URL___4___ + ") format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n\n.CE_icon {\n  /* use !important to prevent issues with browser extensions that change fonts */\n  font-family: 'carddesigner' !important;\n  font-style: normal;\n  font-weight: normal;\n  -webkit-font-feature-settings: normal;\n          font-feature-settings: normal;\n  font-variant: normal;\n  text-transform: none;\n  line-height: 1;\n\n  /* Better Font Rendering =========== */\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\n.star:before {\n  content: \"\\e921\";\n}\n\n.layer-add:before {\n  content: \"\\e920\";\n}\n\n.text-single-line:before {\n  content: \"\\e91b\";\n}\n\n.align-center:before {\n  content: \"\\e90c\";\n}\n\n.align-justify:before {\n  content: \"\\e90d\";\n}\n\n.align-left:before {\n  content: \"\\e90e\";\n}\n\n.align-right:before {\n  content: \"\\e90f\";\n}\n\n.bold:before {\n  content: \"\\e91c\";\n}\n\n.circle:before {\n  content: \"\\e91a\";\n}\n\n.crop:before {\n  content: \"\\e910\";\n}\n\n.delete:before {\n  content: \"\\e911\";\n}\n\n.effects:before {\n  content: \"\\e900\";\n}\n\n.hand:before {\n  content: \"\\e912\";\n}\n\n.image:before {\n  content: \"\\e901\";\n}\n\n.italic:before {\n  content: \"\\e91d\";\n}\n\n.layers:before {\n  content: \"\\e902\";\n}\n\n.minus:before {\n  content: \"\\e916\";\n}\n\n.move:before {\n  content: \"\\e903\";\n}\n\n.paragraph:before {\n  content: \"\\e91e\";\n}\n\n.plus:before {\n  content: \"\\e915\";\n}\n\n.rectangle:before {\n  content: \"\\e918\";\n}\n\n.redo:before {\n  content: \"\\e914\";\n}\n\n.select-down:before {\n  content: \"\\e904\";\n}\n\n.selection:before {\n  content: \"\\e905\";\n}\n\n.shapes:before {\n  content: \"\\e906\";\n}\n\n.text:before {\n  content: \"\\e907\";\n}\n\n.times:before {\n  content: \"\\e917\";\n}\n\n.tools:before {\n  content: \"\\e908\";\n}\n\n.triangle:before {\n  content: \"\\e919\";\n}\n\n.underline:before {\n  content: \"\\e91f\";\n}\n\n.undo:before {\n  content: \"\\e913\";\n}\n\n.upload:before {\n  content: \"\\e909\";\n}\n\n.zoom-in:before {\n  content: \"\\e90a\";\n}\n\n.zoom-out:before {\n  content: \"\\e90b\";\n}\n\n.image1:before {\n  content: \"\\e922\";\n}\n\n.page:before {\n  content: \"\\e924\";\n}\n\n.checkbox-unchecked:before {\n  content: \"\\ea53\";\n}\n\n.radio-unchecked:before {\n  content: \"\\ea56\";\n}\n\n.font-size:before {\n  content: \"\\ea61\";\n}\n\n.strikethrough:before {\n  content: \"\\ea65\";\n}", ""]);
@@ -34376,7 +34259,7 @@ exports.push([module.i, "@font-face {\n  font-family: 'carddesigner';\n  src: ur
 
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34402,31 +34285,31 @@ module.exports = function escape(url, needQuotes) {
 };
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fonts/carddesigner.eot";
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fonts/carddesigner.ttf";
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fonts/carddesigner.woff";
 
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fonts/carddesigner.svg";
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!

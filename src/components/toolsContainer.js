@@ -7,46 +7,44 @@ import {
 } from './contextmenu';
 
 /**
- * @typedef {Object} textOptions
+ * @typedef {Object} tools
+ * @property {HTMLElement} addPage
  * @property {HTMLElement} addText
- * @property {HTMLElement} fontSize
- * @property {HTMLElement} fontStyle
- * @property {HTMLElement} fontFamily
- * @property {HTMLElement} fontWeight
- */
-
-/**
- * @typedef {Object} mainTools
- * @property {HTMLElement & textOptions} text
- * @property {HTMLElement} shapes
- * @property {HTMLElement} image
- * @property {HTMLElement} page
- * @property {HTMLElement} object
- * @property {HTMLElement} selection
- * @property {HTMLElement} hand
+ * @property {HTMLElement} circle
+ * @property {HTMLElement} rectangle
+ * @property {HTMLElement} triangle
  * @property {HTMLElement} backgroundColor
  * @property {HTMLElement} strokeColor
+ * @property {HTMLInputElement} openImage
+ * @property {HTMLInputElement} loadSVG
  */
 
 /**
- * @typedef {Object} textStyle
- * @property {HTMLElement} underline
- * @property {HTMLElement} italic
- * @property {HTMLElement} strikethrough
+ * @typedef {Object} textSettings
+ * @property {HTMLSelectElement} fontFamily 
+ * @property {HTMLSelectElement} fontWeight 
+ * @property {HTMLInputElement} fontSize 
  */
 
 /**
- * @typedef {Object} page
- * @property {HTMLElement} page.pageName
- * @property {HTMLElement} page.pageWidth
- * @property {HTMLElement} page.pageHeight
- * @property {HTMLElement} page.addPage
+ * @typedef {Object} pageSettings
+ * @property {HTMLInputElement} pageName
+ * @property {HTMLInputElement} pageHeight
+ * @property {HTMLInputElement} pageWidth
  */
 
 /**
  * @typedef {Object} toolsContainer
+ * @property {tools} tools
+ * @property {pageSettings} pageSettings
+ * @property {textSettings} textSettings
  */
 
+
+/**
+ * @function
+ * @returns {toolsContainer}
+ */
 export function toolsContainer() {
   /**
    * @type {HTMLDivElement}
@@ -346,11 +344,13 @@ export function toolsContainer() {
       addPage: page.addPage,
       addText: textOptions.addText,
       backgroundColor: mainTools.backgroundColor,
-      strokeColor: mainTools.strokeColor
+      strokeColor: mainTools.strokeColor,
+      openImage: imageOptions.openImage.querySelector('input')
     },
     textSettings: {
       ...textOptions,
-      ...textStyle
+      ...textStyle,
+      fontSize: textOptions.fontSize.querySelector('input')
     },
     pageSettings: {
       ...page
