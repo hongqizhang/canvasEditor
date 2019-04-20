@@ -19,23 +19,31 @@
     left: 0;
     top: 0;
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: row;
     width: fit-content;
     height: 100%;
     padding: 5px;
     margin: 0;
     background-color: #584e53;
     box-sizing: border-box;
+    z-index: 2;
 
     #CE_container-wrapper {
       width: fit-content;
       display: flex;
-      flex-flow: column wrap;
+      flex-flow: column;
+      overflow: auto;
       padding-top: 5px;
+      padding-left: 5px;
+      align-items: center;
 
       >.CE_freeContainer_wrapper {
+        flex-shrink: 0;
         position: static;
-        margin: 0 0 5px 5px;
+
+        &:not(:first-child) {
+          margin-top: 5px;
+        }
       }
     }
 
@@ -43,9 +51,11 @@
       width: fit-content;
       height: 100%;
       display: flex;
-      flex-flow: column wrap;
+      flex-flow: column;
+      overflow: auto;
 
       >* {
+        flex-shrink: 0;
         background-color: #363134;
         color: white;
         height: 40px;
@@ -60,16 +70,6 @@
 
         &.object::before {
           content: "\e921";
-        }
-
-        &.backgroundColor {
-          box-sizing: border-box;
-          padding: 10px;
-          background-color: #ccf;
-        }
-
-        &.strokeColor {
-          border: solid 4px #ccf;
         }
       }
     }
@@ -107,6 +107,16 @@
   justify-content: center;
   box-sizing: border-box;
   font-size: 1em;
+
+  &.backgroundColor {
+    box-sizing: border-box;
+    padding: 10px;
+    background-color: #ccf !important;
+  }
+
+  &.strokeColor {
+    border: solid 4px #ccf !important;
+  }
 
   &:active {
     outline: none;
@@ -160,5 +170,43 @@
     background-color: rgba(0, 0, 0, 0.3);
     border: solid 4px rgb(218, 218, 142);
     box-sizing: border-box;
+  }
+}
+
+.rangeSlider-wrapper {
+  margin: 20px 20px !important;
+  width: auto !important;
+}
+
+.CE_dropshadow-tool {
+  .CE_dropshadow-controls {
+    display: flex;
+    margin: 5px;
+    flex-flow: column wrap;
+
+    >div {
+      display: flex;
+
+      .CE_icon {
+        margin: 0 10px 0 15px;
+      }
+
+      >input {
+        width: 60px;
+        height: 30px;
+        text-align: center;
+      }
+
+      >* {
+        flex-shrink: 0;
+        box-sizing: border-box;
+
+        &:not(:first-child) {
+          margin-left: 5px;
+        }
+      }
+    }
+
+
   }
 }

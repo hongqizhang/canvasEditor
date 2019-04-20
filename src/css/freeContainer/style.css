@@ -11,6 +11,7 @@
   -webkit-box-shadow: 0 0 4px #313163;
           box-shadow: 0 0 4px #313163;
   background-color: white;
+  z-index: 3;
 }
 
 .CE_freeContainer_wrapper * {

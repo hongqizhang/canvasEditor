@@ -104,19 +104,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var fabric__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var fabric__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(fabric__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _components_freeContainer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
-/* harmony import */ var _components_toolsContainer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(18);
-/* harmony import */ var _css_main_main_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(20);
+/* harmony import */ var _components_toolsContainer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(22);
+/* harmony import */ var _css_main_main_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(24);
 /* harmony import */ var _css_main_main_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_css_main_main_css__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _css_freeContainer_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(22);
+/* harmony import */ var _css_freeContainer_style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(26);
 /* harmony import */ var _css_freeContainer_style_css__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_css_freeContainer_style_css__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _css_inputs_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(24);
+/* harmony import */ var _css_inputs_style_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(28);
 /* harmony import */ var _css_inputs_style_css__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_css_inputs_style_css__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _css_contextmenu_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(26);
+/* harmony import */ var _css_contextmenu_style_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(30);
 /* harmony import */ var _css_contextmenu_style_css__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_css_contextmenu_style_css__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _css_res_style_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(28);
+/* harmony import */ var _css_res_style_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(32);
 /* harmony import */ var _css_res_style_css__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_css_res_style_css__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _components_contextmenu__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(19);
-/* harmony import */ var html_element_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(12);
+/* harmony import */ var _components_contextmenu__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(23);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -136,43 +135,45 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 
 
+var html = __webpack_require__(12)["default"];
 /**
  * 
  * @param {HTMLDivElement} parentel 
  * @param {Object} opts 
  */
 
+
 function CanvasEditor(parentel, opts) {
   if (!parentel) return console.error('pranetel undefined!');
 
-  var picker = __webpack_require__(35);
+  var picker = __webpack_require__(39);
 
-  var clickCatchMask = html_element_js__WEBPACK_IMPORTED_MODULE_9__["div"]({
+  var clickCatchMask = html.div({
     className: 'CE_click-catch-mask'
   });
-  var mainWrapper = html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('div', {
+  var mainWrapper = html.create('div', {
     id: 'CE_wrapper'
   });
-  var canvasContainer = html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('div', {
+  var canvasContainer = html.create('div', {
     id: 'CE_canvasContainer'
   });
   var colorPickerContainer = null;
   var colorPicker = null;
   var canvasContextMenuOptions = {
-    background: html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('span', {
+    background: html.span({
       textContent: 'Background color'
     }),
-    delte: html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('span', {
+    delte: html.span({
       textContent: 'Delete'
     }),
-    paste: html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('span', {
+    paste: html.span({
       textContent: 'Paste'
     })
   };
   var objectContextMenuOptions = {
-    arrange: html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('span', {
+    arrange: html.span({
       textContent: 'Arrange',
-      children: [html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('i', {
+      children: [html.create('i', {
         className: 'CE_icon select-down',
         style: {
           transform: 'rotate(-90deg)'
@@ -182,36 +183,72 @@ function CanvasEditor(parentel, opts) {
         'data-expandable': 'true'
       }
     }),
-    copy: html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('span', {
+    align: html.span({
+      textContent: 'Align',
+      children: [html.create('i', {
+        className: 'CE_icon select-down',
+        style: {
+          transform: 'rotate(-90deg)'
+        }
+      })],
+      attr: {
+        'data-expandable': 'true'
+      }
+    }),
+    copy: html.span({
       textContent: 'Copy'
     }),
-    cut: html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('span', {
+    cut: html.span({
       textContent: 'Cut'
     }),
-    group: html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('span', {
+    group: html.span({
       textContent: 'Group'
     }),
-    lock: html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('span', {
+    lock: html.span({
       textContent: 'Lock'
     })
   };
   var arrangeOptions = {
-    bringBackward: html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('span', {
+    bringBackward: html.span({
       textContent: 'Bring forward'
     }),
-    bringFront: html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('span', {
+    bringFront: html.span({
       textContent: 'Bring front'
     }),
-    sendBackward: html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('span', {
+    sendBackward: html.span({
       textContent: 'Send backward'
     }),
-    sendBack: html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('span', {
+    sendBack: html.span({
       textContent: 'Send back'
+    })
+  };
+  var alignOptions = {
+    center: html.span({
+      textContent: 'Center'
+    }),
+    hCenter: html.span({
+      textContent: 'Horizontaly center'
+    }),
+    vCenter: html.span({
+      textContent: 'Verticaly center'
+    }),
+    left: html.span({
+      textContent: 'Left'
+    }),
+    right: html.span({
+      textContent: 'Right'
+    }),
+    top: html.span({
+      textContent: 'Top'
+    }),
+    bottom: html.span({
+      textContent: 'Bottom'
     })
   };
   var canvasContextMenu = Object(_components_contextmenu__WEBPACK_IMPORTED_MODULE_8__["contextMenu"])(Object.values(canvasContextMenuOptions));
   var objectContextMenu = Object(_components_contextmenu__WEBPACK_IMPORTED_MODULE_8__["contextMenu"])(Object.values(objectContextMenuOptions));
   var arrangeContextMenu = Object(_components_contextmenu__WEBPACK_IMPORTED_MODULE_8__["contextMenu"])(Object.values(arrangeOptions));
+  var alignContextMenu = Object(_components_contextmenu__WEBPACK_IMPORTED_MODULE_8__["contextMenu"])(Object.values(alignOptions));
   var pages = {};
   /**
    * @type {fabric.Canvas}
@@ -297,7 +334,7 @@ function CanvasEditor(parentel, opts) {
   }
 
   function addPage() {
-    var page = html_element_js__WEBPACK_IMPORTED_MODULE_9__["create"]('canvas');
+    var page = html.create('canvas');
     var canvas = new fabric.Canvas();
     canvasContainer.appendChild(page);
     canvas.initialize(page);
@@ -405,8 +442,8 @@ function CanvasEditor(parentel, opts) {
     addPage();
     fixPagesContainerPosition();
     window.addEventListener('resize', fixPagesContainerPosition);
-    var containerWrapper = html_element_js__WEBPACK_IMPORTED_MODULE_9__["get"]('#CE_container-wrapper');
-    var wrapper = html_element_js__WEBPACK_IMPORTED_MODULE_9__["get"]('#CE_tools-wrapper');
+    var containerWrapper = html.get('#CE_container-wrapper');
+    var wrapper = html.get('#CE_tools-wrapper');
     colorPickerContainer = Object(_components_freeContainer__WEBPACK_IMPORTED_MODULE_1__["freeContainer"])({
       parentElement: containerWrapper,
       drop: wrapper,
@@ -716,22 +753,227 @@ function CanvasEditor(parentel, opts) {
         activeCanvas.page.name = name;
       });
     })();
+
+    (function initObjectSettings() {
+      objectSettings.opacity.onchange = function (value) {
+        var activeObjects = activeCanvas.getActiveObjects();
+        if (activeObjects.length === 0) return;else {
+          var _iteratorNormalCompletion10 = true;
+          var _didIteratorError10 = false;
+          var _iteratorError10 = undefined;
+
+          try {
+            for (var _iterator10 = activeObjects[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+              var object = _step10.value;
+              object.set('opacity', value);
+            }
+          } catch (err) {
+            _didIteratorError10 = true;
+            _iteratorError10 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion10 && _iterator10["return"] != null) {
+                _iterator10["return"]();
+              }
+            } finally {
+              if (_didIteratorError10) {
+                throw _iteratorError10;
+              }
+            }
+          }
+        }
+        activeCanvas.renderAll();
+      };
+
+      objectSettings.dropShadow.onchange = function () {
+        var activeObjects = activeCanvas.getActiveObjects();
+        if (activeObjects.length === 0) return;
+        var _iteratorNormalCompletion11 = true;
+        var _didIteratorError11 = false;
+        var _iteratorError11 = undefined;
+
+        try {
+          for (var _iterator11 = activeObjects[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+            var object = _step11.value;
+
+            if (this.value) {
+              object.setShadow({
+                color: '#000',
+                blur: objectSettings.blur.value,
+                offsetX: objectSettings.offsetX.value,
+                offsetY: objectSettings.offsetY.value
+              });
+            } else {
+              object.setShadow(null);
+            }
+          }
+        } catch (err) {
+          _didIteratorError11 = true;
+          _iteratorError11 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion11 && _iterator11["return"] != null) {
+              _iterator11["return"]();
+            }
+          } finally {
+            if (_didIteratorError11) {
+              throw _iteratorError11;
+            }
+          }
+        }
+
+        activeCanvas.renderAll();
+      };
+
+      objectSettings.offsetX.oninput = function () {
+        var activeObjects = activeCanvas.getActiveObjects();
+        if (activeObjects.length === 0) return;
+        var _iteratorNormalCompletion12 = true;
+        var _didIteratorError12 = false;
+        var _iteratorError12 = undefined;
+
+        try {
+          for (var _iterator12 = activeObjects[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+            var object = _step12.value;
+            object.shadow.offsetX = this.value;
+          }
+        } catch (err) {
+          _didIteratorError12 = true;
+          _iteratorError12 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion12 && _iterator12["return"] != null) {
+              _iterator12["return"]();
+            }
+          } finally {
+            if (_didIteratorError12) {
+              throw _iteratorError12;
+            }
+          }
+        }
+
+        activeCanvas.renderAll();
+      };
+
+      objectSettings.offsetY.oninput = function () {
+        var activeObjects = activeCanvas.getActiveObjects();
+        if (activeObjects.length === 0) return;
+        var _iteratorNormalCompletion13 = true;
+        var _didIteratorError13 = false;
+        var _iteratorError13 = undefined;
+
+        try {
+          for (var _iterator13 = activeObjects[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+            var object = _step13.value;
+            if (!object.shadow) return;
+            object.shadow.offsetY = this.value;
+          }
+        } catch (err) {
+          _didIteratorError13 = true;
+          _iteratorError13 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion13 && _iterator13["return"] != null) {
+              _iterator13["return"]();
+            }
+          } finally {
+            if (_didIteratorError13) {
+              throw _iteratorError13;
+            }
+          }
+        }
+
+        activeCanvas.renderAll();
+      };
+
+      objectSettings.blur.oninput = function () {
+        var activeObjects = activeCanvas.getActiveObjects();
+        if (activeObjects.length === 0) return;
+        var _iteratorNormalCompletion14 = true;
+        var _didIteratorError14 = false;
+        var _iteratorError14 = undefined;
+
+        try {
+          for (var _iterator14 = activeObjects[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+            var object = _step14.value;
+            if (!object.shadow) return;
+            object.shadow.blur = this.value;
+          }
+        } catch (err) {
+          _didIteratorError14 = true;
+          _iteratorError14 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion14 && _iterator14["return"] != null) {
+              _iterator14["return"]();
+            }
+          } finally {
+            if (_didIteratorError14) {
+              throw _iteratorError14;
+            }
+          }
+        }
+
+        activeCanvas.renderAll();
+      };
+
+      objectSettings.color.onclick = function () {
+        colorPickerContainer.setTitle('Color picker - shadow');
+        colorPickerContainer.setVisiblity(true);
+
+        colorPicker.onchange = function (color) {
+          var activeObjects = activeCanvas.getActiveObjects();
+          if (activeObjects.length === 0) return;
+          var _iteratorNormalCompletion15 = true;
+          var _didIteratorError15 = false;
+          var _iteratorError15 = undefined;
+
+          try {
+            for (var _iterator15 = activeObjects[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+              var object = _step15.value;
+              if (!object.shadow) return;
+              object.shadow.color = color.rgbhex;
+            }
+          } catch (err) {
+            _didIteratorError15 = true;
+            _iteratorError15 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion15 && _iterator15["return"] != null) {
+                _iterator15["return"]();
+              }
+            } finally {
+              if (_didIteratorError15) {
+                throw _iteratorError15;
+              }
+            }
+          }
+
+          activeCanvas.renderAll();
+        };
+      };
+    })();
   }
 
   function initContextMenu() {
-    objectContextMenuOptions.arrange.addEventListener('click', arrangeOnClick);
-    /**
-     * 
-     * @param {MouseEvent} e 
-     */
+    objectContextMenuOptions.arrange.addEventListener('click', arrangeOnclick);
+    objectContextMenuOptions.align.addEventListener('click', alignOnclick);
 
-    function arrangeOnClick(e) {
+    function arrangeOnclick() {
+      showSecondContext.bind(this)(arrangeContextMenu);
+    }
+
+    function alignOnclick() {
+      showSecondContext.bind(this)(alignContextMenu);
+    }
+
+    function showSecondContext(contextMenu) {
       /**
        * @type {HTMLElement}
        */
       var el = this;
       var elClient = el.getBoundingClientRect();
-      arrangeContextMenu.show({
+      contextMenu.show({
         clientX: elClient.right,
         clientY: elClient.top
       });
@@ -792,7 +1034,7 @@ function CanvasEditor(parentel, opts) {
   }
 
   function updateActiveContainer() {
-    var allContainer = html_element_js__WEBPACK_IMPORTED_MODULE_9__["getAll"]('#CE_canvasContainer .canvas-container');
+    var allContainer = html.getAll('#CE_canvasContainer .canvas-container');
     allContainer = _toConsumableArray(allContainer);
 
     if (allContainer.length === 1) {
@@ -800,13 +1042,13 @@ function CanvasEditor(parentel, opts) {
       return;
     }
 
-    var _iteratorNormalCompletion10 = true;
-    var _didIteratorError10 = false;
-    var _iteratorError10 = undefined;
+    var _iteratorNormalCompletion16 = true;
+    var _didIteratorError16 = false;
+    var _iteratorError16 = undefined;
 
     try {
-      for (var _iterator10 = allContainer[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-        var el = _step10.value;
+      for (var _iterator16 = allContainer[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+        var el = _step16.value;
 
         el.onclick = function () {
           var lastActive = document.querySelector('.canvas-container.active');
@@ -819,16 +1061,16 @@ function CanvasEditor(parentel, opts) {
         };
       }
     } catch (err) {
-      _didIteratorError10 = true;
-      _iteratorError10 = err;
+      _didIteratorError16 = true;
+      _iteratorError16 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion10 && _iterator10["return"] != null) {
-          _iterator10["return"]();
+        if (!_iteratorNormalCompletion16 && _iterator16["return"] != null) {
+          _iterator16["return"]();
         }
       } finally {
-        if (_didIteratorError10) {
-          throw _iteratorError10;
+        if (_didIteratorError16) {
+          throw _iteratorError16;
         }
       }
     }
@@ -871,6 +1113,20 @@ function CanvasEditor(parentel, opts) {
         textSettings.fontFamily.value = fontFamily;
         textSettings.fontWeight.value = fontWeight;
         textSettings.fontSize.value = fontSize;
+      }
+
+      objectSettings.opacity.setValue(activeObject.opacity);
+
+      if (activeObject.shadow) {
+        objectSettings.offsetX.value = activeObject.shadow.offsetX;
+        objectSettings.offsetY.value = activeObject.shadow.offsetY;
+        objectSettings.blur.value = activeObject.shadow.blur;
+      }
+
+      if (!activeObject.get('shadow')) {
+        objectSettings.dropShadow.setvalue(false);
+      } else {
+        objectSettings.dropShadow.setvalue(true);
       }
     }, 10);
   }
@@ -32162,7 +32418,6 @@ module.exports = Array.isArray || function (arr) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "freeContainer", function() { return freeContainer; });
-/* harmony import */ var html_element_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(12);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -32171,7 +32426,7 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
-
+var html = __webpack_require__(12)["default"];
 /**
  * @typedef {Object} freeContainer
  * @property {function(bool):void} setVisiblity
@@ -32195,29 +32450,30 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
  * @returns {freeContainer}
  */
 
+
 function freeContainer() {
   var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var wrapper = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('div', {
+  var wrapper = html.create('div', {
     className: 'CE_freeContainer_wrapper'
   });
-  var handel = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('div', {
+  var handel = html.create('div', {
     className: 'CE_controls grab'
   });
-  var body = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('div', {
+  var body = html.create('div', {
     className: 'CE_body',
     onmousemove: bodyonmousemove
   });
-  var closeBtn = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('button', {
+  var closeBtn = html.create('button', {
     className: 'CE_icon times',
     onclick: function onclick() {
       return setVisiblity(false);
     }
   });
-  var mover = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('span', {
+  var mover = html.create('span', {
     className: 'CE_mover',
     onmousedown: onmousedown
   });
-  var mainParent = html_element_js__WEBPACK_IMPORTED_MODULE_0__["get"]('#CE_wrapper');
+  var mainParent = html.get('#CE_wrapper');
   var parentElement = opts.parentElement || mainParent;
   var start = {
     x: 0,
@@ -32501,425 +32757,55 @@ function freeContainer() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return a; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "bubble", function() { return bubble; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "button", function() { return button; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "div", function() { return div; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAll", function() { return getAll; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "img", function() { return img; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "input", function() { return input; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "span", function() { return span; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toolTip", function() { return toolTip; });
 /* harmony import */ var _css_main_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(13);
 /* harmony import */ var _css_main_css__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_css_main_css__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _html__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(18);
+/* harmony import */ var _rangeSlider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(19);
+/* harmony import */ var _tooltip__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(20);
+/* harmony import */ var _toggler__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(21);
 
 
-/**
- * @typedef {Object} elementExtended
- * @property {function(eventList):void} removeEvents removes all events added to element
- * @property {function():void} assignEvents reassign all events that are removed from element
- * @property {function():void} bubble add bubble effect on click
- */
-
-/**
- * @typedef {Object} createOptions
- * @property {HTMLElement[] | HTMLAllCollection} children
- * @property {Object} attr calls HTMLElement.setAttribute(String: name, String: value);
- */
-
-/**
- * @typedef {Object} inputNumber
- * @property {Number|String} min Returns / Sets the min value of input.
- * @property {Number|String} max Returns / Sets the max value of input.
- * @property {String|Number} step Returns / Sets the increment and decrement step of input.
- */
-
-/**
- * @typedef {Object} inputCheckbox
- * @property {Boolean} checked Returns / Sets the current state of the element when type is checkbox or radio.
- * @property {Boolean} defaultChecked Returns / Sets the default state of a radio button or checkbox as originally 
- * specified in HTML that created this object.
- * @property {Boolean} indeterminate Returns whether the checkbox or radio button is in indeterminate state. For checkboxes, 
- * the effect is that the appearance of the checkbox is obscured/greyed in some way as to indicate its state is indeterminate 
- * (not checked but not unchecked). Does not affect the value of the checked attribute, and clicking the checkbox will set the value to false.
- */
-
-/**
- * @typedef {Object} inputImage
- * @property {String} alt Returns / Sets the element's alt attribute, containing alternative text to use when type is image.
- * @property {String} height  Returns / Sets the element's height attribute, which defines the height of the image displayed for the button, 
- * if the value of type is image.
- * @property {String} src Returns / Sets the element's src attribute, which specifies a URI for the location of an 
- * image to display on the graphical submit button, if the value of type is image; otherwise it is ignored.
- * @property {String} width Returns / Sets the document's width attribute, which defines the width of the image displayed for the button, 
- * if the value of type is image.
- */
-
-/**
- * @typedef {Object} inputFile
- * @property {String} accept Returns / Sets the element's accept attribute, containing comma-separated list of file types accepted by the 
- * server when type is file.
- * @property {FileList} files Returns/accepts a FileList object, which contains a list of File objects representing the files selected for upload.
- */
-
-/**
- * Create new HTML tag
- * @param {String} tag HTMl element tag name 
- * @param {HTMLElement & createOptions} props
- * @returns {HTMLElement & elementExtended}
- */
-function create(tag = 'div', props = {}) {
-  let html = this;
-  let el = document.createElement(tag);
-  let eventFunctions = [];
-  let oldEventListener = el.addEventListener.bind(el);
-
-  /**@override addEventListener of page */
-  el.addEventListener = addEventListener;
-
-  /**@property */
-  el.assignEvents = assignEvents;
-
-  /**@property */
-  el.removeEvents = removeEvents;
-
-  /**
-   * removes all event from page.
-   * @param {String[]|String} events
-   * @returns {void}
-   */
-  function removeEvents(events) {
-    if (events) {
-      for (let event of eventFunctions) {
-        if (Array.isArray(events) && events.indexOf(event.type)) {
-          el.removeEventListener(event.type, event.listener);
-        } else if (typeof events === 'string' && event.type === events) {
-          el.removeEventListener(event.type, event.listener);
-        }
-      }
-
-      return;
-    }
-    for (let event of eventFunctions) {
-      el.removeEventListener(event.type, event.listener);
-    }
-  }
-
-  /**
-   * assign all event that were removed from page
-   * @returns {void}
-   */
-  function assignEvents() {
-    for (let event of eventFunctions) {
-      oldEventListener(event.type, event.listener, event.options);
-    }
-  }
-
-  /**
-   * 
-   * @param {String} type A case-sensitive string representing the event type to listen for.
-   * @param {CallableFunction} listener The object which receives a notification 
-   * (an object that implements the Event interface) when an event of the specified type occurs. 
-   * This must be an object implementing the EventListener interface, or a JavaScript function. 
-   * See The event listener callback for details on the callback itself.
-   * @param {Object} [options] An options object that specifies characteristics about the event listener.
-   * @param {Boolean} [options.capture] A Boolean indicating that events of this type will be dispatched 
-   * to the registered listener before being dispatched to any EventTarget beneath it in the DOM tree.
-   * @param {Boolean} [options.once] A Boolean indicating that the listener should be invoked at most 
-   * once after being added. If true, the listener would be automatically removed when invoked.
-   * @param {Boolean} [options.passive] A Boolean which, if true, indicates that the function specified 
-   * by listener will never call preventDefault(). If a passive listener does call preventDefault(), 
-   * the user agent will do nothing other than generate a console warning. See Improving scrolling 
-   * performance with passive listeners to learn more.
-   * @param {Boolean} [options.mozSystemGroup] "experimental" A Boolean indicating that the listener 
-   * should be added to the system group. Available only in code running in XBL or in the chrome of the 
-   * Firefox browser.
-   * @returns {void}
-   */
-  function addEventListener(type, listener, options) {
-    eventFunctions[eventFunctions.length] = {
-      type,
-      listener,
-      options
-    };
-    oldEventListener(type, listener, options);
-  }
-
-  for (let prop in props) {
-
-    if (props[prop] === undefined) {
-      return console.error(`invalid value of "${prop}"`);
-    }
-
-    if (prop == 'children' && Array.isArray(props[prop])) {
-      for (let htmlel of props[prop]) {
-        el.appendChild(htmlel);
-      }
-    } else if (prop == 'attr') {
-      for (let p in props[prop]) {
-        el.setAttribute(p, props[prop][p]);
-      }
-    } else if (props[prop].constructor.name === 'Object') {
-      for (let p in props[prop]) {
-        el[prop][p] = props[prop][p];
-      }
-    } else el[prop] = props[prop];
-  }
-
-  /**
-   * @function
-   * @param {HTMLElement | HTMLAllCollection | HTMLElement[]} nodes
-   */
-  el.append = function (nodes) {
-    nodes = Array.isArray(nodes) ? nodes : [nodes];
-    for (let i = 0; i < nodes.length; ++i) {
-      el.appendChild(nodes[i]);
-    }
-  }
-
-  if (props.children) {
-    el.append(props.children);
-  }
-
-  el.bubble = function bubble() {
-    html.bubble(el);
-  }
-
-  return el;
-}
-
-/**
- * get first mathing element from DOM
- * @param {String} selector CSS selector 
- * @returns {HTMLElement}
- */
-function get(selector) {
-  return document.querySelector(selector);
-}
-
-/**
- * get all matching element from DOM
- * @param {String} selector CSS selector
- * @returns {HTMLElement[]}
- */
-function getAll(selector) {
-  return document.querySelectorAll(selector);
-}
-
-/**
- * 
- * @param {element} el 
- */
-function bubble(el) {
-  let bubble = this.create('i', {
-    className: 'bubble'
-  });
-
-  el.addEventListener('click', bubbles);
-
-  function bubbles(e) {
-    let elClient = el.getBoundingClientRect();
-    bubble.classList.add('animate');
-    el.classList.add('bubbling');
-    bubble.style.height = elClient.width + 'px';
-    bubble.style.width = elClient.width + 'px';
-    bubble.style.top = (e.clientY - elClient.top - elClient.width / 2) + 'px';
-    bubble.style.left = (e.clientX - elClient.left - elClient.width / 2) + 'px';
-
-    setTimeout(function assignProps() {
-      el.removeEvents();
-      el.appendChild(bubble);
-    }, 0);
 
 
-    setTimeout(function removeBubble() {
-      bubble.classList.remove('animate');
-      el.classList.remove('bubbling');
-      el.assignEvents();
-      el.removeChild(bubble);
-    }, 580);
-  }
-}
-
-/**
- * 
- * @param {HTMLInputElement} props 
- * @returns {HTMLInputElement}
- */
-function input(props = {}) {
-  props.type = 'text';
-  return this.create('input', props);
-}
-
-/**
- * 
- * @param {HTMLSpanElement} props 
- * @returns {HTMLSpanElement} 
- */
-function span(props = {}) {
-  return this.create('span', props);
-}
-
-/**
- * 
- * @param {String} text 
- * @param {HTMLButtonElement} [props] 
- * @returns {HTMLButtonElement} 
- */
-function button(text = '', props = {}) {
-  if (text) {
-    props.textContent = text;
-  }
-  let button = this.create('span', props);
-  button.bubble();
-
-  return button;
-}
-/**
- * 
- * @param {HTMLDivElement} props 
- * @returns {HTMLDivElement} 
- */
-function div(props = {}) {
-  return this.create('div', props);
-}
-/**
- * 
- * @param {String} src 
- * @param {String} alt 
- * @param {HTMLImageElement} props 
- * @returns {HTMLImageElement} 
- */
-function img(src = '', alt = '', props = {}) {
-  props.src = src;
-  props.alt = alt;
-  return this.create('img', props);
-}
-/**
- * 
- * @param {String} href 
- * @param {Node} child 
- * @param {HTMLAnchorElement} props 
- * @returns {HTMLAnchorElement} 
- */
-function a(href = '', child = null, props = {}) {
-  props.href = href;
-  if (child) {
-    props.children = [child];
-  }
-  return this.create('a', props);
-}
-/**
- * 
- * @param {Object} opts 
- * @param {String} opts.title 
- * @param {element} opts.element 
- * @param {String} opts.direction 
- * @param {Boolean} opts.watchChange
- */
-function toolTip(opts) {
-  if (!opts.element) return console.error('element is undefined');
-  if (!opts.direction) opts.direction = 'left';
-  let title = opts.title || opts.element.getAttribute('title') || opts.element.getAttribute('data-title') || '';
-  let toolTip = this.create('div', {
-    className: 'toolTip'
-  });
-  let toolTipPointer = this.create('span', {
-    className: 'toolTip-pointer'
-  });
-  let wrapper = this.create('div', {
-    className: 'toolTip-wrapper',
-    attr: {
-      "data-direction": opts.direction
-    }
-  });
-  let text = this.create('span', {
-    textContent: title,
-    className: 'text'
-  });
-  /**
-   * @type {MutationObserver}
-   */
-  let observer;
-
-  toolTip.appendChild(toolTipPointer);
-  toolTip.appendChild(text);
-  wrapper.appendChild(toolTip);
-
-  opts.element.onmouseenter = mouseEnter;
-  opts.element.onmouseleave = mouseLeave;
+// import {
+//   a,
+//   bubble,
+//   button,
+//   create,
+//   div,
+//   get,
+//   getAll,
+//   img,
+//   input,
+//   span
+// } from './html';
 
 
-  function mouseEnter() {
-
-    let elClient = opts.element.getBoundingClientRect();
-
-    if (opts.direction) {
-      if (opts.direction === 'left') {
-        wrapper.style.left = elClient.left + 'px';
-        wrapper.style.top = elClient.top + elClient.height / 2 + 'px';
-        toolTipPointer.style.right = `0`;
-        toolTipPointer.style.top = `50%`;
-        toolTipPointer.style.transform = 'translate3d(50%, -50%, 0) rotate(45deg)';
-        wrapper.style.transform = 'translate3d(-100%, -50%, 0px)';
-      }
-      if (opts.direction === 'right') {
-        wrapper.style.left = elClient.right + 'px';
-        wrapper.style.top = elClient.top + elClient.height / 2 + 'px';
-        toolTipPointer.style.left = `0`;
-        toolTipPointer.style.top = `50%`;
-        toolTipPointer.style.transform = 'translate3d(-50%, -50%, 0) rotate(45deg)';
-        wrapper.style.transform = 'translate3d(0%, -50%, 0px)';
-      }
-      if (opts.direction === 'top') {
-        wrapper.style.left = elClient.left + elClient.width / 2 + 'px';
-        wrapper.style.top = elClient.top + 'px';
-        toolTipPointer.style.left = `50%`;
-        toolTipPointer.style.bottom = `0`;
-        toolTipPointer.style.transform = 'translate3d(-50%, 50%, 0) rotate(45deg)';
-        wrapper.style.transform = 'translate3d(-50%, -100%, 0px)';
-      }
-      if (opts.direction === 'bottom') {
-        wrapper.style.left = elClient.left + elClient.width / 2 + 'px';
-        wrapper.style.top = elClient.bottom + 'px';
-        toolTipPointer.style.left = `50%`;
-        toolTipPointer.style.top = `0`;
-        toolTipPointer.style.transform = 'translate3d(-50%, -50%, 0) rotate(45deg)';
-        wrapper.style.transform = 'translate3d(-50%, 0%, 0px)';
-      }
-    }
-
-    if (opts.watchChange) {
-      observer = new MutationObserver(function (changes, observer) {
-        for (let change of changes) {
-          if (change.type === 'attributes') {
-            text.textContent = opts.element.getAttribute('title') || opts.element.getAttribute('data-title');
-          }
-        }
-      });
-      observer.observe(opts.element, {
-        attributes: true
-      });
-    }
-
-    document.body.appendChild(wrapper);
-  }
-
-  function mouseLeave() {
-    if (!toolTip.parentElement) return;
-    document.body.removeChild(wrapper);
-    if (opts.watchChange && observer) {
-      observer.disconnect;
-    }
-  }
-
-  opts.element.removeAttribute('title');
-
-}
 
 
+const exprt = {
+  ..._html__WEBPACK_IMPORTED_MODULE_1__,
+  rangeSlider: _rangeSlider__WEBPACK_IMPORTED_MODULE_2__["rangeSlider"],
+  toolTip: _tooltip__WEBPACK_IMPORTED_MODULE_3__["toolTip"],
+  toggler: _toggler__WEBPACK_IMPORTED_MODULE_4__["toggler"]
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (exprt);
+
+// export {
+//   a,
+//   bubble,
+//   button,
+//   create,
+//   div,
+//   get,
+//   getAll,
+//   img,
+//   input,
+//   rangeSlider,
+//   span,
+//   toolTip
+// }
 
 /***/ }),
 /* 13 */
@@ -32952,7 +32838,7 @@ if(false) {}
 
 exports = module.exports = __webpack_require__(15)(false);
 // Module
-exports.push([module.i, ".bubble {\n  position: absolute;\n  -webkit-transform-origin: center;\n          transform-origin: center;\n  border-radius: 50%;\n  background-color: rgba(0, 0, 0, .3);\n}\n\n.bubble.animate {\n  -webkit-animation: grow 600ms ease 1;\n          animation: grow 600ms ease 1;\n}\n\n.bubbling {\n  position: relative;\n  overflow: hidden;\n}\n\n.toolTip-wrapper {\n  position: fixed;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  pointer-events: none;\n  z-index: 999;\n}\n\n.toolTip-wrapper .toolTip {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  background-color: #99f;\n  -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .2);\n          box-shadow: 0 0 8px rgba(0, 0, 0, .2);\n  padding: 10px;\n  border-radius: 4px;\n  -webkit-animation: spring 100ms ease 1;\n          animation: spring 100ms ease 1;\n  width: fit-content;\n  max-width: 220px;\n}\n\n.toolTip-wrapper .toolTip > .text {\n  z-index: 1;\n  display: block;\n  color: white;\n  font-family: Arial, Helvetica, sans-serif;\n  white-space: pre-line;\n}\n\n.toolTip-wrapper .toolTip > .toolTip-pointer {\n  z-index: -1;\n  position: absolute;\n  -webkit-transform-origin: center;\n          transform-origin: center;\n  height: 15px;\n  width: 15px;\n  background-color: #99f;\n}\n\n@-webkit-keyframes spring {\n  0% {\n    -webkit-transform: scale(0.8);\n            transform: scale(0.8);\n  }\n  80% {\n    -webkit-transform: scale(1.2);\n            transform: scale(1.2);\n  }\n  100% {\n    -webkit-transform: scale(1);\n            transform: scale(1);\n  }\n}\n\n@keyframes spring {\n  0% {\n    -webkit-transform: scale(0.8);\n            transform: scale(0.8);\n  }\n  80% {\n    -webkit-transform: scale(1.2);\n            transform: scale(1.2);\n  }\n  100% {\n    -webkit-transform: scale(1);\n            transform: scale(1);\n  }\n}\n\n@-webkit-keyframes grow {\n  0% {\n    opacity: 0;\n    -webkit-transform: scale(0) translate3d(0, 0, 0);\n            transform: scale(0) translate3d(0, 0, 0);\n  }\n  20% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n    -webkit-transform: scale(1.2) translate3d(0, 0, 0);\n            transform: scale(1.2) translate3d(0, 0, 0);\n  }\n}\n\n@keyframes grow {\n  0% {\n    opacity: 0;\n    -webkit-transform: scale(0) translate3d(0, 0, 0);\n            transform: scale(0) translate3d(0, 0, 0);\n  }\n  20% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n    -webkit-transform: scale(1.2) translate3d(0, 0, 0);\n            transform: scale(1.2) translate3d(0, 0, 0);\n  }\n}", ""]);
+exports.push([module.i, ".bubble {\n  position: absolute;\n  -webkit-transform-origin: center;\n          transform-origin: center;\n  border-radius: 50%;\n  background-color: rgba(0, 0, 0, .3);\n}\n\n.bubble.animate {\n  -webkit-animation: grow 600ms ease 1;\n          animation: grow 600ms ease 1;\n}\n\n.bubbling {\n  position: relative;\n  overflow: hidden;\n}\n\n.toggler-wrapper {\n  position: relative;\n  display: block;\n  height: 30px;\n  width: 60px;\n  border-radius: 15px;\n  background-color: #99f;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n\n.toggler-wrapper *:focus {\n  outline: none !important;\n}\n\n.toggler-wrapper > span {\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n  background-color: #f99;\n  -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .3);\n          box-shadow: 0 0 8px rgba(0, 0, 0, .3);\n  -webkit-transform: translate3d(0, 0, 0);\n          transform: translate3d(0, 0, 0);\n  -webkit-transition: all 300ms ease;\n  transition: all 300ms ease;\n  margin: 0 !important;\n}\n\n.toggler-wrapper > input[type=checkbox]:checked + span.toggler_btn {\n  background-color: #7dda85;\n  -webkit-transform: translate3d(100%, 0, 0);\n          transform: translate3d(100%, 0, 0);\n}\n\n.rangeSlider-wrapper {\n  position: relative;\n  height: 4px;\n  background-color: #99f;\n  margin: 13px 5px;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n\n.rangeSlider-wrapper *:focus, .rangeSlider-wrapper:focus {\n  outline: none !important;\n}\n\n.rangeSlider-wrapper > span {\n  position: absolute;\n  top: -5.5px;\n  left: -7.5px;\n  display: block;\n  height: 15px;\n  width: 15px;\n  border-radius: 50%;\n  background-color: #f99;\n}\n\n.rangeSlider-wrapper > span::after {\n  font-family: Arial, Helvetica, sans-serif;\n  position: absolute;\n  top: 5px;\n  left: 5px;\n  height: 38px;\n  width: 38px;\n  border-radius: 50%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  content: attr(data-value);\n  font-size: 12.8px;\n  font-size: 0.8rem;\n  font-weight: bold;\n  color: white;\n  -webkit-transform: translate(-50%, -50%) scale(0);\n          transform: translate(-50%, -50%) scale(0);\n  opacity: 0;\n  -webkit-transition: all 300ms ease-out;\n  transition: all 300ms ease-out;\n  -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .3);\n          box-shadow: 0 0 8px rgba(0, 0, 0, .3);\n}\n\n.rangeSlider-wrapper.active > span::after, .rangeSlider-wrapper:active > span::after {\n  background-color: inherit;\n  -webkit-transform: translate(-50%, -50%) scale(1);\n          transform: translate(-50%, -50%) scale(1);\n  opacity: 1;\n}\n\n.rangeSlider-wrapper.small {\n  height: 2px;\n  margin: 18px 5px;\n}\n\n.rangeSlider-wrapper.small > span {\n  top: -5px;\n  left: -6px;\n  height: 12px;\n  width: 12px;\n}\n\n.toolTip-wrapper {\n  position: fixed;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  pointer-events: none;\n  z-index: 999;\n}\n\n.toolTip-wrapper .toolTip {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  background-color: #99f;\n  -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .2);\n          box-shadow: 0 0 8px rgba(0, 0, 0, .2);\n  padding: 10px;\n  border-radius: 4px;\n  -webkit-animation: spring 100ms ease 1;\n          animation: spring 100ms ease 1;\n  width: fit-content;\n  max-width: 220px;\n}\n\n.toolTip-wrapper .toolTip > .text {\n  z-index: 1;\n  display: block;\n  color: white;\n  font-family: Arial, Helvetica, sans-serif;\n  white-space: pre-line;\n}\n\n.toolTip-wrapper .toolTip > .toolTip-pointer {\n  z-index: -1;\n  position: absolute;\n  -webkit-transform-origin: center;\n          transform-origin: center;\n  height: 15px;\n  width: 15px;\n  background-color: #99f;\n}\n\n@-webkit-keyframes spring {\n  0% {\n    -webkit-transform: scale(0.8);\n            transform: scale(0.8);\n  }\n  80% {\n    -webkit-transform: scale(1.2);\n            transform: scale(1.2);\n  }\n  100% {\n    -webkit-transform: scale(1);\n            transform: scale(1);\n  }\n}\n\n@keyframes spring {\n  0% {\n    -webkit-transform: scale(0.8);\n            transform: scale(0.8);\n  }\n  80% {\n    -webkit-transform: scale(1.2);\n            transform: scale(1.2);\n  }\n  100% {\n    -webkit-transform: scale(1);\n            transform: scale(1);\n  }\n}\n\n@-webkit-keyframes grow {\n  0% {\n    opacity: 0;\n    -webkit-transform: scale(0) translate3d(0, 0, 0);\n            transform: scale(0) translate3d(0, 0, 0);\n  }\n  20% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n    -webkit-transform: scale(1.2) translate3d(0, 0, 0);\n            transform: scale(1.2) translate3d(0, 0, 0);\n  }\n}\n\n@keyframes grow {\n  0% {\n    opacity: 0;\n    -webkit-transform: scale(0) translate3d(0, 0, 0);\n            transform: scale(0) translate3d(0, 0, 0);\n  }\n  20% {\n    opacity: 1;\n  }\n  100% {\n    opacity: 0;\n    -webkit-transform: scale(1.2) translate3d(0, 0, 0);\n            transform: scale(1.2) translate3d(0, 0, 0);\n  }\n}", ""]);
 
 
 
@@ -33552,17 +33438,727 @@ module.exports = function (css) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return a; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "bubble", function() { return bubble; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "button", function() { return button; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "div", function() { return div; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAll", function() { return getAll; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "img", function() { return img; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "input", function() { return input; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "span", function() { return span; });
+/**
+ * @typedef {Object} elementExtended
+ * @property {function(eventList):void} removeEvents removes all events added to element
+ * @property {function():void} assignEvents reassign all events that are removed from element
+ * @property {function():void} bubble add bubble effect on click
+ */
+
+/**
+ * @typedef {Object} createOptions
+ * @property {HTMLElement[] | HTMLAllCollection} children
+ * @property {Object} attr calls HTMLElement.setAttribute(String: name, String: value);
+ */
+
+/**
+ * @typedef {Object} inputNumber
+ * @property {Number|String} min Returns / Sets the min value of input.
+ * @property {Number|String} max Returns / Sets the max value of input.
+ * @property {String|Number} step Returns / Sets the increment and decrement step of input.
+ */
+
+/**
+ * @typedef {Object} inputCheckbox
+ * @property {Boolean} checked Returns / Sets the current state of the element when type is checkbox or radio.
+ * @property {Boolean} defaultChecked Returns / Sets the default state of a radio button or checkbox as originally 
+ * specified in HTML that created this object.
+ * @property {Boolean} indeterminate Returns whether the checkbox or radio button is in indeterminate state. For checkboxes, 
+ * the effect is that the appearance of the checkbox is obscured/greyed in some way as to indicate its state is indeterminate 
+ * (not checked but not unchecked). Does not affect the value of the checked attribute, and clicking the checkbox will set the value to false.
+ */
+
+/**
+ * @typedef {Object} inputImage
+ * @property {String} alt Returns / Sets the element's alt attribute, containing alternative text to use when type is image.
+ * @property {String} height  Returns / Sets the element's height attribute, which defines the height of the image displayed for the button, 
+ * if the value of type is image.
+ * @property {String} src Returns / Sets the element's src attribute, which specifies a URI for the location of an 
+ * image to display on the graphical submit button, if the value of type is image; otherwise it is ignored.
+ * @property {String} width Returns / Sets the document's width attribute, which defines the width of the image displayed for the button, 
+ * if the value of type is image.
+ */
+
+/**
+ * @typedef {Object} inputFile
+ * @property {String} accept Returns / Sets the element's accept attribute, containing comma-separated list of file types accepted by the 
+ * server when type is file.
+ * @property {FileList} files Returns/accepts a FileList object, which contains a list of File objects representing the files selected for upload.
+ */
+
+/**
+ * Create new HTML tag
+ * @param {String} tag HTMl element tag name 
+ * @param {HTMLElement & createOptions} props
+ * @returns {HTMLElement & elementExtended}
+ */
+function create(tag = 'div', props = {}) {
+  let html = this;
+  let el = document.createElement(tag);
+  let eventFunctions = [];
+  let oldEventListener = el.addEventListener.bind(el);
+
+  /**@override addEventListener of page */
+  el.addEventListener = addEventListener;
+
+  /**@property */
+  el.assignEvents = assignEvents;
+
+  /**@property */
+  el.removeEvents = removeEvents;
+
+  /**
+   * removes all event from page.
+   * @param {String[]|String} events
+   * @returns {void}
+   */
+  function removeEvents(events) {
+    if (events) {
+      for (let event of eventFunctions) {
+        if (Array.isArray(events) && events.indexOf(event.type)) {
+          el.removeEventListener(event.type, event.listener);
+        } else if (typeof events === 'string' && event.type === events) {
+          el.removeEventListener(event.type, event.listener);
+        }
+      }
+
+      return;
+    }
+    for (let event of eventFunctions) {
+      el.removeEventListener(event.type, event.listener);
+    }
+  }
+
+  /**
+   * assign all event that were removed from page
+   * @returns {void}
+   */
+  function assignEvents() {
+    for (let event of eventFunctions) {
+      oldEventListener(event.type, event.listener, event.options);
+    }
+  }
+
+  /**
+   * 
+   * @param {String} type A case-sensitive string representing the event type to listen for.
+   * @param {CallableFunction} listener The object which receives a notification 
+   * (an object that implements the Event interface) when an event of the specified type occurs. 
+   * This must be an object implementing the EventListener interface, or a JavaScript function. 
+   * See The event listener callback for details on the callback itself.
+   * @param {Object} [options] An options object that specifies characteristics about the event listener.
+   * @param {Boolean} [options.capture] A Boolean indicating that events of this type will be dispatched 
+   * to the registered listener before being dispatched to any EventTarget beneath it in the DOM tree.
+   * @param {Boolean} [options.once] A Boolean indicating that the listener should be invoked at most 
+   * once after being added. If true, the listener would be automatically removed when invoked.
+   * @param {Boolean} [options.passive] A Boolean which, if true, indicates that the function specified 
+   * by listener will never call preventDefault(). If a passive listener does call preventDefault(), 
+   * the user agent will do nothing other than generate a console warning. See Improving scrolling 
+   * performance with passive listeners to learn more.
+   * @param {Boolean} [options.mozSystemGroup] "experimental" A Boolean indicating that the listener 
+   * should be added to the system group. Available only in code running in XBL or in the chrome of the 
+   * Firefox browser.
+   * @returns {void}
+   */
+  function addEventListener(type, listener, options) {
+    eventFunctions[eventFunctions.length] = {
+      type,
+      listener,
+      options
+    };
+    oldEventListener(type, listener, options);
+  }
+
+  for (let prop in props) {
+
+    if (props[prop] === undefined) {
+      return console.error(`invalid value of "${prop}"`);
+    }
+
+    if (prop == 'children' && Array.isArray(props[prop])) {
+      for (let htmlel of props[prop]) {
+        el.appendChild(htmlel);
+      }
+    } else if (prop == 'attr') {
+      for (let p in props[prop]) {
+        el.setAttribute(p, props[prop][p]);
+      }
+    } else if (props[prop].constructor.name === 'Object') {
+      for (let p in props[prop]) {
+        el[prop][p] = props[prop][p];
+      }
+    } else el[prop] = props[prop];
+  }
+
+  /**
+   * @function
+   * @param {HTMLElement | HTMLAllCollection | HTMLElement[]} nodes
+   */
+  el.append = function (nodes) {
+    nodes = Array.isArray(nodes) ? nodes : [nodes];
+    for (let i = 0; i < nodes.length; ++i) {
+      el.appendChild(nodes[i]);
+    }
+  }
+
+  if (props.children) {
+    el.append(props.children);
+  }
+
+  el.bubble = function createBubble() {
+    bubble(el);
+  }
+
+  return el;
+}
+
+/**
+ * get first mathing element from DOM
+ * @param {String} selector CSS selector 
+ * @returns {HTMLElement}
+ */
+function get(selector) {
+  return document.querySelector(selector);
+}
+
+/**
+ * get all matching element from DOM
+ * @param {String} selector CSS selector
+ * @returns {HTMLElement[]}
+ */
+function getAll(selector) {
+  return document.querySelectorAll(selector);
+}
+
+/**
+ * 
+ * @param {element} el 
+ */
+function bubble(el) {
+  let bubble = create('i', {
+    className: 'bubble'
+  });
+
+  el.addEventListener('click', bubbles);
+
+  function bubbles(e) {
+    let elClient = el.getBoundingClientRect();
+    bubble.classList.add('animate');
+    el.classList.add('bubbling');
+    bubble.style.height = elClient.width + 'px';
+    bubble.style.width = elClient.width + 'px';
+    bubble.style.top = (e.clientY - elClient.top - elClient.width / 2) + 'px';
+    bubble.style.left = (e.clientX - elClient.left - elClient.width / 2) + 'px';
+
+    setTimeout(function assignProps() {
+      el.removeEvents();
+      el.appendChild(bubble);
+    }, 0);
+
+
+    setTimeout(function removeBubble() {
+      bubble.classList.remove('animate');
+      el.classList.remove('bubbling');
+      el.assignEvents();
+      el.removeChild(bubble);
+    }, 580);
+  }
+}
+
+/**
+ * 
+ * @param {HTMLInputElement} props 
+ * @returns {HTMLInputElement}
+ */
+function input(props = {}) {
+  if (!props.type) props.type = 'text';
+  return create('input', props);
+}
+
+/**
+ * 
+ * @param {HTMLSpanElement} props 
+ * @returns {HTMLSpanElement} 
+ */
+function span(props = {}) {
+  return create('span', props);
+}
+
+/**
+ * 
+ * @param {String} text 
+ * @param {HTMLButtonElement} [props] 
+ * @returns {HTMLButtonElement} 
+ */
+function button(text = '', props = {}) {
+  if (text) {
+    props.textContent = text;
+  }
+  let button = create('span', props);
+  button.bubble();
+
+  return button;
+}
+/**
+ * 
+ * @param {HTMLDivElement} props 
+ * @returns {HTMLDivElement} 
+ */
+function div(props = {}) {
+  return create('div', props);
+}
+/**
+ * 
+ * @param {String} src 
+ * @param {String} alt 
+ * @param {HTMLImageElement} props 
+ * @returns {HTMLImageElement} 
+ */
+function img(src = '', alt = '', props = {}) {
+  props.src = src;
+  props.alt = alt;
+  return create('img', props);
+}
+/**
+ * 
+ * @param {String} href 
+ * @param {Node} child 
+ * @param {HTMLAnchorElement} props 
+ * @returns {HTMLAnchorElement} 
+ */
+function a(href = '', child = null, props = {}) {
+  props.href = href;
+  if (child) {
+    props.children = [child];
+  }
+  return create('a', props);
+}
+
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rangeSlider", function() { return rangeSlider; });
+/* harmony import */ var _html__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(18);
+
+/**
+ * @callback onchange
+ * @param {Number} value 
+ */
+
+/**
+ * 
+ * @typedef slider
+ * @property {onchange} onchange 
+ * @property {function():Number} value 
+ * @property {function(Number):void} setvalue 
+ */
+
+/**
+ * 
+ * @param {Object} params 
+ * @param {Number} params.min 
+ * @param {Number} params.max 
+ * @param {Number} [params.step] 
+ * @param {Number} [params.value ]
+ * @param {onchange} [params.onchange] 
+ * @param {string} [params.size] 
+ * @returns {slider & HTMLElement}
+ */
+function rangeSlider(params = {}) {
+
+
+  let mainWrapper = _html__WEBPACK_IMPORTED_MODULE_0__["div"]({
+    role: 'input',
+    tabIndex: 0,
+    className: 'rangeSlider-wrapper',
+    attr: {
+      'data-value': 0
+    }
+  });
+  let btn = _html__WEBPACK_IMPORTED_MODULE_0__["span"]({
+    className: 'rangeSlider-button'
+  });
+
+  let min = params.min || 0;
+  let max = params.max || 100;
+  let step = params.step || 1;
+  let diff = max - min;
+  let width = 0;
+  let tmout = null;
+
+  mainWrapper.value = params.value || min;
+
+  if (params.size) {
+    mainWrapper.classList.add(params.size);
+  }
+  if (params.value) {
+    setTimeout(() => {
+      setValue(params.value);
+    }, 0);
+  }
+
+  mainWrapper.addEventListener('mousedown', onmousedown);
+  mainWrapper.addEventListener('focus', makeActive);
+  mainWrapper.addEventListener('touchstart', onmousedown);
+
+  function makeActive() {
+    mainWrapper.classList.add('active');
+    mainWrapper.onblur = removeActive;
+  }
+
+  function removeActive() {
+    mainWrapper.classList.remove('active');
+    mainWrapper.onblur = null;
+  }
+
+  /**
+   * 
+   * @param {MouseEvent} e 
+   */
+  function onmousedown(e) {
+    mainWrapper.focus();
+    document.onmousemove = document.ontouchmove = onmousemove;
+    document.onmouseup = document.ontouchend = onmouseup;
+
+    onmousemove(e);
+  }
+
+  /**
+   * 
+   * @param {MouseEvent | TouchEvent} e 
+   */
+  function onmousemove(e) {
+    let x = e.clientX || e.touches[0].clientX;
+    let wrapperX = mainWrapper.getBoundingClientRect().x;
+    width = mainWrapper.offsetWidth;
+
+    x -= wrapperX;
+
+    if (x <= width && x >= 0) {
+      calculateValue(x);
+    } else if (mainWrapper.value !== max && x > width) {
+      setValue(max);
+    } else if (mainWrapper.value !== min && x < 0) {
+      setValue(min);
+    }
+  }
+
+  function onmouseup() {
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+
+
+
+  /**
+   * 
+   * @param {Number} x 
+   */
+  function calculateValue(x) {
+    let value = x / width * diff;
+    value += min;
+
+    setValue(value);
+  }
+
+  /**
+   * 
+   * @param {Number} value 
+   */
+  function setValue(value) {
+
+    if (value > max) {
+      value = max;
+    } else if (value < min) {
+      value = min;
+    }
+
+    value = parseFloat(value);
+    if (tmout) clearTimeout(tmout);
+    makeActive();
+    width = mainWrapper.offsetWidth;
+
+    let remainder = value % step;
+    if (remainder >= step / 2) {
+      let tmp = value;
+      tmp += (step - remainder);
+
+      if (tmp > max) {
+        value -= remainder
+      } else {
+        value = tmp;
+      }
+    } else {
+      value -= remainder;
+    }
+
+    if (mainWrapper.onchange) {
+      mainWrapper.onchange(value);
+    }
+    mainWrapper.value = value;
+    btn.setAttribute('data-value', (value + '').substr(0, 4));
+
+    let x = (value - min) / diff;
+    x *= width;
+
+    btn.style.transform = `translate3d(${x}px, 0, 0)`;
+
+    tmout = setTimeout(() => {
+      removeActive();
+    }, 1000);
+  }
+
+  mainWrapper.setValue = setValue;
+  mainWrapper.appendChild(btn);
+
+  return mainWrapper;
+}
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toolTip", function() { return toolTip; });
+/* harmony import */ var _html__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(18);
+
+
+/**
+ * 
+ * @param {Object} opts 
+ * @param {String} opts.title 
+ * @param {element} opts.element 
+ * @param {String} opts.direction 
+ * @param {Boolean} opts.watchChange
+ */
+function toolTip(opts) {
+  if (!opts.element) return console.error('element is undefined');
+  if (!opts.direction) opts.direction = 'left';
+  let title = opts.title || opts.element.getAttribute('title') || opts.element.getAttribute('data-title') || '';
+  let toolTip = _html__WEBPACK_IMPORTED_MODULE_0__["create"]('div', {
+    className: 'toolTip'
+  });
+  let toolTipPointer = _html__WEBPACK_IMPORTED_MODULE_0__["create"]('span', {
+    className: 'toolTip-pointer'
+  });
+  let wrapper = _html__WEBPACK_IMPORTED_MODULE_0__["create"]('div', {
+    className: 'toolTip-wrapper',
+    attr: {
+      "data-direction": opts.direction
+    }
+  });
+  let text = _html__WEBPACK_IMPORTED_MODULE_0__["create"]('span', {
+    textContent: title,
+    className: 'text'
+  });
+  /**
+   * @type {MutationObserver}
+   */
+  let observer;
+
+  toolTip.appendChild(toolTipPointer);
+  toolTip.appendChild(text);
+  wrapper.appendChild(toolTip);
+
+  opts.element.onmouseenter = mouseEnter;
+  opts.element.onmouseleave = mouseLeave;
+
+
+  function mouseEnter() {
+
+    let elClient = opts.element.getBoundingClientRect();
+
+    if (opts.direction) {
+      if (opts.direction === 'left') {
+        wrapper.style.left = elClient.left + 'px';
+        wrapper.style.top = elClient.top + elClient.height / 2 + 'px';
+        toolTipPointer.style.right = `0`;
+        toolTipPointer.style.top = `50%`;
+        toolTipPointer.style.transform = 'translate3d(50%, -50%, 0) rotate(45deg)';
+        wrapper.style.transform = 'translate3d(-100%, -50%, 0px)';
+      }
+      if (opts.direction === 'right') {
+        wrapper.style.left = elClient.right + 'px';
+        wrapper.style.top = elClient.top + elClient.height / 2 + 'px';
+        toolTipPointer.style.left = `0`;
+        toolTipPointer.style.top = `50%`;
+        toolTipPointer.style.transform = 'translate3d(-50%, -50%, 0) rotate(45deg)';
+        wrapper.style.transform = 'translate3d(0%, -50%, 0px)';
+      }
+      if (opts.direction === 'top') {
+        wrapper.style.left = elClient.left + elClient.width / 2 + 'px';
+        wrapper.style.top = elClient.top + 'px';
+        toolTipPointer.style.left = `50%`;
+        toolTipPointer.style.bottom = `0`;
+        toolTipPointer.style.transform = 'translate3d(-50%, 50%, 0) rotate(45deg)';
+        wrapper.style.transform = 'translate3d(-50%, -100%, 0px)';
+      }
+      if (opts.direction === 'bottom') {
+        wrapper.style.left = elClient.left + elClient.width / 2 + 'px';
+        wrapper.style.top = elClient.bottom + 'px';
+        toolTipPointer.style.left = `50%`;
+        toolTipPointer.style.top = `0`;
+        toolTipPointer.style.transform = 'translate3d(-50%, -50%, 0) rotate(45deg)';
+        wrapper.style.transform = 'translate3d(-50%, 0%, 0px)';
+      }
+    }
+
+    if (opts.watchChange) {
+      observer = new MutationObserver(function (changes, observer) {
+        for (let change of changes) {
+          if (change.type === 'attributes') {
+            text.textContent = opts.element.getAttribute('title') || opts.element.getAttribute('data-title');
+          }
+        }
+      });
+      observer.observe(opts.element, {
+        attributes: true
+      });
+    }
+
+    document.body.appendChild(wrapper);
+  }
+
+  function mouseLeave() {
+    if (!toolTip.parentElement) return;
+    document.body.removeChild(wrapper);
+    if (opts.watchChange && observer) {
+      observer.disconnect;
+    }
+  }
+
+  opts.element.removeAttribute('title');
+
+}
+
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toggler", function() { return toggler; });
+/* harmony import */ var _html__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(18);
+
+/**
+ * @callback onchange
+ * @param {Boolean} value 
+ */
+
+/**
+ * 
+ * @typedef toggler
+ * @property {onchange} onchange 
+ * @property {function():Boolean} value 
+ * @property {function(Boolean):void} setvalue 
+ */
+
+/**
+ * 
+ * @param {Object} params 
+ * @param {Boolean} [params.value] 
+ * @param {onchange} [params.onchange] 
+ * @param {Number} [params.size]
+ * @param {string} [params.valType='bool'] possible value 'bool' or ''on/off'
+ * @returns {toggler & HTMLElement}
+ */
+
+function toggler(params = {}) {
+
+  let checkbox = _html__WEBPACK_IMPORTED_MODULE_0__["input"]({
+    type: 'checkbox',
+    style: {
+      display: 'none'
+    }
+  });
+  let btn = _html__WEBPACK_IMPORTED_MODULE_0__["span"]({
+    className: 'toggler_btn'
+  });
+  let mainWrapper = _html__WEBPACK_IMPORTED_MODULE_0__["create"]('label', {
+    tabIndex: 0,
+    role: 'input',
+    className: 'toggler-wrapper',
+    children: [
+      checkbox,
+      btn
+    ]
+  });
+
+  if (params.onchange) {
+    mainWrapper.onchange = params.onchange;
+  }
+  if (params.value !== undefined) {
+    if (params.value === true || params.value === 'on') {
+      checkbox.checked = true;
+    }
+  }
+  if (params.size) {
+    let h = params.size;
+    let w = h * 2;
+
+    mainWrapper.style.width = w + 'px';
+    mainWrapper.style.height = h + 'px';
+    mainWrapper.style.borderRadius = h / 2 + 'px';
+    btn.style.height = h + 'px';
+    btn.style.width = h + 'px';
+  }
+
+  checkbox.onchange = function () {
+    if (params.valType === 'on/off') {
+      if (checkbox.checked) {
+        mainWrapper.value = 'on';
+      } else {
+        mainWrapper.value = 'off';
+      }
+    } else {
+      mainWrapper.value = checkbox.checked;
+    }
+  };
+
+  mainWrapper.setvalue = function (value) {
+    value = !!value;
+
+    checkbox.checked = value;
+  }
+
+
+  return mainWrapper;
+}
+
+/***/ }),
+/* 22 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toolsContainer", function() { return toolsContainer; });
-/* harmony import */ var html_element_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(12);
-/* harmony import */ var _freeContainer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
-/* harmony import */ var _contextmenu__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(19);
+/* harmony import */ var _freeContainer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(11);
+/* harmony import */ var _contextmenu__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(23);
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+// import * as html from 'html-element-js';
 
 
 
+var html = __webpack_require__(12)["default"];
 /**
  * @typedef {Object} tools
  * @property {HTMLElement} addPage
@@ -33591,10 +34187,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  */
 
 /**
+ * @typedef {Object} objectSettings
+ * @property {HTMLInputElement} opacity
+ * @property {HTMLSpanElement} dropShadow
+ * @property {HTMLSpanElement} color
+ * @property {HTMLInputElement} offsetX
+ * @property {HTMLInputElement} offsetY
+ * @property {HTMLInputElement} blur
+ */
+
+/**
  * @typedef {Object} toolsContainer
  * @property {tools} tools
  * @property {pageSettings} pageSettings
  * @property {textSettings} textSettings
+ * @property {objectSettings} objectSettings
  */
 
 /**
@@ -33602,18 +34209,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @returns {toolsContainer}
  */
 
+
 function toolsContainer() {
   /**
    * @type {HTMLDivElement}
    */
   var root = CE_wrapper;
-  var wrapper = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('div', {
+  var wrapper = html.create('div', {
     id: 'CE_tools-wrapper'
   });
-  var containerWrapper = html_element_js__WEBPACK_IMPORTED_MODULE_0__["div"]({
+  var containerWrapper = html.div({
     id: 'CE_container-wrapper'
   });
-  var container = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('div', {
+  var container = html.create('div', {
     id: 'CE_tools-container'
   });
   var mainTools = {
@@ -33663,50 +34271,73 @@ function toolsContainer() {
     strokeColor: null
   };
   var page = {
-    pageName: html_element_js__WEBPACK_IMPORTED_MODULE_0__["input"]({
+    pageName: html.input({
       className: 'CE_tool',
       type: 'text',
       value: 'page-1',
       placeholder: 'page name'
     }),
-    pageHeight: html_element_js__WEBPACK_IMPORTED_MODULE_0__["input"]({
+    pageHeight: html.input({
       className: 'CE_tool',
       type: 'number',
       value: '500',
       placeholder: 'h'
     }),
-    pageWidth: html_element_js__WEBPACK_IMPORTED_MODULE_0__["input"]({
+    pageWidth: html.input({
       className: 'CE_tool',
       type: 'number',
       value: '500',
       placeholder: 'w'
     }),
-    addPage: html_element_js__WEBPACK_IMPORTED_MODULE_0__["button"](null, {
+    addPage: html.button(null, {
       className: 'CE_tool CE_btn',
       textContent: 'add new page'
     })
   };
   var object = {
-    /**
-     * @type {htmlSlider}
-     */
-    opacity: null
+    opacity: html.rangeSlider({
+      min: 0,
+      max: 1,
+      value: 1,
+      step: 0.01
+    }),
+    dropShadow: html.toggler({
+      size: 20
+    }),
+    offsetX: html.input({
+      type: 'number',
+      placeholder: 'x',
+      value: 0
+    }),
+    offsetY: html.input({
+      type: 'number',
+      placeholder: 'y',
+      value: 0
+    }),
+    blur: html.input({
+      type: 'number',
+      placeholder: 'blur',
+      value: 0
+    }),
+    color: html.span({
+      className: 'CE_icon backgroundColor'
+    })
   };
   var textOptions = {
-    fontFamily: html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('select', {
+    fontFamily: html.create('select', {
       className: 'CE_tool'
     }),
-    fontWeight: html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('select', {
+    fontWeight: html.create('select', {
       className: 'CE_tool'
     }),
-    fontSize: html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('label', {
+    fontSize: html.create('label', {
       className: 'CE_inline_input CE_tool',
-      children: [icon('font-size'), html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('input', {
+      children: [icon('font-size'), html.create('input', {
         type: 'number',
         value: 40
       })]
     }),
-    addText: html_element_js__WEBPACK_IMPORTED_MODULE_0__["button"](null, {
+    addText: html.button(null, {
       className: 'CE_tool CE_btn',
       textContent: 'add text'
     })
@@ -33733,9 +34364,9 @@ function toolsContainer() {
     triangle: icon('triangle', 'Add triangle')
   };
   var imageOptions = {
-    openImage: html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('label', {
+    openImage: html.create('label', {
       className: 'CE_icon_text',
-      children: [icon('image', 'Open an image'), html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('input', {
+      children: [icon('image', 'Open an image'), html.create('input', {
         type: 'file',
         accept: 'image/x-png, image/jpeg',
         style: {
@@ -33745,8 +34376,8 @@ function toolsContainer() {
     }),
     loadSVG: icon('image1', 'Load SVG file')
   };
-  var cm_shapes = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_2__["contextMenu"])(Object.values(shapes));
-  var cm_imageOptions = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_2__["contextMenu"])(Object.values(imageOptions));
+  var cm_shapes = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_1__["contextMenu"])(Object.values(shapes));
+  var cm_imageOptions = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_1__["contextMenu"])(Object.values(imageOptions));
   var defaultFontFamilies = ['Arial', 'Helvetica', 'Courier New', 'Courier', 'Times New Roman', 'Times'];
   var defaultFontWeight = ['lighter', 'normal', 'bold', 'bolder', 100, 200, 300, 400, 500, 600, 700, 800, 900];
   init();
@@ -33756,16 +34387,15 @@ function toolsContainer() {
     arrayToOptions(defaultFontWeight, textOptions.fontWeight);
     iconsFromObject(mainTools, textStyle);
     mainTools.selection.classList.add('active');
-    var textStyleContainer = html_element_js__WEBPACK_IMPORTED_MODULE_0__["div"]({
+    var textStyleContainer = html.div({
       className: 'CE_tool CE_row',
       children: Object.values(textStyle)
     });
-    var textOptionsAr = Object.values(textOptions);
-    textOptionsAr.push(textStyleContainer);
     mainTools.page.addEventListener('click', pageonclick);
     mainTools.text.addEventListener('click', textonclick);
     mainTools.shapes.addEventListener('click', cm_shapes.show);
     mainTools.image.addEventListener('click', cm_imageOptions.show);
+    mainTools.object.addEventListener('click', objectonclick);
     mainTools.hand.addEventListener('click', updateActiveTool);
     mainTools.selection.addEventListener('click', updateActiveTool);
     wrapper.append(container);
@@ -33774,11 +34404,11 @@ function toolsContainer() {
     root.appendChild(wrapper);
 
     function pageonclick() {
-      var dimension = html_element_js__WEBPACK_IMPORTED_MODULE_0__["div"]({
+      var dimension = html.div({
         className: 'CE_inline_input CE_tool',
-        children: [html_element_js__WEBPACK_IMPORTED_MODULE_0__["span"]({
+        children: [html.span({
           textContent: 'w: '
-        }), page.pageWidth, html_element_js__WEBPACK_IMPORTED_MODULE_0__["span"]({
+        }), page.pageWidth, html.span({
           textContent: 'h: '
         }), page.pageHeight]
       });
@@ -33786,7 +34416,49 @@ function toolsContainer() {
     }
 
     function textonclick() {
+      var textOptionsAr = Object.values(textOptions);
+      textOptionsAr.push(textStyleContainer);
       newContainer.bind(this)('Text', textOptionsAr, 'CE_col');
+    }
+
+    function objectonclick() {
+      var objectSettingsAr = [];
+      objectSettingsAr.push(html.div({
+        className: 'CE_tool',
+        children: [html.span({
+          textContent: 'Opacity'
+        }), object.opacity]
+      }));
+      objectSettingsAr.push(html.div({
+        className: 'CE_tool CE_dropshadow-tool',
+        children: [html.span({
+          textContent: 'Drop shadow'
+        }), html.div({
+          className: 'CE_dropshadow-controls',
+          children: [object.dropShadow]
+        }), html.div({
+          className: 'CE_dropshadow-controls',
+          children: [html.create('small', {
+            textContent: 'Set Color'
+          }), object.color]
+        }), html.div({
+          className: 'CE_dropshadow-controls',
+          children: [html.create('small', {
+            textContent: 'Set axis'
+          }), html.div({
+            children: [object.offsetX, object.offsetY]
+          })]
+        }), html.div({
+          className: 'CE_dropshadow-controls',
+          children: [html.create('small', {
+            textContent: 'Set blur'
+          }), html.div({
+            children: [object.blur]
+          })]
+        })]
+      }));
+      newContainer.bind(this)('Object', objectSettingsAr, 'CE_col');
+      object.opacity.setValue(object.opacity.value);
     }
 
     function updateActiveTool() {
@@ -33794,7 +34466,7 @@ function toolsContainer() {
        * @type {HTMLElement}
        */
       var el = this;
-      var activeel = html_element_js__WEBPACK_IMPORTED_MODULE_0__["get"]('.CE_icon.active');
+      var activeel = html.get('.CE_icon.active');
       if (activeel) activeel.classList.remove('active');
       el.classList.add('active');
     }
@@ -33804,7 +34476,7 @@ function toolsContainer() {
     var _this = this;
 
     if (this && this.style) this.style.pointerEvents = 'none';
-    var container = Object(_freeContainer__WEBPACK_IMPORTED_MODULE_1__["freeContainer"])({
+    var container = Object(_freeContainer__WEBPACK_IMPORTED_MODULE_0__["freeContainer"])({
       parentElement: containerWrapper,
       drop: wrapper
     });
@@ -33837,7 +34509,7 @@ function toolsContainer() {
     try {
       for (var _iterator = options[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
         var option = _step.value;
-        var optionElement = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('option', {
+        var optionElement = html.create('option', {
           textContent: option,
           value: option
         });
@@ -33868,18 +34540,18 @@ function toolsContainer() {
 
   function icon(iconname, text, pos) {
     if (text && pos) {
-      return html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('span', {
+      return html.create('span', {
         textContent: text,
         children: [icon(iconname)]
       });
     } else if (text) {
-      var el = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('span', {
+      var el = html.create('span', {
         children: [icon(iconname)]
       });
       el.appendChild(document.createTextNode(text));
       return el;
     } else {
-      return html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('span', {
+      return html.create('span', {
         className: 'CE_tool CE_icon ' + iconname
       });
     }
@@ -33923,14 +34595,13 @@ function toolsContainer() {
 }
 
 /***/ }),
-/* 19 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "contextMenu", function() { return contextMenu; });
-/* harmony import */ var html_element_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(12);
-
+var html = __webpack_require__(12)["default"];
 /**
  * 
  * @param {Object} [opts] 
@@ -33939,19 +34610,20 @@ __webpack_require__.r(__webpack_exports__);
  * @param {Number} [opts.y] y position
  */
 
+
 function contextMenu() {
   var children = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
   var x = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
   var y = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-  var cm = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('div', {
+  var cm = html.create('div', {
     className: 'CE_contextmenu',
     oncontextmenu: function oncontextmenu() {
       return false;
     }
   });
-  var mask = html_element_js__WEBPACK_IMPORTED_MODULE_0__["create"]('span', {
+  var mask = html.create('span', {
     className: 'CE_mask',
-    oncontextmenu: show,
+    oncontextmenu: hide,
     onclick: hide
   });
   var position = {
@@ -34084,76 +34756,6 @@ function contextMenu() {
 }
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(21);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(16)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(15)(false);
-// Module
-exports.push([module.i, "#CE_wrapper {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  position: relative;\n  background-color: #fcfcfc;\n}\n\n#CE_wrapper .CE_click-catch-mask {\n  z-index: 0;\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  width: 100%;\n}\n\n#CE_wrapper #CE_tools-wrapper {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: row wrap;\n          flex-flow: row wrap;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  padding: 5px;\n  margin: 0;\n  background-color: #584e53;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column wrap;\n          flex-flow: column wrap;\n  padding-top: 5px;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper > .CE_freeContainer_wrapper {\n  position: static;\n  margin: 0 0 5px 5px;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column wrap;\n          flex-flow: column wrap;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > * {\n  background-color: #363134;\n  color: white;\n  height: 40px;\n  width: 40px;\n  margin-top: 5px;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *:hover {\n  background-color: #222122;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.object::before {\n  content: \"\\e921\";\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.backgroundColor {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  padding: 10px;\n  background-color: #ccf;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.strokeColor {\n  border: solid 4px #ccf;\n}\n\n#CE_wrapper #CE_canvasContainer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  z-index: 1;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container:not(:first-child) {\n  margin-left: 30px;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container {\n  margin: 15px;\n  -webkit-box-shadow: 2px 2px 1px 2px #0f0f0f;\n          box-shadow: 2px 2px 1px 2px #0f0f0f;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container.active {\n  -webkit-box-shadow: 2px 2px 1px 2px #250a6e;\n          box-shadow: 2px 2px 1px 2px #250a6e;\n}\n\n.CE_icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  width: 30px;\n  background: transparent;\n  border: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  font-size: 1em;\n}\n\n.CE_icon:active {\n  outline: none;\n  border: none;\n  -webkit-transform: scale(0.85);\n          transform: scale(0.85);\n}\n\n.CE_icon:focus {\n  outline: none;\n  border: solid 1px rgba(0, 0, 255, .3);\n}\n\n.CE_icon.active {\n  background-color: rgba(0, 0, 255, .3) !important;\n}\n\n.CE_btn {\n  height: 40px;\n  border: none;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  background-color: #68f;\n  color: white;\n  font-size: 1em;\n  text-transform: uppercase;\n}\n\n.CE_mask {\n  display: block;\n  position: fixed;\n  left: 0;\n  top: 0;\n  height: 100vh;\n  width: 100vw;\n  z-index: 999;\n}\n\n.CE_highlight {\n  position: relative;\n}\n\n.CE_highlight::after {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(0, 0, 0, .3);\n  border: solid 4px #dada8e;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}", ""]);
-
-
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(23);
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(16)(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(15)(false);
-// Module
-exports.push([module.i, ".CE_freeContainer_wrapper {\n  position: absolute;\n  min-height: 40px;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  left: 0;\n  top: 0;\n  border-radius: 2px;\n  overflow: hidden;\n  -webkit-box-shadow: 0 0 4px #313163;\n          box-shadow: 0 0 4px #313163;\n  background-color: white;\n}\n\n.CE_freeContainer_wrapper * {\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n\n.CE_freeContainer_wrapper > .CE_controls {\n  height: 30px;\n  width: 100%;\n  background-color: #97f;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n.CE_freeContainer_wrapper > .CE_controls.grab {\n  cursor: grab !important;\n  cursor: -webkit-grab !important;\n}\n\n.CE_freeContainer_wrapper > .CE_controls.grabbing {\n  cursor: grabbing !important;\n  cursor: -webkit-grabbing !important;\n}\n\n.CE_freeContainer_wrapper > .CE_controls > .CE_mover {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding-left: 5px;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  height: 100%;\n}\n\n.CE_freeContainer_wrapper > .CE_controls > .CE_mover::before {\n  color: white;\n  content: attr(data-title);\n}\n\n.CE_freeContainer_wrapper > .CE_controls .CE_icon {\n  color: white;\n}\n\n.CE_freeContainer_wrapper > .CE_controls .CE_icon:hover {\n  background-color: rgba(255, 255, 255, .2);\n}\n\n.CE_freeContainer_wrapper > .CE_body {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  min-height: 10px;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  padding: 0 5px 5px 5px;\n  min-width: 200px;\n  max-width: 400px;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col, .CE_freeContainer_wrapper > .CE_body.CE_row {\n  padding-top: 5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_saperator {\n  display: block;\n  width: calc(100% + 15px);\n  height: 30px;\n  border-bottom: solid 1px #999;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_saperator::before {\n  content: attr(\"data-title\");\n  font-size: 0.85em;\n}\n\n.CE_freeContainer_wrapper > .CE_body > div {\n  margin-top: 7.5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > div:not(:last-child) {\n  margin-bottom: 7.5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_row, .CE_freeContainer_wrapper > .CE_body.CE_col,\n.CE_freeContainer_wrapper > .CE_body > .CE_row,\n.CE_freeContainer_wrapper > .CE_body > .CE_col {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_row > .CE_tool, .CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool,\n.CE_freeContainer_wrapper > .CE_body > .CE_row > .CE_tool,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_row > .CE_tool.active, .CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool.active,\n.CE_freeContainer_wrapper > .CE_body > .CE_row > .CE_tool.active,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.active {\n  background-color: #5374cc;\n  border-radius: 2px;\n  color: white;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_row,\n.CE_freeContainer_wrapper > .CE_body > .CE_row {\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: row wrap;\n          flex-flow: row wrap;\n  -webkit-box-pack: space-evenly;\n      -ms-flex-pack: space-evenly;\n          justify-content: space-evenly;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_row > .CE_tool:hover,\n.CE_freeContainer_wrapper > .CE_body > .CE_row > .CE_tool:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col,\n.CE_freeContainer_wrapper > .CE_body > .CE_col {\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > select,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > select {\n  height: 40px;\n  max-width: 100%;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool:not(:first-child),\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool:not(:first-child) {\n  margin-top: 10px;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool.CE_icon,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.CE_icon {\n  margin: auto;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool.CE_icon:not(:first-child),\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.CE_icon:not(:first-child) {\n  margin-top: 5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool.CE_icon:hover,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.CE_icon:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > input,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > input {\n  height: 30px;\n  text-indent: 5px;\n  border: solid 1px #999;\n  border-radius: 2px;\n}\n\n.CE_freeContainer_wrapper > .CE_body .CE_bg-color {\n  border-radius: 4px;\n  background: -webkit-gradient(linear, left top, right bottom, from(#99f), color-stop(#9f9), to(#f99));\n  background: linear-gradient(to bottom right, #99f, #9f9, #f99);\n}\n\n.CE_freeContainer_wrapper > .CE_body .CE_stroke-color {\n  border-radius: 4px;\n  border: solid 2px #f97;\n}\n\n.CE_freeContainer_wrapper .CE_inline_input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  height: 30px;\n}\n\n.CE_freeContainer_wrapper .CE_inline_input * {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  text-align: center;\n}\n\n.CE_freeContainer_wrapper .CE_inline_input input {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  width: 40px;\n  height: 100%;\n}", ""]);
-
-
-
-/***/ }),
 /* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -34184,7 +34786,7 @@ if(false) {}
 
 exports = module.exports = __webpack_require__(15)(false);
 // Module
-exports.push([module.i, ".CE_input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  position: relative;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  width: 100%;\n  height: 40px;\n}\n\n.CE_input:hover {\n  background-color: transparent !important;\n}\n\n.CE_input > .CE_fake-label {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding-left: 5px;\n  width: 50%;\n  white-space: nowrap;\n  overflow: hidden;\n}\n\n.CE_input > .CE_fake-label::after {\n  margin-left: 10px;\n  display: inline-block;\n  width: 30px;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  content: attr(data-value);\n}\n\n.CE_input > input {\n  margin: 0 0 0 auto;\n  height: 30px;\n  text-indent: 10px;\n  width: 50%;\n}", ""]);
+exports.push([module.i, "#CE_wrapper {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  position: relative;\n  background-color: #fcfcfc;\n}\n\n#CE_wrapper .CE_click-catch-mask {\n  z-index: 0;\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  width: 100%;\n}\n\n#CE_wrapper #CE_tools-wrapper {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: row;\n          flex-flow: row;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  padding: 5px;\n  margin: 0;\n  background-color: #584e53;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  z-index: 2;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column;\n          flex-flow: column;\n  overflow: auto;\n  padding-top: 5px;\n  padding-left: 5px;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper > .CE_freeContainer_wrapper {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  position: static;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper > .CE_freeContainer_wrapper:not(:first-child) {\n  margin-top: 5px;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column;\n          flex-flow: column;\n  overflow: auto;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > * {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  background-color: #363134;\n  color: white;\n  height: 40px;\n  width: 40px;\n  margin-top: 5px;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *:hover {\n  background-color: #222122;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.object::before {\n  content: \"\\e921\";\n}\n\n#CE_wrapper #CE_canvasContainer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  z-index: 1;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container:not(:first-child) {\n  margin-left: 30px;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container {\n  margin: 15px;\n  -webkit-box-shadow: 2px 2px 1px 2px #0f0f0f;\n          box-shadow: 2px 2px 1px 2px #0f0f0f;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container.active {\n  -webkit-box-shadow: 2px 2px 1px 2px #250a6e;\n          box-shadow: 2px 2px 1px 2px #250a6e;\n}\n\n.CE_icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  width: 30px;\n  background: transparent;\n  border: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  font-size: 1em;\n}\n\n.CE_icon.backgroundColor {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  padding: 10px;\n  background-color: #ccf !important;\n}\n\n.CE_icon.strokeColor {\n  border: solid 4px #ccf !important;\n}\n\n.CE_icon:active {\n  outline: none;\n  border: none;\n  -webkit-transform: scale(0.85);\n          transform: scale(0.85);\n}\n\n.CE_icon:focus {\n  outline: none;\n  border: solid 1px rgba(0, 0, 255, .3);\n}\n\n.CE_icon.active {\n  background-color: rgba(0, 0, 255, .3) !important;\n}\n\n.CE_btn {\n  height: 40px;\n  border: none;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  background-color: #68f;\n  color: white;\n  font-size: 1em;\n  text-transform: uppercase;\n}\n\n.CE_mask {\n  display: block;\n  position: fixed;\n  left: 0;\n  top: 0;\n  height: 100vh;\n  width: 100vw;\n  z-index: 999;\n}\n\n.CE_highlight {\n  position: relative;\n}\n\n.CE_highlight::after {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(0, 0, 0, .3);\n  border: solid 4px #dada8e;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n.rangeSlider-wrapper {\n  margin: 20px 20px !important;\n  width: auto !important;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  margin: 5px;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column wrap;\n          flex-flow: column wrap;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div .CE_icon {\n  margin: 0 10px 0 15px;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div > input {\n  width: 60px;\n  height: 30px;\n  text-align: center;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div > * {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div > *:not(:first-child) {\n  margin-left: 5px;\n}", ""]);
 
 
 
@@ -34219,7 +34821,7 @@ if(false) {}
 
 exports = module.exports = __webpack_require__(15)(false);
 // Module
-exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  background-color: white;\n  -webkit-transform-origin: top;\n          transform-origin: top;\n  z-index: 999;\n  border-radius: 2px;\n  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n          box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n}\n\n.CE_contextmenu > * {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  min-width: 200px;\n  min-height: 30px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 10px;\n  font-size: 0.8em;\n  font-weight: 500;\n  cursor: default;\n}\n\n.CE_contextmenu > *:not(:last-child) {\n  border-bottom: solid 1px rgba(0, 0, 0, .4);\n}\n\n.CE_contextmenu > *:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_contextmenu .CE_icon_text span {\n  width: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: row;\n          flex-direction: row;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.CE_contextmenu .CE_icon_text span .CE_icon {\n  margin: 0;\n  width: 30px;\n}", ""]);
+exports.push([module.i, ".CE_freeContainer_wrapper {\n  position: absolute;\n  min-height: 40px;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  left: 0;\n  top: 0;\n  border-radius: 2px;\n  overflow: hidden;\n  -webkit-box-shadow: 0 0 4px #313163;\n          box-shadow: 0 0 4px #313163;\n  background-color: white;\n  z-index: 3;\n}\n\n.CE_freeContainer_wrapper * {\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n}\n\n.CE_freeContainer_wrapper > .CE_controls {\n  height: 30px;\n  width: 100%;\n  background-color: #97f;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: end;\n      -ms-flex-pack: end;\n          justify-content: flex-end;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n.CE_freeContainer_wrapper > .CE_controls.grab {\n  cursor: grab !important;\n  cursor: -webkit-grab !important;\n}\n\n.CE_freeContainer_wrapper > .CE_controls.grabbing {\n  cursor: grabbing !important;\n  cursor: -webkit-grabbing !important;\n}\n\n.CE_freeContainer_wrapper > .CE_controls > .CE_mover {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding-left: 5px;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  height: 100%;\n}\n\n.CE_freeContainer_wrapper > .CE_controls > .CE_mover::before {\n  color: white;\n  content: attr(data-title);\n}\n\n.CE_freeContainer_wrapper > .CE_controls .CE_icon {\n  color: white;\n}\n\n.CE_freeContainer_wrapper > .CE_controls .CE_icon:hover {\n  background-color: rgba(255, 255, 255, .2);\n}\n\n.CE_freeContainer_wrapper > .CE_body {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  min-height: 10px;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  padding: 0 5px 5px 5px;\n  min-width: 200px;\n  max-width: 400px;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col, .CE_freeContainer_wrapper > .CE_body.CE_row {\n  padding-top: 5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_saperator {\n  display: block;\n  width: calc(100% + 15px);\n  height: 30px;\n  border-bottom: solid 1px #999;\n}\n\n.CE_freeContainer_wrapper > .CE_body > .CE_saperator::before {\n  content: attr(\"data-title\");\n  font-size: 0.85em;\n}\n\n.CE_freeContainer_wrapper > .CE_body > div {\n  margin-top: 7.5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body > div:not(:last-child) {\n  margin-bottom: 7.5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_row, .CE_freeContainer_wrapper > .CE_body.CE_col,\n.CE_freeContainer_wrapper > .CE_body > .CE_row,\n.CE_freeContainer_wrapper > .CE_body > .CE_col {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_row > .CE_tool, .CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool,\n.CE_freeContainer_wrapper > .CE_body > .CE_row > .CE_tool,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_row > .CE_tool.active, .CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool.active,\n.CE_freeContainer_wrapper > .CE_body > .CE_row > .CE_tool.active,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.active {\n  background-color: #5374cc;\n  border-radius: 2px;\n  color: white;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_row,\n.CE_freeContainer_wrapper > .CE_body > .CE_row {\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: row wrap;\n          flex-flow: row wrap;\n  -webkit-box-pack: space-evenly;\n      -ms-flex-pack: space-evenly;\n          justify-content: space-evenly;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_row > .CE_tool:hover,\n.CE_freeContainer_wrapper > .CE_body > .CE_row > .CE_tool:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col,\n.CE_freeContainer_wrapper > .CE_body > .CE_col {\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > select,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > select {\n  height: 40px;\n  max-width: 100%;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool:not(:first-child),\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool:not(:first-child) {\n  margin-top: 10px;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool.CE_icon,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.CE_icon {\n  margin: auto;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool.CE_icon:not(:first-child),\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.CE_icon:not(:first-child) {\n  margin-top: 5px;\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool.CE_icon:hover,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool.CE_icon:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_freeContainer_wrapper > .CE_body.CE_col > input,\n.CE_freeContainer_wrapper > .CE_body > .CE_col > input {\n  height: 30px;\n  text-indent: 5px;\n  border: solid 1px #999;\n  border-radius: 2px;\n}\n\n.CE_freeContainer_wrapper > .CE_body .CE_bg-color {\n  border-radius: 4px;\n  background: -webkit-gradient(linear, left top, right bottom, from(#99f), color-stop(#9f9), to(#f99));\n  background: linear-gradient(to bottom right, #99f, #9f9, #f99);\n}\n\n.CE_freeContainer_wrapper > .CE_body .CE_stroke-color {\n  border-radius: 4px;\n  border: solid 2px #f97;\n}\n\n.CE_freeContainer_wrapper .CE_inline_input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  height: 30px;\n}\n\n.CE_freeContainer_wrapper .CE_inline_input * {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  text-align: center;\n}\n\n.CE_freeContainer_wrapper .CE_inline_input input {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  width: 40px;\n  height: 100%;\n}", ""]);
 
 
 
@@ -34253,13 +34855,83 @@ if(false) {}
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(15)(false);
+// Module
+exports.push([module.i, ".CE_input {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  position: relative;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  width: 100%;\n  height: 40px;\n}\n\n.CE_input:hover {\n  background-color: transparent !important;\n}\n\n.CE_input > .CE_fake-label {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding-left: 5px;\n  width: 50%;\n  white-space: nowrap;\n  overflow: hidden;\n}\n\n.CE_input > .CE_fake-label::after {\n  margin-left: 10px;\n  display: inline-block;\n  width: 30px;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  content: attr(data-value);\n}\n\n.CE_input > input {\n  margin: 0 0 0 auto;\n  height: 30px;\n  text-indent: 10px;\n  width: 50%;\n}", ""]);
+
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(31);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(16)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(15)(false);
+// Module
+exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  background-color: white;\n  -webkit-transform-origin: top;\n          transform-origin: top;\n  z-index: 999;\n  border-radius: 2px;\n  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n          box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n}\n\n.CE_contextmenu > * {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  min-width: 200px;\n  min-height: 30px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 10px;\n  font-size: 0.8em;\n  font-weight: 500;\n  cursor: default;\n}\n\n.CE_contextmenu > *:not(:last-child) {\n  border-bottom: solid 1px rgba(0, 0, 0, .4);\n}\n\n.CE_contextmenu > *:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_contextmenu *[data-expandable] {\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.CE_contextmenu .CE_icon_text span {\n  width: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: row;\n          flex-direction: row;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.CE_contextmenu .CE_icon_text span .CE_icon {\n  margin: 0;\n  width: 30px;\n}", ""]);
+
+
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(33);
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(16)(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(15)(false);
 // Imports
-var urlEscape = __webpack_require__(30);
-var ___CSS_LOADER_URL___0___ = urlEscape(__webpack_require__(31));
-var ___CSS_LOADER_URL___1___ = urlEscape(__webpack_require__(31) + "#iefix");
-var ___CSS_LOADER_URL___2___ = urlEscape(__webpack_require__(32));
-var ___CSS_LOADER_URL___3___ = urlEscape(__webpack_require__(33));
-var ___CSS_LOADER_URL___4___ = urlEscape(__webpack_require__(34) + "#carddesigner");
+var urlEscape = __webpack_require__(34);
+var ___CSS_LOADER_URL___0___ = urlEscape(__webpack_require__(35));
+var ___CSS_LOADER_URL___1___ = urlEscape(__webpack_require__(35) + "#iefix");
+var ___CSS_LOADER_URL___2___ = urlEscape(__webpack_require__(36));
+var ___CSS_LOADER_URL___3___ = urlEscape(__webpack_require__(37));
+var ___CSS_LOADER_URL___4___ = urlEscape(__webpack_require__(38) + "#carddesigner");
 
 // Module
 exports.push([module.i, "@font-face {\n  font-family: 'carddesigner';\n  src: url(" + ___CSS_LOADER_URL___0___ + ");\n  src: url(" + ___CSS_LOADER_URL___1___ + ") format('embedded-opentype'),\n    url(" + ___CSS_LOADER_URL___2___ + ") format('truetype'),\n    url(" + ___CSS_LOADER_URL___3___ + ") format('woff'),\n    url(" + ___CSS_LOADER_URL___4___ + ") format('svg');\n  font-weight: normal;\n  font-style: normal;\n}\n\n.CE_icon {\n  /* use !important to prevent issues with browser extensions that change fonts */\n  font-family: 'carddesigner' !important;\n  font-style: normal;\n  font-weight: normal;\n  -webkit-font-feature-settings: normal;\n          font-feature-settings: normal;\n  font-variant: normal;\n  text-transform: none;\n  line-height: 1;\n\n  /* Better Font Rendering =========== */\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n\n.star:before {\n  content: \"\\e921\";\n}\n\n.layer-add:before {\n  content: \"\\e920\";\n}\n\n.text-single-line:before {\n  content: \"\\e91b\";\n}\n\n.align-center:before {\n  content: \"\\e90c\";\n}\n\n.align-justify:before {\n  content: \"\\e90d\";\n}\n\n.align-left:before {\n  content: \"\\e90e\";\n}\n\n.align-right:before {\n  content: \"\\e90f\";\n}\n\n.bold:before {\n  content: \"\\e91c\";\n}\n\n.circle:before {\n  content: \"\\e91a\";\n}\n\n.crop:before {\n  content: \"\\e910\";\n}\n\n.delete:before {\n  content: \"\\e911\";\n}\n\n.effects:before {\n  content: \"\\e900\";\n}\n\n.hand:before {\n  content: \"\\e912\";\n}\n\n.image:before {\n  content: \"\\e901\";\n}\n\n.italic:before {\n  content: \"\\e91d\";\n}\n\n.layers:before {\n  content: \"\\e902\";\n}\n\n.minus:before {\n  content: \"\\e916\";\n}\n\n.move:before {\n  content: \"\\e903\";\n}\n\n.paragraph:before {\n  content: \"\\e91e\";\n}\n\n.plus:before {\n  content: \"\\e915\";\n}\n\n.rectangle:before {\n  content: \"\\e918\";\n}\n\n.redo:before {\n  content: \"\\e914\";\n}\n\n.select-down:before {\n  content: \"\\e904\";\n}\n\n.selection:before {\n  content: \"\\e905\";\n}\n\n.shapes:before {\n  content: \"\\e906\";\n}\n\n.text:before {\n  content: \"\\e907\";\n}\n\n.times:before {\n  content: \"\\e917\";\n}\n\n.tools:before {\n  content: \"\\e908\";\n}\n\n.triangle:before {\n  content: \"\\e919\";\n}\n\n.underline:before {\n  content: \"\\e91f\";\n}\n\n.undo:before {\n  content: \"\\e913\";\n}\n\n.upload:before {\n  content: \"\\e909\";\n}\n\n.zoom-in:before {\n  content: \"\\e90a\";\n}\n\n.zoom-out:before {\n  content: \"\\e90b\";\n}\n\n.image1:before {\n  content: \"\\e922\";\n}\n\n.page:before {\n  content: \"\\e924\";\n}\n\n.checkbox-unchecked:before {\n  content: \"\\ea53\";\n}\n\n.radio-unchecked:before {\n  content: \"\\ea56\";\n}\n\n.font-size:before {\n  content: \"\\ea61\";\n}\n\n.strikethrough:before {\n  content: \"\\ea65\";\n}", ""]);
@@ -34267,7 +34939,7 @@ exports.push([module.i, "@font-face {\n  font-family: 'carddesigner';\n  src: ur
 
 
 /***/ }),
-/* 30 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34293,31 +34965,31 @@ module.exports = function escape(url, needQuotes) {
 };
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fonts/carddesigner.eot";
 
 /***/ }),
-/* 32 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fonts/carddesigner.ttf";
 
 /***/ }),
-/* 33 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fonts/carddesigner.woff";
 
 /***/ }),
-/* 34 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fonts/carddesigner.svg";
 
 /***/ }),
-/* 35 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!

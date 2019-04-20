@@ -24,8 +24,8 @@
   display: flex;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
-      -ms-flex-flow: row wrap;
-          flex-flow: row wrap;
+      -ms-flex-flow: row;
+          flex-flow: row;
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
@@ -35,6 +35,7 @@
   background-color: #584e53;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
+  z-index: 2;
 }
 
 #CE_wrapper #CE_tools-wrapper #CE_container-wrapper {
@@ -46,14 +47,24 @@
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-      -ms-flex-flow: column wrap;
-          flex-flow: column wrap;
+      -ms-flex-flow: column;
+          flex-flow: column;
+  overflow: auto;
   padding-top: 5px;
+  padding-left: 5px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 #CE_wrapper #CE_tools-wrapper #CE_container-wrapper > .CE_freeContainer_wrapper {
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
   position: static;
-  margin: 0 0 5px 5px;
+}
+
+#CE_wrapper #CE_tools-wrapper #CE_container-wrapper > .CE_freeContainer_wrapper:not(:first-child) {
+  margin-top: 5px;
 }
 
 #CE_wrapper #CE_tools-wrapper #CE_tools-container {
@@ -66,11 +77,14 @@
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-      -ms-flex-flow: column wrap;
-          flex-flow: column wrap;
+      -ms-flex-flow: column;
+          flex-flow: column;
+  overflow: auto;
 }
 
 #CE_wrapper #CE_tools-wrapper #CE_tools-container > * {
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
   background-color: #363134;
   color: white;
   height: 40px;
@@ -86,17 +100,6 @@
 
 #CE_wrapper #CE_tools-wrapper #CE_tools-container > *.object::before {
   content: "\e921";
-}
-
-#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.backgroundColor {
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  padding: 10px;
-  background-color: #ccf;
-}
-
-#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.strokeColor {
-  border: solid 4px #ccf;
 }
 
 #CE_wrapper #CE_canvasContainer {
@@ -141,6 +144,17 @@
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   font-size: 1em;
+}
+
+.CE_icon.backgroundColor {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  background-color: #ccf !important;
+}
+
+.CE_icon.strokeColor {
+  border: solid 4px #ccf !important;
 }
 
 .CE_icon:active {
@@ -202,5 +216,48 @@
   border: solid 4px #dada8e;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
+}
+
+.rangeSlider-wrapper {
+  margin: 20px 20px !important;
+  width: auto !important;
+}
+
+.CE_dropshadow-tool .CE_dropshadow-controls {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 5px;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: column wrap;
+          flex-flow: column wrap;
+}
+
+.CE_dropshadow-tool .CE_dropshadow-controls > div {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.CE_dropshadow-tool .CE_dropshadow-controls > div .CE_icon {
+  margin: 0 10px 0 15px;
+}
+
+.CE_dropshadow-tool .CE_dropshadow-controls > div > input {
+  width: 60px;
+  height: 30px;
+  text-align: center;
+}
+
+.CE_dropshadow-tool .CE_dropshadow-controls > div > * {
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.CE_dropshadow-tool .CE_dropshadow-controls > div > *:not(:first-child) {
+  margin-left: 5px;
 }
 /*# sourceMappingURL=main.css.map */

@@ -1,4 +1,4 @@
-import * as html from 'html-element-js';
+const html = require('html-element-js').default;
 
 /**
  * @typedef {Object} freeContainer

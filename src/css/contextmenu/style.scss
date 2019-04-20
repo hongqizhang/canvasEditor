@@ -31,6 +31,10 @@
     }
   }
 
+  *[data-expandable] {
+    justify-content: space-between;
+  }
+
   .CE_icon_text {
     span {
       width: 100%;

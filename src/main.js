@@ -16,7 +16,7 @@ import {
   contextMenu
 } from './components/contextmenu';
 
-import * as html from 'html-element-js';
+const html = require('html-element-js').default;
 
 /**
  * 
@@ -40,18 +40,18 @@ export function CanvasEditor(parentel, opts) {
   let colorPickerContainer = null;
   let colorPicker = null;
   let canvasContextMenuOptions = {
-    background: html.create('span', {
+    background: html.span({
       textContent: 'Background color'
     }),
-    delte: html.create('span', {
+    delte: html.span({
       textContent: 'Delete'
     }),
-    paste: html.create('span', {
+    paste: html.span({
       textContent: 'Paste'
     })
   };
   let objectContextMenuOptions = {
-    arrange: html.create('span', {
+    arrange: html.span({
       textContent: 'Arrange',
       children: [
         html.create('i', {
@@ -65,36 +65,74 @@ export function CanvasEditor(parentel, opts) {
         'data-expandable': 'true'
       }
     }),
-    copy: html.create('span', {
+    align: html.span({
+      textContent: 'Align',
+      children: [
+        html.create('i', {
+          className: 'CE_icon select-down',
+          style: {
+            transform: 'rotate(-90deg)'
+          }
+        })
+      ],
+      attr: {
+        'data-expandable': 'true'
+      }
+    }),
+    copy: html.span({
       textContent: 'Copy'
     }),
-    cut: html.create('span', {
+    cut: html.span({
       textContent: 'Cut'
     }),
-    group: html.create('span', {
+    group: html.span({
       textContent: 'Group'
     }),
-    lock: html.create('span', {
+    lock: html.span({
       textContent: 'Lock'
     })
   };
   let arrangeOptions = {
-    bringBackward: html.create('span', {
+    bringBackward: html.span({
       textContent: 'Bring forward'
     }),
-    bringFront: html.create('span', {
+    bringFront: html.span({
       textContent: 'Bring front'
     }),
-    sendBackward: html.create('span', {
+    sendBackward: html.span({
       textContent: 'Send backward'
     }),
-    sendBack: html.create('span', {
+    sendBack: html.span({
       textContent: 'Send back'
     }),
   }
+  let alignOptions = {
+    center: html.span({
+      textContent: 'Center'
+    }),
+    hCenter: html.span({
+      textContent: 'Horizontaly center'
+    }),
+    vCenter: html.span({
+      textContent: 'Verticaly center'
+    }),
+    left: html.span({
+      textContent: 'Left',
+    }),
+    right: html.span({
+      textContent: 'Right',
+    }),
+    top: html.span({
+      textContent: 'Top',
+    }),
+    bottom: html.span({
+      textContent: 'Bottom',
+    })
+  };
   let canvasContextMenu = contextMenu(Object.values(canvasContextMenuOptions));
   let objectContextMenu = contextMenu(Object.values(objectContextMenuOptions));
   let arrangeContextMenu = contextMenu(Object.values(arrangeOptions));
+  let alignContextMenu = contextMenu(Object.values(alignOptions));
 
   let pages = {};
   /**
@@ -430,21 +468,116 @@ export function CanvasEditor(parentel, opts) {
         activeCanvas.page.name = name;
       });
     })();
+
+    (function initObjectSettings() {
+      objectSettings.opacity.onchange = function (value) {
+        let activeObjects = activeCanvas.getActiveObjects();
+        if (activeObjects.length === 0) return;
+        else {
+          for (let object of activeObjects) {
+            object.set('opacity', value);
+          }
+        }
+        activeCanvas.renderAll();
+      }
+
+      objectSettings.dropShadow.onchange = function () {
+        let activeObjects = activeCanvas.getActiveObjects();
+
+        if (activeObjects.length === 0) return;
+
+        for (let object of activeObjects) {
+          if (this.value) {
+            object.setShadow({
+              color: '#000',
+              blur: objectSettings.blur.value,
+              offsetX: objectSettings.offsetX.value,
+              offsetY: objectSettings.offsetY.value
+            });
+          } else {
+            object.setShadow(null);
+          }
+        }
+
+        activeCanvas.renderAll();
+      }
+
+      objectSettings.offsetX.oninput = function () {
+        let activeObjects = activeCanvas.getActiveObjects();
+
+        if (activeObjects.length === 0) return;
+
+        for (let object of activeObjects) {
+          object.shadow.offsetX = this.value;
+        }
+
+        activeCanvas.renderAll();
+      }
+      objectSettings.offsetY.oninput = function () {
+        let activeObjects = activeCanvas.getActiveObjects();
+
+        if (activeObjects.length === 0) return;
+
+        for (let object of activeObjects) {
+          if (!object.shadow) return;
+          object.shadow.offsetY = this.value;
+        }
+
+        activeCanvas.renderAll();
+      }
+
+      objectSettings.blur.oninput = function () {
+        let activeObjects = activeCanvas.getActiveObjects();
+
+        if (activeObjects.length === 0) return;
+
+        for (let object of activeObjects) {
+          if (!object.shadow) return;
+          object.shadow.blur = this.value;
+        }
+
+        activeCanvas.renderAll();
+      }
+
+      objectSettings.color.onclick = function () {
+        colorPickerContainer.setTitle('Color picker - shadow');
+        colorPickerContainer.setVisiblity(true);
+
+        colorPicker.onchange = function (color) {
+          let activeObjects = activeCanvas.getActiveObjects();
+
+          if (activeObjects.length === 0) return;
+
+          for (let object of activeObjects) {
+            if (!object.shadow) return;
+            object.shadow.color = color.rgbhex;
+          }
+
+          activeCanvas.renderAll();
+        }
+      }
+    })();
   }
 
   function initContextMenu() {
-    objectContextMenuOptions.arrange.addEventListener('click', arrangeOnClick);
-    /**
-     * 
-     * @param {MouseEvent} e 
-     */
-    function arrangeOnClick(e) {
+    objectContextMenuOptions.arrange.addEventListener('click', arrangeOnclick);
+    objectContextMenuOptions.align.addEventListener('click', alignOnclick)
+
+    function arrangeOnclick() {
+      showSecondContext.bind(this)(arrangeContextMenu);
+    }
+
+    function alignOnclick() {
+      showSecondContext.bind(this)(alignContextMenu)
+    }
+
+    function showSecondContext(contextMenu) {
       /**
        * @type {HTMLElement}
        */
       let el = this;
       let elClient = el.getBoundingClientRect();
-      arrangeContextMenu.show({
+      contextMenu.show({
         clientX: elClient.right,
         clientY: elClient.top
       });
@@ -562,8 +695,17 @@ export function CanvasEditor(parentel, opts) {
         textSettings.fontSize.value = fontSize;
       }
 
-
-
+      objectSettings.opacity.setValue(activeObject.opacity);
+      if (activeObject.shadow) {
+        objectSettings.offsetX.value = activeObject.shadow.offsetX;
+        objectSettings.offsetY.value = activeObject.shadow.offsetY;
+        objectSettings.blur.value = activeObject.shadow.blur;
+      }
+      if (!activeObject.get('shadow')) {
+        objectSettings.dropShadow.setvalue(false);
+      } else {
+        objectSettings.dropShadow.setvalue(true);
+      }
     }, 10);
   }
 

@@ -44,6 +44,12 @@
   background-color: rgba(0, 0, 0, 0.2);
 }
 
+.CE_contextmenu *[data-expandable] {
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
 .CE_contextmenu .CE_icon_text span {
   width: 100%;
   display: -webkit-box;

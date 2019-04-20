@@ -1,4 +1,4 @@
-import * as html from 'html-element-js';
+const html = require('html-element-js').default;
 
 /**
  * 
@@ -14,7 +14,7 @@ export function contextMenu(children = null, x = 0, y = 0) {
   });
   let mask = html.create('span', {
     className: 'CE_mask',
-    oncontextmenu: show,
+    oncontextmenu: hide,
     onclick: hide
   });
   let position = {

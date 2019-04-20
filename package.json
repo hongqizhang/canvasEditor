@@ -15,7 +15,6 @@
     "a-color-picker": "^1.1.7",
     "canvas": "^2.4.1",
     "fabric": "^2.7.0",
-    "html-element-js": "0.0.21",
     "xmldom": "^0.1.27"
   },
   "devDependencies": {
@@ -27,6 +26,7 @@
     "cssnano": "^4.1.10",
     "exports-loader": "^0.7.0",
     "file-loader": "^3.0.1",
+    "html-element-js": "0.0.219",
     "http-server": "^0.11.1",
     "postcss-cssnext": "^3.1.0",
     "postcss-loader": "^3.0.0",

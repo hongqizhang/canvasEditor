@@ -1,10 +1,14 @@
-import * as html from 'html-element-js';
+// import * as html from 'html-element-js';
+
 import {
   freeContainer
 } from './freeContainer';
 import {
   contextMenu
 } from './contextmenu';
+
+
+const html = require('html-element-js').default;
 
 /**
  * @typedef {Object} tools
@@ -34,10 +38,21 @@ import {
  */
 
 /**
+ * @typedef {Object} objectSettings
+ * @property {HTMLInputElement} opacity
+ * @property {HTMLSpanElement} dropShadow
+ * @property {HTMLSpanElement} color
+ * @property {HTMLInputElement} offsetX
+ * @property {HTMLInputElement} offsetY
+ * @property {HTMLInputElement} blur
+ */
+
+/**
  * @typedef {Object} toolsContainer
  * @property {tools} tools
  * @property {pageSettings} pageSettings
  * @property {textSettings} textSettings
+ * @property {objectSettings} objectSettings
  */
 
 
@@ -122,10 +137,33 @@ export function toolsContainer() {
     }),
   };
   let object = {
-    /**
-     * @type {htmlSlider}
-     */
-    opacity: null
+    opacity: html.rangeSlider({
+      min: 0,
+      max: 1,
+      value: 1,
+      step: 0.01
+    }),
+    dropShadow: html.toggler({
+      size: 20
+    }),
+    offsetX: html.input({
+      type: 'number',
+      placeholder: 'x',
+      value: 0
+    }),
+    offsetY: html.input({
+      type: 'number',
+      placeholder: 'y',
+      value: 0
+    }),
+    blur: html.input({
+      type: 'number',
+      placeholder: 'blur',
+      value: 0
+    }),
+    color: html.span({
+      className: 'CE_icon backgroundColor'
+    })
   }
   let textOptions = {
     fontFamily: html.create('select', {
@@ -204,13 +242,12 @@ export function toolsContainer() {
       className: 'CE_tool CE_row',
       children: Object.values(textStyle)
     });
-    let textOptionsAr = Object.values(textOptions);
-    textOptionsAr.push(textStyleContainer)
 
     mainTools.page.addEventListener('click', pageonclick);
     mainTools.text.addEventListener('click', textonclick);
     mainTools.shapes.addEventListener('click', cm_shapes.show);
     mainTools.image.addEventListener('click', cm_imageOptions.show);
+    mainTools.object.addEventListener('click', objectonclick);
 
     mainTools.hand.addEventListener('click', updateActiveTool);
     mainTools.selection.addEventListener('click', updateActiveTool);
@@ -239,7 +276,78 @@ export function toolsContainer() {
     }
 
     function textonclick() {
+      let textOptionsAr = Object.values(textOptions);
+      textOptionsAr.push(textStyleContainer);
       newContainer.bind(this)('Text', textOptionsAr, 'CE_col');
+    }
+
+    function objectonclick() {
+      let objectSettingsAr = [];
+
+      objectSettingsAr.push(html.div({
+        className: 'CE_tool',
+        children: [
+          html.span({
+            textContent: 'Opacity'
+          }),
+          object.opacity
+        ]
+      }));
+
+      objectSettingsAr.push(html.div({
+        className: 'CE_tool CE_dropshadow-tool',
+        children: [
+          html.span({
+            textContent: 'Drop shadow'
+          }),
+          html.div({
+            className: 'CE_dropshadow-controls',
+            children: [
+              object.dropShadow
+            ]
+          }),
+          html.div({
+            className: 'CE_dropshadow-controls',
+            children: [
+              html.create('small', {
+                textContent: 'Set Color'
+              }),
+              object.color
+            ]
+          }),
+          html.div({
+            className: 'CE_dropshadow-controls',
+            children: [
+              html.create('small', {
+                textContent: 'Set axis'
+              }),
+              html.div({
+                children: [
+                  object.offsetX,
+                  object.offsetY
+                ]
+              })
+            ]
+          }),
+          html.div({
+            className: 'CE_dropshadow-controls',
+            children: [
+              html.create('small', {
+                textContent: 'Set blur'
+              }),
+              html.div({
+                children: [
+                  object.blur
+                ]
+              })
+            ]
+          }),
+        ]
+      }));
+
+      newContainer.bind(this)('Object', objectSettingsAr, 'CE_col');
+
+      object.opacity.setValue(object.opacity.value);
     }
 
     function updateActiveTool() {
