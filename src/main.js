@@ -43,12 +43,15 @@ export function CanvasEditor(parentel, opts) {
     background: html.span({
       textContent: 'Background color'
     }),
-    delte: html.span({
+    delete: html.span({
       textContent: 'Delete'
     }),
     paste: html.span({
       textContent: 'Paste'
-    })
+    }),
+    unlockAll: html.span({
+      textContent: 'Unlock All'
+    }),
   };
   let objectContextMenuOptions = {
     arrange: html.span({
@@ -79,11 +82,14 @@ export function CanvasEditor(parentel, opts) {
         'data-expandable': 'true'
       }
     }),
+    cut: html.span({
+      textContent: 'Cut'
+    }),
     copy: html.span({
       textContent: 'Copy'
     }),
-    cut: html.span({
-      textContent: 'Cut'
+    deleteBtn: html.span({
+      textContent: 'Delete'
     }),
     group: html.span({
       textContent: 'Group'
@@ -93,16 +99,16 @@ export function CanvasEditor(parentel, opts) {
     })
   };
   let arrangeOptions = {
-    bringBackward: html.span({
+    bringForward: html.span({
       textContent: 'Bring forward'
     }),
-    bringFront: html.span({
+    bringToFront: html.span({
       textContent: 'Bring front'
     }),
     sendBackward: html.span({
       textContent: 'Send backward'
     }),
-    sendBack: html.span({
+    sendToBack: html.span({
       textContent: 'Send back'
     }),
   }
@@ -115,26 +121,23 @@ export function CanvasEditor(parentel, opts) {
     }),
     vCenter: html.span({
       textContent: 'Verticaly center'
-    }),
-    left: html.span({
-      textContent: 'Left',
-    }),
-    right: html.span({
-      textContent: 'Right',
-    }),
-    top: html.span({
-      textContent: 'Top',
-    }),
-    bottom: html.span({
-      textContent: 'Bottom',
     })
   };
   let canvasContextMenu = contextMenu(Object.values(canvasContextMenuOptions));
   let objectContextMenu = contextMenu(Object.values(objectContextMenuOptions));
   let arrangeContextMenu = contextMenu(Object.values(arrangeOptions));
   let alignContextMenu = contextMenu(Object.values(alignOptions));
+  /**
+   * @type {fabric.ActiveSelection}
+   */
+  let copiedObject = null;
+  /**
+   * @type {MouseEvent}
+   */
+  let mouseEvent = null;
 
   let pages = {};
+  pages.length = 0;
   /**
    * @type {fabric.Canvas}
    */
@@ -144,6 +147,11 @@ export function CanvasEditor(parentel, opts) {
    * @type {toolsContainer}
    */
   let alltools = null;
+
+  /**
+   * @type {fabric.ActiveSelection[]}
+   */
+  let lockedObjects = [];
 
   init();
 
@@ -230,51 +238,66 @@ export function CanvasEditor(parentel, opts) {
 
     canvasContainer.appendChild(page);
     canvas.initialize(page);
-    canvas.setHeight(500);
-    canvas.setWidth(500);
     canvas.setBackgroundColor('#fff');
+
+    let height = alltools.pageSettings.pageHeight.value;
+    let width = alltools.pageSettings.pageWidth.value;
+    canvas.setHeight(height);
+    canvas.setWidth(width);
 
     let i = canvasContainer.childElementCount;
     let pageName = 'page-' + i;
-    pages[pageName] = {
-      canvas,
+    ++pages.length;
+    canvas.page = {
+      DOMElement: page,
       name: pageName
     };
-    canvas.page = pages[pageName];
+    pages[pageName] = canvas;
 
     canvas.on('mouse:down', updateActiveCanvas);
 
-    if (!activeCanvas) {
-      activeCanvas = canvas;
-    }
-
     let element = canvas.getElement().parentElement;
+    element.setAttribute('data-name', pageName);
     element.addEventListener('contextmenu', canvasContextMenuTrigger);
 
     fixPagesContainerPosition();
-    updateActiveContainer();
+    updateActiveCanvas(canvas);
+  }
 
-    function updateActiveCanvas() {
-      if (activeCanvas === canvas) return;
-      deselectObjects();
-      activeCanvas = canvas;
+  /**
+   * 
+   * @param {fabric.Canvas} canvas 
+   */
+  function updateActiveCanvas(canvas) {
+    canvas = canvas instanceof fabric.Canvas ? canvas : this;
 
-      let height = activeCanvas.getHeight();
-      let width = activeCanvas.getWidth();
-      let pageName = activeCanvas.page.name;
+    if (activeCanvas === canvas) return;
 
-      let pageSettings = alltools.pageSettings;
-
-      pageSettings.pageHeight.value = height;
-      pageSettings.pageWidth.value = width;
-      pageSettings.pageName.value = pageName;
+    if (pages.length === 1) {
+      canvasContextMenuOptions.delete.classList.add('disabled');
+    } else {
+      canvasContextMenuOptions.delete.classList.remove('disabled');
     }
+
+    deselectObjects();
+    updateActiveContainer(canvas);
+    activeCanvas = canvas;
+
+    let height = activeCanvas.getHeight();
+    let width = activeCanvas.getWidth();
+    let pageName = activeCanvas.page.name;
+
+    let pageSettings = alltools.pageSettings;
+
+    pageSettings.pageHeight.value = height;
+    pageSettings.pageWidth.value = width;
+    pageSettings.pageName.value = pageName;
   }
 
   function deselectObjects() {
     if (activeCanvas) {
       activeCanvas.discardActiveObject();
-      activeCanvas.requestRenderAll();
+      activeCanvas.renderAll();
     };
   }
 
@@ -310,10 +333,10 @@ export function CanvasEditor(parentel, opts) {
       borderColor: '#88f',
       cornerSize: 6
     });
+    fabric.Canvas.prototype.preserveObjectStacking = true;
     fabric.Object.prototype.onSelect = objectOnSelect;
-    // fabric.Canvas.prototype.on('mouse:down', canvasContextMenuTrigger);
-    mainWrapper.appendChild(canvasContainer);
     mainWrapper.appendChild(clickCatchMask);
+    mainWrapper.appendChild(canvasContainer);
     parentel.appendChild(mainWrapper);
 
     clickCatchMask.addEventListener('click', deselectObjects);
@@ -323,9 +346,9 @@ export function CanvasEditor(parentel, opts) {
      */
     alltools = toolsContainer();
 
+    addPage();
     initTools();
     initContextMenu();
-    addPage();
     fixPagesContainerPosition();
     window.addEventListener('resize', fixPagesContainerPosition);
     let containerWrapper = html.get('#CE_container-wrapper');
@@ -560,8 +583,22 @@ export function CanvasEditor(parentel, opts) {
   }
 
   function initContextMenu() {
-    objectContextMenuOptions.arrange.addEventListener('click', arrangeOnclick);
-    objectContextMenuOptions.align.addEventListener('click', alignOnclick)
+
+    let {
+      align,
+      arrange,
+      copy,
+      cut,
+      deleteBtn,
+      lock
+    } = objectContextMenuOptions;
+
+    arrange.addEventListener('click', arrangeOnclick);
+    align.addEventListener('click', alignOnclick);
+
+    arrangeContextMenu.itemOnclick = alignContextMenu.itemOnclick = arrangeContextMenu.maskOnclick = alignContextMenu.maskOnclick = function () {
+      objectContextMenu.hide();
+    }
 
     function arrangeOnclick() {
       showSecondContext.bind(this)(arrangeContextMenu);
@@ -582,31 +619,199 @@ export function CanvasEditor(parentel, opts) {
         clientY: elClient.top
       });
     }
+
+
+    canvasContextMenuOptions.delete.addEventListener('click', deleteCanvas);
+    canvasContextMenuOptions.paste.addEventListener('click', pasteObject);
+    canvasContextMenuOptions.unlockAll.addEventListener('click', unlockObjects);
+    canvasContextMenuOptions.background.addEventListener('click', function () {
+      colorPickerContainer.setTitle('Color picker - background');
+      colorPickerContainer.setVisiblity(true);
+      colorPicker.onchange = function (color) {
+        activeCanvas.setBackgroundColor(color.rgbhex, activeCanvas.renderAll.bind(activeCanvas));
+      }
+    });
+
+    copy.addEventListener('click', copyObject);
+    cut.addEventListener('click', cutObject);
+    deleteBtn.addEventListener('click', deleteObject);
+    lock.addEventListener('click', lockObject);
+
+    for (let key in arrangeOptions) {
+      arrangeOptions[key].addEventListener('click', function () {
+        let activeObject = activeCanvas.getActiveObject();
+        activeObject[key]();
+      });
+    }
+
+    for (let key in alignOptions) {
+      alignOptions[key].addEventListener('click', function () {
+        setObjectAlignment(key);
+      });
+    }
+
   }
 
-  /**
-   * 
-   * @param {Object} fabricEvent 
-   * @param {fabric.Object} fabricEvent.target
-   * @param {Object} fabricEvent.pointer
-   * @param {Number} fabricEvent.pointer.x
-   * @param {Number} fabricEvent.pointer.y
-   * @param {MouseEvent} fabricEvent.e
-   *
-  function canvasContextMenuTrigger(fabricEvent) {
-    fabricEvent.e.preventDefault();
-    console.log(activeCanvas);
-  }*/
+  function setObjectAlignment(alignment) {
+    let activeObject = activeCanvas.getActiveObject();
+    let pos = null;
+    switch (alignment) {
+      case 'center':
+        activeCanvas.centerObject(activeObject);
+        break;
+      case 'hCenter':
+        activeCanvas.centerObjectH(activeObject);
+        break;
+      case 'vCenter':
+        activeCanvas.centerObjectV(activeObject);
+        break;
+    }
+    activeCanvas.renderAll();
+  }
 
+  function copyObject() {
+    if (!activeCanvas) return;
+    let activeObject = activeCanvas.getActiveObject();
+    copiedObject = null;
+    activeObject.clone(function (object) {
+      copiedObject = object;
+    });
+  }
+
+  function cutObject() {
+    copyObject();
+    deleteObject();
+  }
+
+  function pasteObject() {
+    if (!activeCanvas) return;
+    if (mouseEvent) {
+      let location = activeCanvas.getPointer(mouseEvent);
+      let pos = new fabric.Point(location.x, location.y);
+      copiedObject.setPositionByOrigin(pos, 'center', 'center');
+      if (copiedObject.type !== 'activeSelection') {
+        activeCanvas.add(copiedObject);
+      } else {
+        activeCanvas.add(...copiedObject.getObjects());
+      }
+    } else {
+      if (copiedObject.type !== 'activeSelection') {
+        activeCanvas.add(copiedObject);
+      } else {
+        activeCanvas.add(...copiedObject.getObjects());
+      }
+    }
+    activeCanvas.setActiveObject(copiedObject);
+    copyObject();
+
+    activeCanvas.renderAll();
+  }
+
+  function deleteCanvas() {
+    if (pages.length === 1) return;
+    let page = activeCanvas.page;
+    activeCanvas.page = null;
+    activeCanvas.dispose();
+    activeCanvas = null;
+    --pages.length;
+    page.DOMElement.parentElement.removeChild(page.DOMElement);
+    delete pages[page.name];
+    for (let key in pages) {
+      if (key !== 'length') {
+        updateActiveCanvas(pages[key]);
+        break;
+      }
+    }
+    fixPagesContainerPosition();
+  }
+
+  function deleteObject() {
+    let activeObject = activeCanvas.getActiveObject();
+    if (activeObject.type === 'activeSelection') {
+      activeCanvas.remove(...activeObject.getObjects());
+    } else {
+      activeCanvas.remove(activeObject);
+    }
+  }
+
+  function lockObject() {
+    let activeObject = activeCanvas.getActiveObject();
+    if (activeObject.type !== 'activeSelection') {
+      lock(activeObject);
+    } else {
+      let objects = activeObject.getObjects();
+      for (let object of objects) {
+        lock(object);
+      }
+    }
+    activeCanvas.discardActiveObject();
+    activeCanvas.renderAll();
+
+    function lock(object) {
+      object.selectable = false;
+      lockedObjects.push(object);
+    }
+  }
+
+  function unlockObjects() {
+    if (lockedObjects.length === 0) return;
+    while (lockedObjects.length > 0) {
+      lockedObjects.pop().selectable = true;
+    }
+  }
   /**
    * 
    * @param {MouseEvent} e 
    */
   function canvasContextMenuTrigger(e) {
     e.preventDefault();
-    if (activeCanvas.getElement().parentElement === this && activeCanvas.getActiveObject()) {
+    mouseEvent = e;
+    let pageName = this.getAttribute('data-name');
+
+    if (activeCanvas.page.pageName !== pageName) {
+      updateActiveCanvas(pages[pageName]);
+    }
+
+    let group = objectContextMenuOptions.group;
+    let activeObject = activeCanvas.getActiveObject();
+    let length = activeCanvas.getActiveObjects().length;
+    if (activeObject) {
       objectContextMenu.show(e);
+      if (length > 1 && activeObject.type === 'activeSelection') {
+        group.classList.remove('disabled');
+        group.textContent = 'Group';
+        group.onclick = function () {
+          activeObject.toGroup();
+        }
+      } else if (activeObject.type === 'group') {
+        group.classList.remove('disabled');
+        group.textContent = 'Ungroup';
+        group.onclick = function () {
+          activeObject.toActiveSelection();
+        }
+      } else {
+        group.textContent = 'Group';
+        group.classList.add('disabled');
+      }
+
+      if (activeObject.lockUniScaling) {
+        objectContextMenuOptions.lock.textContent = 'Unlock';
+      } else {
+        objectContextMenuOptions.lock.textContent = 'Lock';
+      }
+
     } else {
+      if (copiedObject) {
+        canvasContextMenuOptions.paste.classList.remove('disabled');
+      } else {
+        canvasContextMenuOptions.paste.classList.add('disabled');
+      }
+
+      if (lockedObjects.length > 0) {
+        canvasContextMenuOptions.unlockAll.classList.remove('disabled');
+      } else {
+        canvasContextMenuOptions.unlockAll.classList.add('disabled');
+      }
       canvasContextMenu.show(e);
     }
   }
@@ -636,24 +841,20 @@ export function CanvasEditor(parentel, opts) {
     reader.readAsDataURL(this.files[0]);
   }
 
-  function updateActiveContainer() {
-    let allContainer = html.getAll('#CE_canvasContainer .canvas-container');
-    allContainer = [...allContainer];
-
-    if (allContainer.length === 1) {
-      allContainer[0].classList.add('active');
-      return;
+  /**
+   * 
+   * @param {fabric.Canvas} canvas 
+   */
+  function updateActiveContainer(canvas) {
+    if (activeCanvas) {
+      let pageName = activeCanvas.page.name;
+      let el = html.get(`div[data-name=${pageName}]`);
+      if (el) el.classList.remove('active');
     }
 
-    for (let el of allContainer) {
-      el.onclick = function () {
-        let lastActive = document.querySelector('.canvas-container.active');
-        if (lastActive) {
-          lastActive.classList.remove('active');
-        }
-        this.classList.add('active');
-      }
-    }
+    let pageName = canvas.page.name;
+    let el = html.get(`div[data-name=${pageName}]`);
+    if (el) el.classList.add('active');
   }
 
   function objectOnSelect() {

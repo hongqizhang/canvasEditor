@@ -178,9 +178,19 @@ export function toolsContainer() {
       label.appendChild(fileInput);
       return label;
     })(),
-    loadSVG: html.create('span', {
-      textContent: 'Load SVG file'
-    })
+    loadSVG: (function image() {
+      let label = html.create('label', {
+        textContent: 'Load SVG file'
+      });
+      let fileInput = html.create('input', {
+        type: 'file',
+        style: {
+          display: 'none'
+        }
+      });
+      label.appendChild(fileInput);
+      return label;
+    })()
   }
   let container = freeContainer({
     disableCloseBtn: true,

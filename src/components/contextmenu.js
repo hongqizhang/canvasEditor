@@ -1,11 +1,31 @@
 const html = require('html-element-js').default;
 
 /**
+ * @callback itemOnclick
+ * @param {HTMLElement} item
+ */
+
+/**
+ * @typedef contextMenu
+ * @property {function():void} dispose
+ * @property {function():void} show
+ * @property {function():void} hide
+ * @property {function(HTMLElement[]):void} addItems
+ * @property {function(HTMLElement):void} removeItem
+ * @property {function(number, number):void} setPosition
+ * @property {function(HTMLElement):void} itemOnclick
+ * @property {function():void} maskOnclick
+ */
+
+/**
  * 
  * @param {Object} [opts] 
  * @param {HTMLElement[]} [opts.children=null] children to append
  * @param {Number} [opts.x] x position 
  * @param {Number} [opts.y] y position
+ * @param {itemOnclick} [opts.itemOnclick]
+ * @param {function} [opts.maskOnclick]
+ * @returns {contextMenu}
  */
 export function contextMenu(children = null, x = 0, y = 0) {
   let cm = html.create('div', {
@@ -14,12 +34,33 @@ export function contextMenu(children = null, x = 0, y = 0) {
   });
   let mask = html.create('span', {
     className: 'CE_mask',
-    oncontextmenu: hide,
-    onclick: hide
+    oncontextmenu: maskOnclick,
+    onclick: maskOnclick
   });
   let position = {
     x: 0,
     y: 0
+  };
+  let returnable = {
+    dispose,
+    show,
+    hide,
+    addItems,
+    removeItem,
+    insertBefore,
+    setPosition
+  };
+
+  returnable.itemOnclick = function () {
+    return;
+  };
+  returnable.maskOnclick = function () {
+    return;
+  };
+
+  function maskOnclick(e) {
+    if (returnable.maskOnclick) returnable.maskOnclick();
+    hide(e);
   }
 
   setPosition(x, y);
@@ -61,7 +102,12 @@ export function contextMenu(children = null, x = 0, y = 0) {
     setPosition(position.x, position.y);
   }
 
-  function hide() {
+  /**
+   * 
+   * @param {MouseEvent} e 
+   */
+  function hide(e) {
+    if (e && e.preventDefault) e.preventDefault();
     if (cm.parentElement) {
       document.body.removeChild(mask);
       document.body.removeChild(cm);
@@ -88,9 +134,14 @@ export function contextMenu(children = null, x = 0, y = 0) {
      * @param {HTMLElement} item 
      */
     function hideOnClick(item) {
-      if (!item.getAttribute('data-expandable')) {
-        item.addEventListener('click', hide);
-      }
+      item.addEventListener('click', (e) => {
+        returnable.itemOnclick(item);
+        if (item.tagName === 'LABEL') {
+          hide(null);
+        } else if (!item.getAttribute('data-expandable')) {
+          hide(e);
+        }
+      });
     }
   }
 
@@ -108,13 +159,5 @@ export function contextMenu(children = null, x = 0, y = 0) {
     cm.style.transform = `translate(${x}px, ${y}px)`;
   }
 
-  return {
-    dispose,
-    show,
-    hide,
-    addItems,
-    removeItem,
-    insertBefore,
-    setPosition
-  }
+  return returnable;
 }

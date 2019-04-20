@@ -44,6 +44,14 @@
   background-color: rgba(0, 0, 0, 0.2);
 }
 
+.CE_contextmenu > *.disabled {
+  color: #ccc;
+}
+
+.CE_contextmenu > *.disabled:hover {
+  background-color: white;
+}
+
 .CE_contextmenu *[data-expandable] {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;

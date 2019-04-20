@@ -163,11 +163,14 @@ function CanvasEditor(parentel, opts) {
     background: html.span({
       textContent: 'Background color'
     }),
-    delte: html.span({
+    "delete": html.span({
       textContent: 'Delete'
     }),
     paste: html.span({
       textContent: 'Paste'
+    }),
+    unlockAll: html.span({
+      textContent: 'Unlock All'
     })
   };
   var objectContextMenuOptions = {
@@ -195,11 +198,14 @@ function CanvasEditor(parentel, opts) {
         'data-expandable': 'true'
       }
     }),
+    cut: html.span({
+      textContent: 'Cut'
+    }),
     copy: html.span({
       textContent: 'Copy'
     }),
-    cut: html.span({
-      textContent: 'Cut'
+    deleteBtn: html.span({
+      textContent: 'Delete'
     }),
     group: html.span({
       textContent: 'Group'
@@ -209,16 +215,16 @@ function CanvasEditor(parentel, opts) {
     })
   };
   var arrangeOptions = {
-    bringBackward: html.span({
+    bringForward: html.span({
       textContent: 'Bring forward'
     }),
-    bringFront: html.span({
+    bringToFront: html.span({
       textContent: 'Bring front'
     }),
     sendBackward: html.span({
       textContent: 'Send backward'
     }),
-    sendBack: html.span({
+    sendToBack: html.span({
       textContent: 'Send back'
     })
   };
@@ -231,25 +237,24 @@ function CanvasEditor(parentel, opts) {
     }),
     vCenter: html.span({
       textContent: 'Verticaly center'
-    }),
-    left: html.span({
-      textContent: 'Left'
-    }),
-    right: html.span({
-      textContent: 'Right'
-    }),
-    top: html.span({
-      textContent: 'Top'
-    }),
-    bottom: html.span({
-      textContent: 'Bottom'
     })
   };
   var canvasContextMenu = Object(_components_contextmenu__WEBPACK_IMPORTED_MODULE_8__["contextMenu"])(Object.values(canvasContextMenuOptions));
   var objectContextMenu = Object(_components_contextmenu__WEBPACK_IMPORTED_MODULE_8__["contextMenu"])(Object.values(objectContextMenuOptions));
   var arrangeContextMenu = Object(_components_contextmenu__WEBPACK_IMPORTED_MODULE_8__["contextMenu"])(Object.values(arrangeOptions));
   var alignContextMenu = Object(_components_contextmenu__WEBPACK_IMPORTED_MODULE_8__["contextMenu"])(Object.values(alignOptions));
+  /**
+   * @type {fabric.ActiveSelection}
+   */
+
+  var copiedObject = null;
+  /**
+   * @type {MouseEvent}
+   */
+
+  var mouseEvent = null;
   var pages = {};
+  pages.length = 0;
   /**
    * @type {fabric.Canvas}
    */
@@ -260,6 +265,11 @@ function CanvasEditor(parentel, opts) {
    */
 
   var alltools = null;
+  /**
+   * @type {fabric.ActiveSelection[]}
+   */
+
+  var lockedObjects = [];
   init();
 
   function addText(value, props) {
@@ -338,45 +348,58 @@ function CanvasEditor(parentel, opts) {
     var canvas = new fabric.Canvas();
     canvasContainer.appendChild(page);
     canvas.initialize(page);
-    canvas.setHeight(500);
-    canvas.setWidth(500);
     canvas.setBackgroundColor('#fff');
+    var height = alltools.pageSettings.pageHeight.value;
+    var width = alltools.pageSettings.pageWidth.value;
+    canvas.setHeight(height);
+    canvas.setWidth(width);
     var i = canvasContainer.childElementCount;
     var pageName = 'page-' + i;
-    pages[pageName] = {
-      canvas: canvas,
+    ++pages.length;
+    canvas.page = {
+      DOMElement: page,
       name: pageName
     };
-    canvas.page = pages[pageName];
+    pages[pageName] = canvas;
     canvas.on('mouse:down', updateActiveCanvas);
-
-    if (!activeCanvas) {
-      activeCanvas = canvas;
-    }
-
     var element = canvas.getElement().parentElement;
+    element.setAttribute('data-name', pageName);
     element.addEventListener('contextmenu', canvasContextMenuTrigger);
     fixPagesContainerPosition();
-    updateActiveContainer();
+    updateActiveCanvas(canvas);
+  }
+  /**
+   * 
+   * @param {fabric.Canvas} canvas 
+   */
 
-    function updateActiveCanvas() {
-      if (activeCanvas === canvas) return;
-      deselectObjects();
-      activeCanvas = canvas;
-      var height = activeCanvas.getHeight();
-      var width = activeCanvas.getWidth();
-      var pageName = activeCanvas.page.name;
-      var pageSettings = alltools.pageSettings;
-      pageSettings.pageHeight.value = height;
-      pageSettings.pageWidth.value = width;
-      pageSettings.pageName.value = pageName;
+
+  function updateActiveCanvas(canvas) {
+    canvas = canvas instanceof fabric.Canvas ? canvas : this;
+    if (activeCanvas === canvas) return;
+
+    if (pages.length === 1) {
+      canvasContextMenuOptions["delete"].classList.add('disabled');
+    } else {
+      canvasContextMenuOptions["delete"].classList.remove('disabled');
     }
+
+    deselectObjects();
+    updateActiveContainer(canvas);
+    activeCanvas = canvas;
+    var height = activeCanvas.getHeight();
+    var width = activeCanvas.getWidth();
+    var pageName = activeCanvas.page.name;
+    var pageSettings = alltools.pageSettings;
+    pageSettings.pageHeight.value = height;
+    pageSettings.pageWidth.value = width;
+    pageSettings.pageName.value = pageName;
   }
 
   function deselectObjects() {
     if (activeCanvas) {
       activeCanvas.discardActiveObject();
-      activeCanvas.requestRenderAll();
+      activeCanvas.renderAll();
     }
 
     ;
@@ -426,10 +449,10 @@ function CanvasEditor(parentel, opts) {
       borderColor: '#88f',
       cornerSize: 6
     });
-    fabric.Object.prototype.onSelect = objectOnSelect; // fabric.Canvas.prototype.on('mouse:down', canvasContextMenuTrigger);
-
-    mainWrapper.appendChild(canvasContainer);
+    fabric.Canvas.prototype.preserveObjectStacking = true;
+    fabric.Object.prototype.onSelect = objectOnSelect;
     mainWrapper.appendChild(clickCatchMask);
+    mainWrapper.appendChild(canvasContainer);
     parentel.appendChild(mainWrapper);
     clickCatchMask.addEventListener('click', deselectObjects);
     /**
@@ -437,9 +460,9 @@ function CanvasEditor(parentel, opts) {
      */
 
     alltools = Object(_components_toolsContainer__WEBPACK_IMPORTED_MODULE_2__["toolsContainer"])();
+    addPage();
     initTools();
     initContextMenu();
-    addPage();
     fixPagesContainerPosition();
     window.addEventListener('resize', fixPagesContainerPosition);
     var containerWrapper = html.get('#CE_container-wrapper');
@@ -956,8 +979,18 @@ function CanvasEditor(parentel, opts) {
   }
 
   function initContextMenu() {
-    objectContextMenuOptions.arrange.addEventListener('click', arrangeOnclick);
-    objectContextMenuOptions.align.addEventListener('click', alignOnclick);
+    var align = objectContextMenuOptions.align,
+        arrange = objectContextMenuOptions.arrange,
+        copy = objectContextMenuOptions.copy,
+        cut = objectContextMenuOptions.cut,
+        deleteBtn = objectContextMenuOptions.deleteBtn,
+        lock = objectContextMenuOptions.lock;
+    arrange.addEventListener('click', arrangeOnclick);
+    align.addEventListener('click', alignOnclick);
+
+    arrangeContextMenu.itemOnclick = alignContextMenu.itemOnclick = arrangeContextMenu.maskOnclick = alignContextMenu.maskOnclick = function () {
+      objectContextMenu.hide();
+    };
 
     function arrangeOnclick() {
       showSecondContext.bind(this)(arrangeContextMenu);
@@ -978,21 +1011,190 @@ function CanvasEditor(parentel, opts) {
         clientY: elClient.top
       });
     }
-  }
-  /**
-   * 
-   * @param {Object} fabricEvent 
-   * @param {fabric.Object} fabricEvent.target
-   * @param {Object} fabricEvent.pointer
-   * @param {Number} fabricEvent.pointer.x
-   * @param {Number} fabricEvent.pointer.y
-   * @param {MouseEvent} fabricEvent.e
-   *
-  function canvasContextMenuTrigger(fabricEvent) {
-    fabricEvent.e.preventDefault();
-    console.log(activeCanvas);
-  }*/
 
+    canvasContextMenuOptions["delete"].addEventListener('click', deleteCanvas);
+    canvasContextMenuOptions.paste.addEventListener('click', pasteObject);
+    canvasContextMenuOptions.unlockAll.addEventListener('click', unlockObjects);
+    canvasContextMenuOptions.background.addEventListener('click', function () {
+      colorPickerContainer.setTitle('Color picker - background');
+      colorPickerContainer.setVisiblity(true);
+
+      colorPicker.onchange = function (color) {
+        activeCanvas.setBackgroundColor(color.rgbhex, activeCanvas.renderAll.bind(activeCanvas));
+      };
+    });
+    copy.addEventListener('click', copyObject);
+    cut.addEventListener('click', cutObject);
+    deleteBtn.addEventListener('click', deleteObject);
+    lock.addEventListener('click', lockObject);
+
+    var _loop = function _loop(key) {
+      arrangeOptions[key].addEventListener('click', function () {
+        var activeObject = activeCanvas.getActiveObject();
+        activeObject[key]();
+      });
+    };
+
+    for (var key in arrangeOptions) {
+      _loop(key);
+    }
+
+    var _loop2 = function _loop2(key) {
+      alignOptions[key].addEventListener('click', function () {
+        setObjectAlignment(key);
+      });
+    };
+
+    for (var key in alignOptions) {
+      _loop2(key);
+    }
+  }
+
+  function setObjectAlignment(alignment) {
+    var activeObject = activeCanvas.getActiveObject();
+    var pos = null;
+
+    switch (alignment) {
+      case 'center':
+        activeCanvas.centerObject(activeObject);
+        break;
+
+      case 'hCenter':
+        activeCanvas.centerObjectH(activeObject);
+        break;
+
+      case 'vCenter':
+        activeCanvas.centerObjectV(activeObject);
+        break;
+    }
+
+    activeCanvas.renderAll();
+  }
+
+  function copyObject() {
+    if (!activeCanvas) return;
+    var activeObject = activeCanvas.getActiveObject();
+    copiedObject = null;
+    activeObject.clone(function (object) {
+      copiedObject = object;
+    });
+  }
+
+  function cutObject() {
+    copyObject();
+    deleteObject();
+  }
+
+  function pasteObject() {
+    if (!activeCanvas) return;
+
+    if (mouseEvent) {
+      var location = activeCanvas.getPointer(mouseEvent);
+      var pos = new fabric.Point(location.x, location.y);
+      copiedObject.setPositionByOrigin(pos, 'center', 'center');
+
+      if (copiedObject.type !== 'activeSelection') {
+        activeCanvas.add(copiedObject);
+      } else {
+        var _activeCanvas;
+
+        (_activeCanvas = activeCanvas).add.apply(_activeCanvas, _toConsumableArray(copiedObject.getObjects()));
+      }
+    } else {
+      if (copiedObject.type !== 'activeSelection') {
+        activeCanvas.add(copiedObject);
+      } else {
+        var _activeCanvas2;
+
+        (_activeCanvas2 = activeCanvas).add.apply(_activeCanvas2, _toConsumableArray(copiedObject.getObjects()));
+      }
+    }
+
+    activeCanvas.setActiveObject(copiedObject);
+    copyObject();
+    activeCanvas.renderAll();
+  }
+
+  function deleteCanvas() {
+    if (pages.length === 1) return;
+    var page = activeCanvas.page;
+    activeCanvas.page = null;
+    activeCanvas.dispose();
+    activeCanvas = null;
+    --pages.length;
+    page.DOMElement.parentElement.removeChild(page.DOMElement);
+    delete pages[page.name];
+
+    for (var key in pages) {
+      if (key !== 'length') {
+        updateActiveCanvas(pages[key]);
+        break;
+      }
+    }
+
+    fixPagesContainerPosition();
+  }
+
+  function deleteObject() {
+    var activeObject = activeCanvas.getActiveObject();
+
+    if (activeObject.type === 'activeSelection') {
+      var _activeCanvas3;
+
+      (_activeCanvas3 = activeCanvas).remove.apply(_activeCanvas3, _toConsumableArray(activeObject.getObjects()));
+    } else {
+      activeCanvas.remove(activeObject);
+    }
+  }
+
+  function lockObject() {
+    var activeObject = activeCanvas.getActiveObject();
+
+    if (activeObject.type !== 'activeSelection') {
+      lock(activeObject);
+    } else {
+      var objects = activeObject.getObjects();
+      var _iteratorNormalCompletion16 = true;
+      var _didIteratorError16 = false;
+      var _iteratorError16 = undefined;
+
+      try {
+        for (var _iterator16 = objects[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+          var object = _step16.value;
+          lock(object);
+        }
+      } catch (err) {
+        _didIteratorError16 = true;
+        _iteratorError16 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion16 && _iterator16["return"] != null) {
+            _iterator16["return"]();
+          }
+        } finally {
+          if (_didIteratorError16) {
+            throw _iteratorError16;
+          }
+        }
+      }
+    }
+
+    activeCanvas.discardActiveObject();
+    activeCanvas.renderAll();
+
+    function lock(object) {
+      object.selectable = false;
+      lockedObjects.push(object);
+    }
+  }
+
+  function unlockObjects() {
+    if (lockedObjects.length === 0) return;
+
+    while (lockedObjects.length > 0) {
+      lockedObjects.pop().selectable = true;
+    }
+  }
   /**
    * 
    * @param {MouseEvent} e 
@@ -1001,10 +1203,57 @@ function CanvasEditor(parentel, opts) {
 
   function canvasContextMenuTrigger(e) {
     e.preventDefault();
+    mouseEvent = e;
+    var pageName = this.getAttribute('data-name');
 
-    if (activeCanvas.getElement().parentElement === this && activeCanvas.getActiveObject()) {
+    if (activeCanvas.page.pageName !== pageName) {
+      updateActiveCanvas(pages[pageName]);
+    }
+
+    var group = objectContextMenuOptions.group;
+    var activeObject = activeCanvas.getActiveObject();
+    var length = activeCanvas.getActiveObjects().length;
+
+    if (activeObject) {
       objectContextMenu.show(e);
+
+      if (length > 1 && activeObject.type === 'activeSelection') {
+        group.classList.remove('disabled');
+        group.textContent = 'Group';
+
+        group.onclick = function () {
+          activeObject.toGroup();
+        };
+      } else if (activeObject.type === 'group') {
+        group.classList.remove('disabled');
+        group.textContent = 'Ungroup';
+
+        group.onclick = function () {
+          activeObject.toActiveSelection();
+        };
+      } else {
+        group.textContent = 'Group';
+        group.classList.add('disabled');
+      }
+
+      if (activeObject.lockUniScaling) {
+        objectContextMenuOptions.lock.textContent = 'Unlock';
+      } else {
+        objectContextMenuOptions.lock.textContent = 'Lock';
+      }
     } else {
+      if (copiedObject) {
+        canvasContextMenuOptions.paste.classList.remove('disabled');
+      } else {
+        canvasContextMenuOptions.paste.classList.add('disabled');
+      }
+
+      if (lockedObjects.length > 0) {
+        canvasContextMenuOptions.unlockAll.classList.remove('disabled');
+      } else {
+        canvasContextMenuOptions.unlockAll.classList.add('disabled');
+      }
+
       canvasContextMenu.show(e);
     }
   }
@@ -1032,48 +1281,24 @@ function CanvasEditor(parentel, opts) {
 
     reader.readAsDataURL(this.files[0]);
   }
+  /**
+   * 
+   * @param {fabric.Canvas} canvas 
+   */
 
-  function updateActiveContainer() {
-    var allContainer = html.getAll('#CE_canvasContainer .canvas-container');
-    allContainer = _toConsumableArray(allContainer);
 
-    if (allContainer.length === 1) {
-      allContainer[0].classList.add('active');
-      return;
+  function updateActiveContainer(canvas) {
+    if (activeCanvas) {
+      var _pageName = activeCanvas.page.name;
+
+      var _el = html.get("div[data-name=".concat(_pageName, "]"));
+
+      if (_el) _el.classList.remove('active');
     }
 
-    var _iteratorNormalCompletion16 = true;
-    var _didIteratorError16 = false;
-    var _iteratorError16 = undefined;
-
-    try {
-      for (var _iterator16 = allContainer[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
-        var el = _step16.value;
-
-        el.onclick = function () {
-          var lastActive = document.querySelector('.canvas-container.active');
-
-          if (lastActive) {
-            lastActive.classList.remove('active');
-          }
-
-          this.classList.add('active');
-        };
-      }
-    } catch (err) {
-      _didIteratorError16 = true;
-      _iteratorError16 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion16 && _iterator16["return"] != null) {
-          _iterator16["return"]();
-        }
-      } finally {
-        if (_didIteratorError16) {
-          throw _iteratorError16;
-        }
-      }
-    }
+    var pageName = canvas.page.name;
+    var el = html.get("div[data-name=".concat(pageName, "]"));
+    if (el) el.classList.add('active');
   }
 
   function objectOnSelect() {
@@ -34603,11 +34828,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "contextMenu", function() { return contextMenu; });
 var html = __webpack_require__(12)["default"];
 /**
+ * @callback itemOnclick
+ * @param {HTMLElement} item
+ */
+
+/**
+ * @typedef contextMenu
+ * @property {function():void} dispose
+ * @property {function():void} show
+ * @property {function():void} hide
+ * @property {function(HTMLElement[]):void} addItems
+ * @property {function(HTMLElement):void} removeItem
+ * @property {function(number, number):void} setPosition
+ * @property {function(HTMLElement):void} itemOnclick
+ * @property {function():void} maskOnclick
+ */
+
+/**
  * 
  * @param {Object} [opts] 
  * @param {HTMLElement[]} [opts.children=null] children to append
  * @param {Number} [opts.x] x position 
  * @param {Number} [opts.y] y position
+ * @param {itemOnclick} [opts.itemOnclick]
+ * @param {function} [opts.maskOnclick]
+ * @returns {contextMenu}
  */
 
 
@@ -34623,13 +34868,36 @@ function contextMenu() {
   });
   var mask = html.create('span', {
     className: 'CE_mask',
-    oncontextmenu: hide,
-    onclick: hide
+    oncontextmenu: maskOnclick,
+    onclick: maskOnclick
   });
   var position = {
     x: 0,
     y: 0
   };
+  var returnable = {
+    dispose: dispose,
+    show: show,
+    hide: hide,
+    addItems: addItems,
+    removeItem: removeItem,
+    insertBefore: insertBefore,
+    setPosition: setPosition
+  };
+
+  returnable.itemOnclick = function () {
+    return;
+  };
+
+  returnable.maskOnclick = function () {
+    return;
+  };
+
+  function maskOnclick(e) {
+    if (returnable.maskOnclick) returnable.maskOnclick();
+    hide(e);
+  }
+
   setPosition(x, y);
   addItems(children);
 
@@ -34672,8 +34940,15 @@ function contextMenu() {
 
     setPosition(position.x, position.y);
   }
+  /**
+   * 
+   * @param {MouseEvent} e 
+   */
 
-  function hide() {
+
+  function hide(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
     if (cm.parentElement) {
       document.body.removeChild(mask);
       document.body.removeChild(cm);
@@ -34724,9 +34999,15 @@ function contextMenu() {
 
 
     function hideOnClick(item) {
-      if (!item.getAttribute('data-expandable')) {
-        item.addEventListener('click', hide);
-      }
+      item.addEventListener('click', function (e) {
+        returnable.itemOnclick(item);
+
+        if (item.tagName === 'LABEL') {
+          hide(null);
+        } else if (!item.getAttribute('data-expandable')) {
+          hide(e);
+        }
+      });
     }
   }
 
@@ -34744,15 +35025,7 @@ function contextMenu() {
     cm.style.transform = "translate(".concat(x, "px, ").concat(y, "px)");
   }
 
-  return {
-    dispose: dispose,
-    show: show,
-    hide: hide,
-    addItems: addItems,
-    removeItem: removeItem,
-    insertBefore: insertBefore,
-    setPosition: setPosition
-  };
+  return returnable;
 }
 
 /***/ }),
@@ -34891,7 +35164,7 @@ if(false) {}
 
 exports = module.exports = __webpack_require__(15)(false);
 // Module
-exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  background-color: white;\n  -webkit-transform-origin: top;\n          transform-origin: top;\n  z-index: 999;\n  border-radius: 2px;\n  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n          box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n}\n\n.CE_contextmenu > * {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  min-width: 200px;\n  min-height: 30px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 10px;\n  font-size: 0.8em;\n  font-weight: 500;\n  cursor: default;\n}\n\n.CE_contextmenu > *:not(:last-child) {\n  border-bottom: solid 1px rgba(0, 0, 0, .4);\n}\n\n.CE_contextmenu > *:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_contextmenu *[data-expandable] {\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.CE_contextmenu .CE_icon_text span {\n  width: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: row;\n          flex-direction: row;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.CE_contextmenu .CE_icon_text span .CE_icon {\n  margin: 0;\n  width: 30px;\n}", ""]);
+exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  background-color: white;\n  -webkit-transform-origin: top;\n          transform-origin: top;\n  z-index: 999;\n  border-radius: 2px;\n  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n          box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n}\n\n.CE_contextmenu > * {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  min-width: 200px;\n  min-height: 30px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 10px;\n  font-size: 0.8em;\n  font-weight: 500;\n  cursor: default;\n}\n\n.CE_contextmenu > *:not(:last-child) {\n  border-bottom: solid 1px rgba(0, 0, 0, .4);\n}\n\n.CE_contextmenu > *:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_contextmenu > *.disabled {\n  color: #ccc;\n}\n\n.CE_contextmenu > *.disabled:hover {\n  background-color: white;\n}\n\n.CE_contextmenu *[data-expandable] {\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.CE_contextmenu .CE_icon_text span {\n  width: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: row;\n          flex-direction: row;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.CE_contextmenu .CE_icon_text span .CE_icon {\n  margin: 0;\n  width: 30px;\n}", ""]);
 
 
 
