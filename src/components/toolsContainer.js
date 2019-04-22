@@ -17,8 +17,9 @@ const html = require('html-element-js').default;
  * @property {HTMLElement} circle
  * @property {HTMLElement} rectangle
  * @property {HTMLElement} triangle
+ * @property {HTMLElement} selection
+ * @property {HTMLElement} grab
  * @property {HTMLElement} backgroundColor
- * @property {HTMLElement} strokeColor
  * @property {HTMLInputElement} openImage
  * @property {HTMLInputElement} loadSVG
  */
@@ -45,6 +46,8 @@ const html = require('html-element-js').default;
  * @property {HTMLInputElement} offsetX
  * @property {HTMLInputElement} offsetY
  * @property {HTMLInputElement} blur
+ * @property {HTMLInputElement} strokeToggle
+ * @property {HTMLInputElement} strokeWidth
  */
 
 /**
@@ -106,11 +109,7 @@ export function toolsContainer() {
     /**
      * @type {HTMLElement}
      */
-    backgroundColor: null,
-    /**
-     * @type {HTMLElement}
-     */
-    strokeColor: null,
+    backgroundColor: null
   };
   let page = {
     pageName: html.input({
@@ -149,20 +148,32 @@ export function toolsContainer() {
     offsetX: html.input({
       type: 'number',
       placeholder: 'x',
-      value: 0
+      value: 2
     }),
     offsetY: html.input({
       type: 'number',
       placeholder: 'y',
-      value: 0
+      value: 2
     }),
     blur: html.input({
       type: 'number',
       placeholder: 'blur',
-      value: 0
+      value: 2
     }),
     color: html.span({
       className: 'CE_icon backgroundColor'
+    }),
+    strokeToggle: html.toggler({
+      size: 20
+    }),
+    strokeWidth: html.input({
+      min: 1,
+      type: 'number',
+      placeholder: 'stroke',
+      value: 1
+    }),
+    strokeColor: html.span({
+      className: 'CE_icon CE_tool strokeColor'
     })
   }
   let textOptions = {
@@ -220,7 +231,19 @@ export function toolsContainer() {
         })
       ]
     }),
-    loadSVG: icon('image1', 'Load SVG file')
+    loadSVG: html.create('label', {
+      className: 'CE_icon_text',
+      children: [
+        icon('image', 'Open SVG file'),
+        html.create('input', {
+          type: 'file',
+          accept: '.svg',
+          style: {
+            display: 'none'
+          }
+        })
+      ]
+    })
   }
 
   let cm_shapes = contextMenu(Object.values(shapes));
@@ -310,7 +333,7 @@ export function toolsContainer() {
             className: 'CE_dropshadow-controls',
             children: [
               html.create('small', {
-                textContent: 'Set Color'
+                textContent: 'Set color'
               }),
               object.color
             ]
@@ -345,9 +368,46 @@ export function toolsContainer() {
         ]
       }));
 
+      objectSettingsAr.push(html.div({
+        className: 'CE_tool CE_dropshadow-tool',
+        children: [
+          html.span({
+            textContent: 'Stroke'
+          }),
+          html.div({
+            className: 'CE_dropshadow-controls',
+            children: [
+              object.strokeToggle
+            ]
+          }),
+          html.div({
+            className: 'CE_dropshadow-controls',
+            children: [
+              html.create('small', {
+                textContent: 'Stroke width'
+              }),
+              html.div({
+                children: [
+                  object.strokeWidth
+                ]
+              })
+            ]
+          }),
+          html.div({
+            className: 'CE_dropshadow-controls',
+            children: [
+              html.create('small', {
+                textContent: 'Set stroke color'
+              }),
+              object.strokeColor
+            ]
+          })
+        ]
+      }));
+
       newContainer.bind(this)('Object', objectSettingsAr, 'CE_col');
 
-      object.opacity.setValue(object.opacity.value);
+      object.opacity.setvalue(object.opacity.value);
     }
 
     function updateActiveTool() {
@@ -449,11 +509,13 @@ export function toolsContainer() {
     tools: {
       ...shapes,
       ...imageOptions,
+      grab: mainTools.hand,
+      selection: mainTools.selection,
       addPage: page.addPage,
       addText: textOptions.addText,
       backgroundColor: mainTools.backgroundColor,
-      strokeColor: mainTools.strokeColor,
-      openImage: imageOptions.openImage.querySelector('input')
+      openImage: imageOptions.openImage.querySelector('input'),
+      loadSVG: imageOptions.loadSVG.querySelector('input')
     },
     textSettings: {
       ...textOptions,

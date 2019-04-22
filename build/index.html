@@ -13,10 +13,29 @@
 <body>
   <header>
     <h1>Canvas Editor</h1>
+    <div class="file-menu">
+      <span class="menu-toggler">file</span>
+      <ul class="menu">
+        <li id="open">Open</li>
+        <li id="save">Save</li>
+        <li id="saveJPEG">Save as jpeg</li>
+        <li id="savePNG">Save as png</li>
+      </ul>
+    </div>
   </header>
   <div id="editor"></div>
   <script>
-    CanvasEditor(editor);
+    const ce = CanvasEditor(editor);
+
+    save.onclick = function () {
+      let json = ce.toJSON();
+      localStorage.setItem('saved', json);
+      alert('saved');
+    }
+
+    if ('saved' in localStorage) {
+      ce.loadJSON(localStorage.getItem('saved'));
+    }
   </script>
 </body>
 

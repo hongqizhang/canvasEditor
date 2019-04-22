@@ -116,6 +116,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _css_res_style_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(32);
 /* harmony import */ var _css_res_style_css__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_css_res_style_css__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var _components_contextmenu__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(23);
+/* harmony import */ var blueimp_canvas_to_blob__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(39);
+/* harmony import */ var blueimp_canvas_to_blob__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(blueimp_canvas_to_blob__WEBPACK_IMPORTED_MODULE_9__);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -125,6 +127,7 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
  // import html from './html';
+
 
 
 
@@ -146,7 +149,7 @@ var html = __webpack_require__(12)["default"];
 function CanvasEditor(parentel, opts) {
   if (!parentel) return console.error('pranetel undefined!');
 
-  var picker = __webpack_require__(39);
+  var picker = __webpack_require__(40);
 
   var clickCatchMask = html.div({
     className: 'CE_click-catch-mask'
@@ -215,14 +218,14 @@ function CanvasEditor(parentel, opts) {
     })
   };
   var arrangeOptions = {
+    sendBackwards: html.span({
+      textContent: 'Send backward'
+    }),
     bringForward: html.span({
       textContent: 'Bring forward'
     }),
     bringToFront: html.span({
       textContent: 'Bring front'
-    }),
-    sendBackward: html.span({
-      textContent: 'Send backward'
     }),
     sendToBack: html.span({
       textContent: 'Send back'
@@ -254,6 +257,7 @@ function CanvasEditor(parentel, opts) {
 
   var mouseEvent = null;
   var pages = {};
+  pages.page = {};
   pages.length = 0;
   /**
    * @type {fabric.Canvas}
@@ -270,6 +274,14 @@ function CanvasEditor(parentel, opts) {
    */
 
   var lockedObjects = [];
+  var scale = 1;
+  var translate = {};
+  var zoom = html.rangeSlider({
+    min: 0.5,
+    max: 2,
+    value: 1,
+    step: 0.001
+  });
   init();
 
   function addText(value, props) {
@@ -283,6 +295,7 @@ function CanvasEditor(parentel, opts) {
     var text = new fabric.Textbox(value, props);
     activeCanvas.add(text);
     activeCanvas.centerObject(text);
+    activeCanvas.setActiveObject(text);
   }
 
   function addImage(img, props) {
@@ -309,38 +322,43 @@ function CanvasEditor(parentel, opts) {
       height = height - _diff;
       image.scaleToHeight(height);
     }
+
+    activeCanvas.setActiveObject(image);
   }
 
   function addRect(props) {
     props = props || {
-      fill: 'red',
+      fill: colorPicker ? colorPicker.color : '#000',
       width: 50,
       height: 50
     };
     var rect = new fabric.Rect(props);
     activeCanvas.add(rect);
     activeCanvas.centerObject(rect);
+    activeCanvas.setActiveObject(rect);
   }
 
   function addCircle(props) {
     props = props || {
-      fill: 'red',
+      fill: colorPicker ? colorPicker.color : '#000',
       radius: 25
     };
     var circle = new fabric.Circle(props);
     activeCanvas.add(circle);
     activeCanvas.centerObject(circle);
+    activeCanvas.setActiveObject(circle);
   }
 
   function addTriangle(props) {
     props = props || {
-      fill: 'red',
+      fill: colorPicker ? colorPicker.color : '#000',
       height: 50,
       width: 50
     };
     var triangle = new fabric.Triangle(props);
     activeCanvas.add(triangle);
     activeCanvas.centerObject(triangle);
+    activeCanvas.setActiveObject(triangle);
   }
 
   function addPage() {
@@ -360,7 +378,11 @@ function CanvasEditor(parentel, opts) {
       DOMElement: page,
       name: pageName
     };
-    pages[pageName] = canvas;
+    /**
+     * @type {fabric.Canvas}
+     */
+
+    pages.page[pageName] = canvas;
     canvas.on('mouse:down', updateActiveCanvas);
     var element = canvas.getElement().parentElement;
     element.setAttribute('data-name', pageName);
@@ -404,43 +426,119 @@ function CanvasEditor(parentel, opts) {
 
     ;
   }
+  /**
+   *   
+   * @param {Number} [scaling=1]
+   * @param {Boolean} [retinaScaling=true] 
+   */
 
-  function saveAsPng() {}
 
-  function saveAsJPEG() {}
+  function saveAsPng() {
+    var scaling = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+    var retinaScaling = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    var images = saveAsBase64({
+      quality: quality,
+      multiplier: scaling,
+      enableRetinaScaling: retinaScaling
+    });
+    var blobs = {};
 
-  function saveAsBase64() {}
+    for (var image in images) {
+      blobs[image] = blueimp_canvas_to_blob__WEBPACK_IMPORTED_MODULE_9___default()(images[image]);
+    }
+
+    return blobs;
+  }
+  /**
+   * 
+   * @param {Number} [quality=0.9]  
+   * @param {Number} [scaling=1]
+   * @param {Boolean} [retinaScaling=true] 
+   */
+
+
+  function saveAsJPEG() {
+    var quality = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.9;
+    var scaling = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+    var retinaScaling = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    var images = saveAsBase64({
+      quality: quality,
+      multiplier: scaling,
+      enableRetinaScaling: retinaScaling
+    });
+    var blobs = {};
+
+    for (var image in images) {
+      blobs[image] = blueimp_canvas_to_blob__WEBPACK_IMPORTED_MODULE_9___default()(images[image]);
+    }
+
+    return blobs;
+  }
+  /**
+   * 
+   * @param {Object} [options]
+   * @param {String} [options.format] image format possible value 'jpeg' of 'png'
+   * @param {Number} [options.quality] quality for jpeg min 0 max 1
+   * @param {Number} [options.multiplier] Multiplier to scale by, to have consistent
+   * @param {Number} [options.left] Cropping left offset
+   * @param {Number} [options.right] Cropping right offset
+   * @param {Number} [options.width] Cropping width offset
+   * @param {Number} [options.height] Cropping height offset
+   * @param {Boolean} [options.enableRetinaScaling] Enable retina scaling for clone image
+   */
+
+
+  function saveAsBase64(options) {
+    var images = {};
+    var canvases = pages.page;
+
+    for (var page in canvases) {
+      images[page] = pages.page[page].toDataURL(options);
+    }
+
+    return images;
+  }
 
   function toJSON() {
-    var json = [];
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
+    var json = {};
+    var canvases = pages.page;
 
-    try {
-      for (var _iterator = pages[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var page = _step.value;
-        json.push(page.toJSON());
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-          _iterator["return"]();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
+    for (var page in canvases) {
+      json[page] = {};
+      json[page].name = pages.page[page].page.name;
+      json[page].data = pages.page[page].toJSON();
+      json[page].data.width = pages.page[page].getWidth();
+      json[page].data.height = pages.page[page].getHeight();
     }
 
     return JSON.stringify(json);
   }
 
-  function loadJSON() {}
+  function loadJSON(json) {
+    try {
+      json = JSON.parse(json);
+      mainWrapper.style.cursor = 'progress';
+      mainWrapper.style.pointerEvents = 'none';
+
+      for (var page in json) {
+        if (activeCanvas.getObjects().length !== 0) {
+          addPage();
+        }
+
+        activeCanvas.page.name = json[page].name;
+        activeCanvas.setWidth(json[page].data.width);
+        activeCanvas.setHeight(json[page].data.height);
+        activeCanvas.loadFromJSON(json[page].data, function () {
+          mainWrapper.style.removeProperty('cursor');
+          mainWrapper.style.removeProperty('pointer-events');
+          activeCanvas.renderAll();
+          fixPagesContainerPosition();
+        });
+      }
+    } catch (error) {
+      alert('Cannot load json, Error: ' + error);
+    }
+  }
 
   function init() {
     fabric.Object.prototype.set({
@@ -451,9 +549,32 @@ function CanvasEditor(parentel, opts) {
     });
     fabric.Canvas.prototype.preserveObjectStacking = true;
     fabric.Object.prototype.onSelect = objectOnSelect;
+    mainWrapper.appendChild(html.div({
+      id: 'CE_zoom',
+      children: [html.span({
+        className: 'CE_icon zoom-out',
+        onmousedown: function onmousedown() {
+          scale = parseFloat((scale + '').substr(0, 3));
+          if (scale > 0.5) scale -= 0.1;
+          zoom.setvalue(scale);
+        }
+      }), zoom, html.span({
+        className: 'CE_icon zoom-in',
+        onmousedown: function onmousedown() {
+          scale = parseFloat((scale + '').substr(0, 3));
+          if (scale < 2) scale += 0.1;
+          zoom.setvalue(scale);
+        }
+      })]
+    }));
     mainWrapper.appendChild(clickCatchMask);
     mainWrapper.appendChild(canvasContainer);
     parentel.appendChild(mainWrapper);
+
+    zoom.onchange = function (value) {
+      updateScaling(value);
+    };
+
     clickCatchMask.addEventListener('click', deselectObjects);
     /**
      * @type {tools}
@@ -475,7 +596,10 @@ function CanvasEditor(parentel, opts) {
     colorPicker = picker.createPicker(colorPickerContainer.DOMElements.body, {
       showHSL: false,
       showHEX: false,
-      palette: 'PALETTE_MATERIAL_CHROME'
+      palette: 'PALETTE_MATERIAL_CHROME',
+      showAlpha: true,
+      color: 'rgb(205, 220, 57)',
+      paletteEditable: true
     });
   }
 
@@ -503,257 +627,184 @@ function CanvasEditor(parentel, opts) {
         return addText();
       });
       tools.openImage.addEventListener('change', handleImage);
+      tools.loadSVG.addEventListener('change', handleSVG);
       tools.backgroundColor.addEventListener('click', function () {
         colorPickerContainer.setTitle('Color picker - fill');
         colorPickerContainer.setVisiblity(true);
 
         colorPicker.onchange = function (e) {
-          var activeObjects = activeCanvas.getActiveObjects();
+          var activeObject = activeCanvas.getActiveObject();
           var hexColor = e.rgbhex;
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
-
-          try {
-            for (var _iterator2 = activeObjects[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var activeObject = _step2.value;
-              applyStyle(activeObject, 'fill', hexColor);
-            }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-                _iterator2["return"]();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
-            }
-          }
+          applyStyle(activeObject, 'fill', hexColor);
         };
       });
-      tools.strokeColor.addEventListener('click', function () {
-        colorPickerContainer.setTitle('Color picker - stroke');
-        colorPickerContainer.setVisiblity(true);
+      tools.grab.addEventListener('click', function () {
+        canvasContainer.style.cursor = 'grab';
+        var children = canvasContainer.children;
+        var start = {
+          x: 0,
+          y: 0
+        };
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
 
-        colorPicker.onchange = function (e) {
-          var activeObjects = activeCanvas.getActiveObjects();
-          var hexColor = e.rgbhex;
-          var _iteratorNormalCompletion3 = true;
-          var _didIteratorError3 = false;
-          var _iteratorError3 = undefined;
-
+        try {
+          for (var _iterator = children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var child = _step.value;
+            child.style.pointerEvents = 'none';
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
           try {
-            for (var _iterator3 = activeObjects[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-              var activeObject = _step3.value;
-              applyStyle(activeObject, 'stroke', hexColor);
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
             }
-          } catch (err) {
-            _didIteratorError3 = true;
-            _iteratorError3 = err;
           } finally {
-            try {
-              if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-                _iterator3["return"]();
-              }
-            } finally {
-              if (_didIteratorError3) {
-                throw _iteratorError3;
-              }
+            if (_didIteratorError) {
+              throw _iteratorError;
             }
           }
-        };
+        }
+
+        canvasContainer.onmousedown = mousedown;
+        canvasContainer.ontouchstart = mousedown;
+        /**
+         * 
+         * @param {MouseEvent | TouchEvent} e 
+         */
+
+        function mousedown(e) {
+          canvasContainer.style.cursor = 'grabbing';
+          start.x = e.clientX || e.touches[0].clientX;
+          start.y = e.clientY || e.touches[0].clientY;
+          document.onmousemove = mousemove;
+          document.ontouchmove = mousemove;
+          document.onmouseup = mouseup;
+          document.ontouchend = mouseup;
+        }
+        /**
+         * 
+         * @param {MouseEvent | TouchEvent} e 
+         */
+
+
+        function mousemove(e) {
+          var x = e.clientX || e.touches[0].clientX;
+          var y = e.clientY || e.touches[0].clientY;
+          var dsX = x - start.x;
+          var dsY = y - start.y;
+          start = {
+            x: x,
+            y: y
+          };
+          var cc = /translate\((.*),(.*)\)/g.exec(canvasContainer.style.transform);
+          var transform = {
+            x: parseFloat(cc[1]),
+            y: parseFloat(cc[2])
+          };
+          translate = {
+            x: transform.x + dsX,
+            y: transform.y + dsY
+          };
+          canvasContainer.style.transform = "translate(".concat(translate.x, "px, ").concat(translate.y, "px) scale(").concat(scale, ")");
+        }
+
+        function mouseup() {
+          canvasContainer.style.cursor = 'grab';
+          document.onmousemove = null;
+          document.onmouseup = null;
+          document.ontouchmove = null;
+          document.ontouchend = null;
+        }
+      });
+      tools.selection.addEventListener('click', function () {
+        canvasContainer.style.cursor = 'default';
+        var children = canvasContainer.children;
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = children[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var child = _step2.value;
+            child.style.removeProperty('pointer-events');
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+              _iterator2["return"]();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
+        }
+
+        canvasContainer.onmousedown = null;
+        canvasContainer.ontouchstart = null;
       });
     })();
 
     (function initTextSettings() {
       textSettings.fontFamily.addEventListener('change', function () {
         var fontFamily = this.value;
-        var activeObjects = activeCanvas.getActiveObjects();
-        var _iteratorNormalCompletion4 = true;
-        var _didIteratorError4 = false;
-        var _iteratorError4 = undefined;
-
-        try {
-          for (var _iterator4 = activeObjects[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-            var activeObject = _step4.value;
-            if (activeObject.type !== 'textbox') continue;
-            applyStyle(activeObject, 'fontFamily', fontFamily);
-          }
-        } catch (err) {
-          _didIteratorError4 = true;
-          _iteratorError4 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-              _iterator4["return"]();
-            }
-          } finally {
-            if (_didIteratorError4) {
-              throw _iteratorError4;
-            }
-          }
-        }
+        var activeObject = activeCanvas.getActiveObject();
+        if (activeObject.type !== 'textbox') return;
+        applyStyle(activeObject, 'fontFamily', fontFamily);
       });
       textSettings.fontSize.addEventListener('input', function () {
         var fontSize = this.value;
-        var activeObjects = activeCanvas.getActiveObjects();
-        var _iteratorNormalCompletion5 = true;
-        var _didIteratorError5 = false;
-        var _iteratorError5 = undefined;
-
-        try {
-          for (var _iterator5 = activeObjects[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-            var activeObject = _step5.value;
-            if (activeObject.type !== 'textbox') continue;
-            applyStyle(activeObject, 'fontSize', fontSize);
-          }
-        } catch (err) {
-          _didIteratorError5 = true;
-          _iteratorError5 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
-              _iterator5["return"]();
-            }
-          } finally {
-            if (_didIteratorError5) {
-              throw _iteratorError5;
-            }
-          }
-        }
+        var activeObject = activeCanvas.getActiveObject();
+        if (activeObject.type !== 'textbox') return;
+        applyStyle(activeObject, 'fontSize', fontSize);
       });
       textSettings.fontWeight.addEventListener('input', function () {
         var fontWeight = this.value;
-        var activeObjects = activeCanvas.getActiveObjects();
-        var _iteratorNormalCompletion6 = true;
-        var _didIteratorError6 = false;
-        var _iteratorError6 = undefined;
-
-        try {
-          for (var _iterator6 = activeObjects[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-            var activeObject = _step6.value;
-            if (activeObject.type !== 'textbox') continue;
-            applyStyle(activeObject, 'fontWeight', fontWeight);
-          }
-        } catch (err) {
-          _didIteratorError6 = true;
-          _iteratorError6 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
-              _iterator6["return"]();
-            }
-          } finally {
-            if (_didIteratorError6) {
-              throw _iteratorError6;
-            }
-          }
-        }
+        var activeObject = activeCanvas.getActiveObject();
+        if (activeObject.type !== 'textbox') return;
+        applyStyle(activeObject, 'fontWeight', fontWeight);
       });
       textSettings.underline.addEventListener('click', function () {
-        var activeObjects = activeCanvas.getActiveObjects();
-        var _iteratorNormalCompletion7 = true;
-        var _didIteratorError7 = false;
-        var _iteratorError7 = undefined;
+        var activeObject = activeCanvas.getActiveObject();
+        if (activeObject.type !== 'textbox') return;
 
-        try {
-          for (var _iterator7 = activeObjects[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-            var activeObject = _step7.value;
-            if (activeObject.type !== 'textbox') continue;
-
-            if (activeObject.underline) {
-              this.classList.remove('active');
-              applyStyle(activeObject, 'underline', false);
-            } else {
-              this.classList.add('active');
-              applyStyle(activeObject, 'underline', true);
-            }
-          }
-        } catch (err) {
-          _didIteratorError7 = true;
-          _iteratorError7 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
-              _iterator7["return"]();
-            }
-          } finally {
-            if (_didIteratorError7) {
-              throw _iteratorError7;
-            }
-          }
+        if (activeObject.underline) {
+          this.classList.remove('active');
+          applyStyle(activeObject, 'underline', false);
+        } else {
+          this.classList.add('active');
+          applyStyle(activeObject, 'underline', true);
         }
       });
       textSettings.italic.addEventListener('click', function () {
-        var activeObjects = activeCanvas.getActiveObjects();
-        var _iteratorNormalCompletion8 = true;
-        var _didIteratorError8 = false;
-        var _iteratorError8 = undefined;
+        var activeObject = activeCanvas.getActiveObject();
+        if (activeObject.type !== 'textbox') return;
 
-        try {
-          for (var _iterator8 = activeObjects[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-            var activeObject = _step8.value;
-            if (activeObject.type !== 'textbox') continue;
-
-            if (activeObject.fontStyle === 'italic') {
-              this.classList.remove('active');
-              applyStyle(activeObject, 'fontStyle', 'normal');
-            } else {
-              this.classList.add('active');
-              applyStyle(activeObject, 'fontStyle', 'italic');
-            }
-          }
-        } catch (err) {
-          _didIteratorError8 = true;
-          _iteratorError8 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
-              _iterator8["return"]();
-            }
-          } finally {
-            if (_didIteratorError8) {
-              throw _iteratorError8;
-            }
-          }
+        if (activeObject.fontStyle === 'italic') {
+          this.classList.remove('active');
+          applyStyle(activeObject, 'fontStyle', 'normal');
+        } else {
+          this.classList.add('active');
+          applyStyle(activeObject, 'fontStyle', 'italic');
         }
       });
       textSettings.strikethrough.addEventListener('click', function () {
-        var activeObjects = activeCanvas.getActiveObjects();
-        var _iteratorNormalCompletion9 = true;
-        var _didIteratorError9 = false;
-        var _iteratorError9 = undefined;
+        var activeObject = activeCanvas.getActiveObject();
+        if (activeObject.type !== 'textbox') return;
 
-        try {
-          for (var _iterator9 = activeObjects[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-            var activeObject = _step9.value;
-            if (activeObject.type !== 'textbox') continue;
-
-            if (activeObject.linethrough) {
-              this.classList.remove('active');
-              applyStyle(activeObject, 'linethrough', false);
-            } else {
-              this.classList.add('active');
-              applyStyle(activeObject, 'linethrough', true);
-            }
-          }
-        } catch (err) {
-          _didIteratorError9 = true;
-          _iteratorError9 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion9 && _iterator9["return"] != null) {
-              _iterator9["return"]();
-            }
-          } finally {
-            if (_didIteratorError9) {
-              throw _iteratorError9;
-            }
-          }
+        if (activeObject.linethrough) {
+          this.classList.remove('active');
+          applyStyle(activeObject, 'linethrough', false);
+        } else {
+          this.classList.add('active');
+          applyStyle(activeObject, 'linethrough', true);
         }
       });
     })();
@@ -781,26 +832,26 @@ function CanvasEditor(parentel, opts) {
       objectSettings.opacity.onchange = function (value) {
         var activeObjects = activeCanvas.getActiveObjects();
         if (activeObjects.length === 0) return;else {
-          var _iteratorNormalCompletion10 = true;
-          var _didIteratorError10 = false;
-          var _iteratorError10 = undefined;
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
 
           try {
-            for (var _iterator10 = activeObjects[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-              var object = _step10.value;
+            for (var _iterator3 = activeObjects[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              var object = _step3.value;
               object.set('opacity', value);
             }
           } catch (err) {
-            _didIteratorError10 = true;
-            _iteratorError10 = err;
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion10 && _iterator10["return"] != null) {
-                _iterator10["return"]();
+              if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+                _iterator3["return"]();
               }
             } finally {
-              if (_didIteratorError10) {
-                throw _iteratorError10;
+              if (_didIteratorError3) {
+                throw _iteratorError3;
               }
             }
           }
@@ -811,13 +862,13 @@ function CanvasEditor(parentel, opts) {
       objectSettings.dropShadow.onchange = function () {
         var activeObjects = activeCanvas.getActiveObjects();
         if (activeObjects.length === 0) return;
-        var _iteratorNormalCompletion11 = true;
-        var _didIteratorError11 = false;
-        var _iteratorError11 = undefined;
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
 
         try {
-          for (var _iterator11 = activeObjects[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-            var object = _step11.value;
+          for (var _iterator4 = activeObjects[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var object = _step4.value;
 
             if (this.value) {
               object.setShadow({
@@ -831,16 +882,16 @@ function CanvasEditor(parentel, opts) {
             }
           }
         } catch (err) {
-          _didIteratorError11 = true;
-          _iteratorError11 = err;
+          _didIteratorError4 = true;
+          _iteratorError4 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion11 && _iterator11["return"] != null) {
-              _iterator11["return"]();
+            if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+              _iterator4["return"]();
             }
           } finally {
-            if (_didIteratorError11) {
-              throw _iteratorError11;
+            if (_didIteratorError4) {
+              throw _iteratorError4;
             }
           }
         }
@@ -851,26 +902,26 @@ function CanvasEditor(parentel, opts) {
       objectSettings.offsetX.oninput = function () {
         var activeObjects = activeCanvas.getActiveObjects();
         if (activeObjects.length === 0) return;
-        var _iteratorNormalCompletion12 = true;
-        var _didIteratorError12 = false;
-        var _iteratorError12 = undefined;
+        var _iteratorNormalCompletion5 = true;
+        var _didIteratorError5 = false;
+        var _iteratorError5 = undefined;
 
         try {
-          for (var _iterator12 = activeObjects[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-            var object = _step12.value;
+          for (var _iterator5 = activeObjects[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+            var object = _step5.value;
             object.shadow.offsetX = this.value;
           }
         } catch (err) {
-          _didIteratorError12 = true;
-          _iteratorError12 = err;
+          _didIteratorError5 = true;
+          _iteratorError5 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion12 && _iterator12["return"] != null) {
-              _iterator12["return"]();
+            if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+              _iterator5["return"]();
             }
           } finally {
-            if (_didIteratorError12) {
-              throw _iteratorError12;
+            if (_didIteratorError5) {
+              throw _iteratorError5;
             }
           }
         }
@@ -881,27 +932,27 @@ function CanvasEditor(parentel, opts) {
       objectSettings.offsetY.oninput = function () {
         var activeObjects = activeCanvas.getActiveObjects();
         if (activeObjects.length === 0) return;
-        var _iteratorNormalCompletion13 = true;
-        var _didIteratorError13 = false;
-        var _iteratorError13 = undefined;
+        var _iteratorNormalCompletion6 = true;
+        var _didIteratorError6 = false;
+        var _iteratorError6 = undefined;
 
         try {
-          for (var _iterator13 = activeObjects[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-            var object = _step13.value;
+          for (var _iterator6 = activeObjects[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+            var object = _step6.value;
             if (!object.shadow) return;
             object.shadow.offsetY = this.value;
           }
         } catch (err) {
-          _didIteratorError13 = true;
-          _iteratorError13 = err;
+          _didIteratorError6 = true;
+          _iteratorError6 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion13 && _iterator13["return"] != null) {
-              _iterator13["return"]();
+            if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
+              _iterator6["return"]();
             }
           } finally {
-            if (_didIteratorError13) {
-              throw _iteratorError13;
+            if (_didIteratorError6) {
+              throw _iteratorError6;
             }
           }
         }
@@ -912,27 +963,27 @@ function CanvasEditor(parentel, opts) {
       objectSettings.blur.oninput = function () {
         var activeObjects = activeCanvas.getActiveObjects();
         if (activeObjects.length === 0) return;
-        var _iteratorNormalCompletion14 = true;
-        var _didIteratorError14 = false;
-        var _iteratorError14 = undefined;
+        var _iteratorNormalCompletion7 = true;
+        var _didIteratorError7 = false;
+        var _iteratorError7 = undefined;
 
         try {
-          for (var _iterator14 = activeObjects[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
-            var object = _step14.value;
+          for (var _iterator7 = activeObjects[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+            var object = _step7.value;
             if (!object.shadow) return;
             object.shadow.blur = this.value;
           }
         } catch (err) {
-          _didIteratorError14 = true;
-          _iteratorError14 = err;
+          _didIteratorError7 = true;
+          _iteratorError7 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion14 && _iterator14["return"] != null) {
-              _iterator14["return"]();
+            if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
+              _iterator7["return"]();
             }
           } finally {
-            if (_didIteratorError14) {
-              throw _iteratorError14;
+            if (_didIteratorError7) {
+              throw _iteratorError7;
             }
           }
         }
@@ -947,33 +998,58 @@ function CanvasEditor(parentel, opts) {
         colorPicker.onchange = function (color) {
           var activeObjects = activeCanvas.getActiveObjects();
           if (activeObjects.length === 0) return;
-          var _iteratorNormalCompletion15 = true;
-          var _didIteratorError15 = false;
-          var _iteratorError15 = undefined;
+          var _iteratorNormalCompletion8 = true;
+          var _didIteratorError8 = false;
+          var _iteratorError8 = undefined;
 
           try {
-            for (var _iterator15 = activeObjects[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
-              var object = _step15.value;
+            for (var _iterator8 = activeObjects[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+              var object = _step8.value;
               if (!object.shadow) return;
               object.shadow.color = color.rgbhex;
             }
           } catch (err) {
-            _didIteratorError15 = true;
-            _iteratorError15 = err;
+            _didIteratorError8 = true;
+            _iteratorError8 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion15 && _iterator15["return"] != null) {
-                _iterator15["return"]();
+              if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
+                _iterator8["return"]();
               }
             } finally {
-              if (_didIteratorError15) {
-                throw _iteratorError15;
+              if (_didIteratorError8) {
+                throw _iteratorError8;
               }
             }
           }
 
           activeCanvas.renderAll();
         };
+      };
+
+      objectSettings.strokeColor.addEventListener('click', function () {
+        colorPickerContainer.setTitle('Color picker - stroke');
+        colorPickerContainer.setVisiblity(true);
+
+        colorPicker.onchange = function (e) {
+          var activeObject = activeCanvas.getActiveObject();
+          var hexColor = e.rgbhex;
+          applyStyle(activeObject, 'stroke', hexColor);
+        };
+      });
+
+      objectSettings.strokeToggle.onchange = function () {
+        if (this.value) {
+          var width = parseFloat(objectSettings.strokeWidth.value.substr(0, 3)) || 1;
+          applyStyle(activeCanvas.getActiveObject(), 'strokeWidth', width);
+        } else {
+          applyStyle(activeCanvas.getActiveObject(), 'strokeWidth', 0);
+        }
+      };
+
+      objectSettings.strokeWidth.oninput = function () {
+        var width = parseFloat(this.value.substr(0, 3));
+        applyStyle(activeCanvas.getActiveObject(), 'strokeWidth', width);
       };
     })();
   }
@@ -985,32 +1061,12 @@ function CanvasEditor(parentel, opts) {
         cut = objectContextMenuOptions.cut,
         deleteBtn = objectContextMenuOptions.deleteBtn,
         lock = objectContextMenuOptions.lock;
-    arrange.addEventListener('click', arrangeOnclick);
-    align.addEventListener('click', alignOnclick);
+    objectContextMenu.childMenu(Object.values(arrangeOptions), arrange);
+    objectContextMenu.childMenu(Object.values(alignOptions), align);
 
     arrangeContextMenu.itemOnclick = alignContextMenu.itemOnclick = arrangeContextMenu.maskOnclick = alignContextMenu.maskOnclick = function () {
       objectContextMenu.hide();
     };
-
-    function arrangeOnclick() {
-      showSecondContext.bind(this)(arrangeContextMenu);
-    }
-
-    function alignOnclick() {
-      showSecondContext.bind(this)(alignContextMenu);
-    }
-
-    function showSecondContext(contextMenu) {
-      /**
-       * @type {HTMLElement}
-       */
-      var el = this;
-      var elClient = el.getBoundingClientRect();
-      contextMenu.show({
-        clientX: elClient.right,
-        clientY: elClient.top
-      });
-    }
 
     canvasContextMenuOptions["delete"].addEventListener('click', deleteCanvas);
     canvasContextMenuOptions.paste.addEventListener('click', pasteObject);
@@ -1123,11 +1179,11 @@ function CanvasEditor(parentel, opts) {
     activeCanvas = null;
     --pages.length;
     page.DOMElement.parentElement.removeChild(page.DOMElement);
-    delete pages[page.name];
+    delete pages.page[page.name];
 
-    for (var key in pages) {
+    for (var key in pages.page) {
       if (key !== 'length') {
-        updateActiveCanvas(pages[key]);
+        updateActiveCanvas(pages.page[key]);
         break;
       }
     }
@@ -1154,26 +1210,26 @@ function CanvasEditor(parentel, opts) {
       lock(activeObject);
     } else {
       var objects = activeObject.getObjects();
-      var _iteratorNormalCompletion16 = true;
-      var _didIteratorError16 = false;
-      var _iteratorError16 = undefined;
+      var _iteratorNormalCompletion9 = true;
+      var _didIteratorError9 = false;
+      var _iteratorError9 = undefined;
 
       try {
-        for (var _iterator16 = objects[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
-          var object = _step16.value;
+        for (var _iterator9 = objects[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+          var object = _step9.value;
           lock(object);
         }
       } catch (err) {
-        _didIteratorError16 = true;
-        _iteratorError16 = err;
+        _didIteratorError9 = true;
+        _iteratorError9 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion16 && _iterator16["return"] != null) {
-            _iterator16["return"]();
+          if (!_iteratorNormalCompletion9 && _iterator9["return"] != null) {
+            _iterator9["return"]();
           }
         } finally {
-          if (_didIteratorError16) {
-            throw _iteratorError16;
+          if (_didIteratorError9) {
+            throw _iteratorError9;
           }
         }
       }
@@ -1207,7 +1263,7 @@ function CanvasEditor(parentel, opts) {
     var pageName = this.getAttribute('data-name');
 
     if (activeCanvas.page.pageName !== pageName) {
-      updateActiveCanvas(pages[pageName]);
+      updateActiveCanvas(pages.page[pageName]);
     }
 
     var group = objectContextMenuOptions.group;
@@ -1263,7 +1319,16 @@ function CanvasEditor(parentel, opts) {
     var CcontainerParentClient = canvasContainer.parentElement.getBoundingClientRect();
     var y = CcontainerParentClient.height / 2 - CcontainerClient.height / 2;
     var x = CcontainerParentClient.width / 2 - CcontainerClient.width / 2;
-    canvasContainer.style.transform = "translate(".concat(x, "px, ").concat(y, "px)");
+    translate = {
+      x: x,
+      y: y
+    };
+    canvasContainer.style.transform = "translate(".concat(x, "px, ").concat(y, "px) scale(").concat(scale, ")");
+  }
+
+  function updateScaling(val) {
+    scale = val;
+    canvasContainer.style.transform = "translate(".concat(translate.x, "px, ").concat(translate.y, "px) scale(").concat(scale, ")");
   }
 
   function handleImage() {
@@ -1280,6 +1345,38 @@ function CanvasEditor(parentel, opts) {
     }
 
     reader.readAsDataURL(this.files[0]);
+  }
+
+  function handleSVG() {
+    mainWrapper.style.pointerEvents = 'none';
+    mainWrapper.style.cursor = 'progress';
+    var reader = new FileReader();
+    reader.onload = readerOnLoad;
+    /**
+     * 
+     * @param {ProgressEvent} e 
+     */
+
+    function readerOnLoad(e) {
+      var svg = e.target.result;
+      fabric.loadSVGFromString(svg, function (result, options) {
+        var _activeCanvas4;
+
+        if (activeCanvas.getObjects().length !== 0) {
+          addPage();
+        }
+
+        activeCanvas.setHeight(options.height);
+        activeCanvas.setWidth(options.width);
+
+        (_activeCanvas4 = activeCanvas).add.apply(_activeCanvas4, _toConsumableArray(result));
+
+        mainWrapper.style.removeProperty('pointer-events');
+        mainWrapper.style.removeProperty('cursor');
+      });
+    }
+
+    reader.readAsText(this.files[0]);
   }
   /**
    * 
@@ -1302,72 +1399,104 @@ function CanvasEditor(parentel, opts) {
   }
 
   function objectOnSelect() {
-    setTimeout(function () {
-      var activeObject = activeCanvas.getActiveObject();
-      var textSettings = alltools.textSettings;
-      var objectSettings = alltools.objectSettings;
-      if (!activeObject) return;
+    /**
+     * @type {fabric.ActiveSelection | fabric.Object}
+     */
+    var activeObject = this || activeCanvas.getActiveObject();
+    if (['activeSelection', 'group'].indexOf(activeObject.type) > -1) return;
+    colorPickerContainer.setVisiblity(false);
+    var textSettings = alltools.textSettings;
+    var objectSettings = alltools.objectSettings;
 
-      if (activeObject.type === 'textbox') {
-        /**
-         * @type {fabric.Textbox}
-         */
-        var object = activeObject;
-        var fontSize = object.fontSize;
-        var fontFamily = object.fontFamily;
-        var fontWeight = object.fontWeight;
+    if (activeObject.type === 'text') {
+      var text = activeObject.text;
+      var textobj = activeObject.toObject();
+      delete textobj.text;
+      delete textobj.type;
+      var clonedtextobj = JSON.parse(JSON.stringify(textobj));
+      var textbox = new fabric.Textbox(text, clonedtextobj);
+      deleteObject();
+      activeObject = textbox;
+      activeCanvas.add(textbox);
+      activeCanvas.setActiveObject(textbox);
+    }
 
-        if (object.underline) {
-          textSettings.underline.classList.add('active');
-        } else {
-          textSettings.underline.classList.remove('active');
-        }
+    if (activeObject.type === 'textbox') {
+      var fontSize = activeObject.fontSize;
+      var fontFamily = activeObject.fontFamily;
+      var fontWeight = activeObject.fontWeight;
 
-        if (object.fontStyle === 'italic') {
-          textSettings.italic.classList.add('active');
-        } else {
-          textSettings.italic.classList.remove('active');
-        }
-
-        if (object.linethrough) {
-          textSettings.strikethrough.classList.add('active');
-        } else {
-          textSettings.strikethrough.classList.remove('active');
-        }
-
-        textSettings.fontFamily.value = fontFamily;
-        textSettings.fontWeight.value = fontWeight;
-        textSettings.fontSize.value = fontSize;
-      }
-
-      objectSettings.opacity.setValue(activeObject.opacity);
-
-      if (activeObject.shadow) {
-        objectSettings.offsetX.value = activeObject.shadow.offsetX;
-        objectSettings.offsetY.value = activeObject.shadow.offsetY;
-        objectSettings.blur.value = activeObject.shadow.blur;
-      }
-
-      if (!activeObject.get('shadow')) {
-        objectSettings.dropShadow.setvalue(false);
+      if (activeObject.underline) {
+        textSettings.underline.classList.add('active');
       } else {
-        objectSettings.dropShadow.setvalue(true);
+        textSettings.underline.classList.remove('active');
       }
-    }, 10);
+
+      if (activeObject.fontStyle === 'italic') {
+        textSettings.italic.classList.add('active');
+      } else {
+        textSettings.italic.classList.remove('active');
+      }
+
+      if (activeObject.linethrough) {
+        textSettings.strikethrough.classList.add('active');
+      } else {
+        textSettings.strikethrough.classList.remove('active');
+      }
+
+      textSettings.fontFamily.value = fontFamily;
+      textSettings.fontWeight.value = fontWeight;
+      textSettings.fontSize.value = fontSize;
+    }
+
+    if (activeObject.strokeWidth > 0) {
+      objectSettings.strokeToggle.setvalue(true);
+      objectSettings.strokeWidth.value = activeObject.strokeWidth;
+    } else {
+      objectSettings.strokeToggle.setvalue(false);
+    }
+
+    objectSettings.opacity.setvalue(activeObject.opacity);
+
+    if (activeObject.shadow) {
+      objectSettings.offsetX.value = activeObject.shadow.offsetX;
+      objectSettings.offsetY.value = activeObject.shadow.offsetY;
+      objectSettings.blur.value = activeObject.shadow.blur;
+    }
+
+    if (!activeObject.get('shadow')) {
+      objectSettings.dropShadow.setvalue(false);
+    } else {
+      objectSettings.dropShadow.setvalue(true);
+    }
   }
+  /**
+   * 
+   * @param {fabric.ActiveSelection | fabric.Object | fabric.Group} object 
+   * @param {String} style 
+   * @param {String|Number} value 
+   */
+
 
   function applyStyle(object, style, value) {
-    object[style] = value;
-    object.set({
-      dirty: true
-    });
+    if (object.type === 'activeSelection' || object.type === 'group') {
+      return false;
+    } else {
+      object[style] = value;
+      object.set({
+        dirty: true
+      });
+    }
+
     activeCanvas.renderAll();
   }
 
   return {
     saveAsBase64: saveAsBase64,
     saveAsPng: saveAsPng,
-    saveAsJPEG: saveAsJPEG
+    saveAsJPEG: saveAsJPEG,
+    toJSON: toJSON,
+    loadJSON: loadJSON
   };
 }
 
@@ -32696,7 +32825,8 @@ function freeContainer() {
   });
   var mover = html.create('span', {
     className: 'CE_mover',
-    onmousedown: onmousedown
+    onmousedown: onmousedown,
+    ontouchstart: onmousedown
   });
   var mainParent = html.get('#CE_wrapper');
   var parentElement = opts.parentElement || mainParent;
@@ -32829,14 +32959,14 @@ function freeContainer() {
   }
   /**
    * 
-   * @param {MouseEvent} e 
+   * @param {MouseEvent | TouchEvent} e 
    */
 
 
   function onmousedown(e) {
     e.preventDefault();
-    start.x = e.clientX;
-    start.y = e.clientY;
+    start.x = e.clientX || e.touches[0].clientX;
+    start.y = e.clientY || e.touches[0].clientY;
     var wrapperClient = wrapper.getBoundingClientRect();
     var wrapperPClient = mainParent.getBoundingClientRect();
     var x = wrapperClient.x - wrapperPClient.x;
@@ -32845,7 +32975,9 @@ function freeContainer() {
     wrapper.style.position = 'absolute';
     mainParent.appendChild(wrapper);
     document.onmousemove = onmousemove;
+    document.ontouchmove = onmousemove;
     document.onmouseup = onmouseup;
+    document.ontouchend = onmouseup;
   }
   /**
    * 
@@ -32855,10 +32987,13 @@ function freeContainer() {
 
   function onmousemove(e) {
     e.preventDefault();
-    move.x = e.clientX - start.x;
-    move.y = e.clientY - start.y;
-    start.x = e.clientX;
-    start.y = e.clientY;
+    var cx = e.clientX || e.touches[0].clientX;
+    ;
+    var cy = e.clientY || e.touches[0].clientY;
+    move.x = cx - start.x;
+    move.y = cy - start.y;
+    start.x = cx;
+    start.y = cy;
     var wrapperClient = wrapper.getBoundingClientRect();
     var wrapperPClient = mainParent.getBoundingClientRect();
     var x = wrapperClient.x - wrapperPClient.x;
@@ -32890,7 +33025,9 @@ function freeContainer() {
     }
 
     document.onmouseup = null;
+    document.ontouchend = null;
     document.onmousemove = null;
+    document.ontouchmove = null;
   }
   /**
    * 
@@ -33929,7 +34066,7 @@ function button(text = '', props = {}) {
   if (text) {
     props.textContent = text;
   }
-  let button = create('span', props);
+  let button = create('button', props);
   button.bubble();
 
   return button;
@@ -34033,7 +34170,7 @@ function rangeSlider(params = {}) {
   }
   if (params.value) {
     setTimeout(() => {
-      setValue(params.value);
+      setvalue(params.value);
     }, 0);
   }
 
@@ -34077,9 +34214,9 @@ function rangeSlider(params = {}) {
     if (x <= width && x >= 0) {
       calculateValue(x);
     } else if (mainWrapper.value !== max && x > width) {
-      setValue(max);
+      setvalue(max);
     } else if (mainWrapper.value !== min && x < 0) {
-      setValue(min);
+      setvalue(min);
     }
   }
 
@@ -34098,14 +34235,14 @@ function rangeSlider(params = {}) {
     let value = x / width * diff;
     value += min;
 
-    setValue(value);
+    setvalue(value);
   }
 
   /**
    * 
    * @param {Number} value 
    */
-  function setValue(value) {
+  function setvalue(value) {
 
     if (value > max) {
       value = max;
@@ -34118,7 +34255,9 @@ function rangeSlider(params = {}) {
     makeActive();
     width = mainWrapper.offsetWidth;
 
-    let remainder = value % step;
+    let remainder = value / step;
+    remainder %= 1;
+    remainder *= step;
     if (remainder >= step / 2) {
       let tmp = value;
       tmp += (step - remainder);
@@ -34148,7 +34287,7 @@ function rangeSlider(params = {}) {
     }, 1000);
   }
 
-  mainWrapper.setValue = setValue;
+  mainWrapper.setvalue = setvalue;
   mainWrapper.appendChild(btn);
 
   return mainWrapper;
@@ -34391,8 +34530,9 @@ var html = __webpack_require__(12)["default"];
  * @property {HTMLElement} circle
  * @property {HTMLElement} rectangle
  * @property {HTMLElement} triangle
+ * @property {HTMLElement} selection
+ * @property {HTMLElement} grab
  * @property {HTMLElement} backgroundColor
- * @property {HTMLElement} strokeColor
  * @property {HTMLInputElement} openImage
  * @property {HTMLInputElement} loadSVG
  */
@@ -34419,6 +34559,8 @@ var html = __webpack_require__(12)["default"];
  * @property {HTMLInputElement} offsetX
  * @property {HTMLInputElement} offsetY
  * @property {HTMLInputElement} blur
+ * @property {HTMLInputElement} strokeToggle
+ * @property {HTMLInputElement} strokeWidth
  */
 
 /**
@@ -34488,12 +34630,7 @@ function toolsContainer() {
     /**
      * @type {HTMLElement}
      */
-    backgroundColor: null,
-
-    /**
-     * @type {HTMLElement}
-     */
-    strokeColor: null
+    backgroundColor: null
   };
   var page = {
     pageName: html.input({
@@ -34532,20 +34669,32 @@ function toolsContainer() {
     offsetX: html.input({
       type: 'number',
       placeholder: 'x',
-      value: 0
+      value: 2
     }),
     offsetY: html.input({
       type: 'number',
       placeholder: 'y',
-      value: 0
+      value: 2
     }),
     blur: html.input({
       type: 'number',
       placeholder: 'blur',
-      value: 0
+      value: 2
     }),
     color: html.span({
       className: 'CE_icon backgroundColor'
+    }),
+    strokeToggle: html.toggler({
+      size: 20
+    }),
+    strokeWidth: html.input({
+      min: 1,
+      type: 'number',
+      placeholder: 'stroke',
+      value: 1
+    }),
+    strokeColor: html.span({
+      className: 'CE_icon CE_tool strokeColor'
     })
   };
   var textOptions = {
@@ -34599,7 +34748,16 @@ function toolsContainer() {
         }
       })]
     }),
-    loadSVG: icon('image1', 'Load SVG file')
+    loadSVG: html.create('label', {
+      className: 'CE_icon_text',
+      children: [icon('image', 'Open SVG file'), html.create('input', {
+        type: 'file',
+        accept: '.svg',
+        style: {
+          display: 'none'
+        }
+      })]
+    })
   };
   var cm_shapes = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_1__["contextMenu"])(Object.values(shapes));
   var cm_imageOptions = Object(_contextmenu__WEBPACK_IMPORTED_MODULE_1__["contextMenu"])(Object.values(imageOptions));
@@ -34664,7 +34822,7 @@ function toolsContainer() {
         }), html.div({
           className: 'CE_dropshadow-controls',
           children: [html.create('small', {
-            textContent: 'Set Color'
+            textContent: 'Set color'
           }), object.color]
         }), html.div({
           className: 'CE_dropshadow-controls',
@@ -34682,8 +34840,29 @@ function toolsContainer() {
           })]
         })]
       }));
+      objectSettingsAr.push(html.div({
+        className: 'CE_tool CE_dropshadow-tool',
+        children: [html.span({
+          textContent: 'Stroke'
+        }), html.div({
+          className: 'CE_dropshadow-controls',
+          children: [object.strokeToggle]
+        }), html.div({
+          className: 'CE_dropshadow-controls',
+          children: [html.create('small', {
+            textContent: 'Stroke width'
+          }), html.div({
+            children: [object.strokeWidth]
+          })]
+        }), html.div({
+          className: 'CE_dropshadow-controls',
+          children: [html.create('small', {
+            textContent: 'Set stroke color'
+          }), object.strokeColor]
+        })]
+      }));
       newContainer.bind(this)('Object', objectSettingsAr, 'CE_col');
-      object.opacity.setValue(object.opacity.value);
+      object.opacity.setvalue(object.opacity.value);
     }
 
     function updateActiveTool() {
@@ -34805,11 +34984,13 @@ function toolsContainer() {
 
   return {
     tools: _objectSpread({}, shapes, imageOptions, {
+      grab: mainTools.hand,
+      selection: mainTools.selection,
       addPage: page.addPage,
       addText: textOptions.addText,
       backgroundColor: mainTools.backgroundColor,
-      strokeColor: mainTools.strokeColor,
-      openImage: imageOptions.openImage.querySelector('input')
+      openImage: imageOptions.openImage.querySelector('input'),
+      loadSVG: imageOptions.loadSVG.querySelector('input')
     }),
     textSettings: _objectSpread({}, textOptions, textStyle, {
       fontSize: textOptions.fontSize.querySelector('input')
@@ -34842,6 +35023,7 @@ var html = __webpack_require__(12)["default"];
  * @property {function(number, number):void} setPosition
  * @property {function(HTMLElement):void} itemOnclick
  * @property {function():void} maskOnclick
+ * @property {function(HTMLElement[], HTMLElement):void} childMenu
  */
 
 /**
@@ -34882,7 +35064,8 @@ function contextMenu() {
     addItems: addItems,
     removeItem: removeItem,
     insertBefore: insertBefore,
-    setPosition: setPosition
+    setPosition: setPosition,
+    childMenu: childMenu
   };
 
   returnable.itemOnclick = function () {
@@ -34932,6 +35115,14 @@ function contextMenu() {
 
     if (position.x + cmClient.width > innerWidth) {
       position.x -= cmClient.width;
+    }
+
+    if (position.x < 0) {
+      position.x -= 0 - position.x;
+    }
+
+    if (position.y < 0) {
+      position.y -= 0 - position.y;
     }
 
     if (position.y + cmClient.height > innerHeight) {
@@ -35018,6 +35209,69 @@ function contextMenu() {
   function insertBefore(el, refEl) {
     cm.insertBefore(el, refEl);
   }
+  /**
+   * 
+   * @param {HTMLAllCollection | HTMLElement[]} items 
+   * @param {HTMLElement} item 
+   */
+
+
+  function childMenu(items, item) {
+    var childCM = html.div({
+      className: 'CE_contextmenu'
+    });
+
+    if (items.constructor.name === 'NodeList') {
+      items = items.values();
+    }
+
+    var _iteratorNormalCompletion2 = true;
+    var _didIteratorError2 = false;
+    var _iteratorError2 = undefined;
+
+    try {
+      for (var _iterator2 = items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        var el = _step2.value;
+        childCM.appendChild(el);
+      }
+    } catch (err) {
+      _didIteratorError2 = true;
+      _iteratorError2 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+          _iterator2["return"]();
+        }
+      } finally {
+        if (_didIteratorError2) {
+          throw _iteratorError2;
+        }
+      }
+    }
+
+    if (item.parentElement === cm) {
+      item.appendChild(childCM);
+      item.addEventListener('mouseover', function () {
+        var cmClient = childCM.getBoundingClientRect();
+
+        if (cmClient.x + cmClient.width > innerWidth) {
+          childCM.style.left = '-100%';
+        }
+
+        if (cmClient.x < 0) {
+          childCM.style.left = '100%';
+        }
+
+        if (cmClient.y < 0) {
+          childCM.style.top = '100%';
+        }
+
+        if (cmClient.y + cmClient.height > innerHeight) {
+          childCM.style.top = '-100%';
+        }
+      });
+    }
+  }
 
   function setPosition(x, y) {
     position.x = x;
@@ -35059,7 +35313,7 @@ if(false) {}
 
 exports = module.exports = __webpack_require__(15)(false);
 // Module
-exports.push([module.i, "#CE_wrapper {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  position: relative;\n  background-color: #fcfcfc;\n}\n\n#CE_wrapper .CE_click-catch-mask {\n  z-index: 0;\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  width: 100%;\n}\n\n#CE_wrapper #CE_tools-wrapper {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: row;\n          flex-flow: row;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  padding: 5px;\n  margin: 0;\n  background-color: #584e53;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  z-index: 2;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column;\n          flex-flow: column;\n  overflow: auto;\n  padding-top: 5px;\n  padding-left: 5px;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper > .CE_freeContainer_wrapper {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  position: static;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper > .CE_freeContainer_wrapper:not(:first-child) {\n  margin-top: 5px;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column;\n          flex-flow: column;\n  overflow: auto;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > * {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  background-color: #363134;\n  color: white;\n  height: 40px;\n  width: 40px;\n  margin-top: 5px;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *:hover {\n  background-color: #222122;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.object::before {\n  content: \"\\e921\";\n}\n\n#CE_wrapper #CE_canvasContainer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  z-index: 1;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container:not(:first-child) {\n  margin-left: 30px;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container {\n  margin: 15px;\n  -webkit-box-shadow: 2px 2px 1px 2px #0f0f0f;\n          box-shadow: 2px 2px 1px 2px #0f0f0f;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container.active {\n  -webkit-box-shadow: 2px 2px 1px 2px #250a6e;\n          box-shadow: 2px 2px 1px 2px #250a6e;\n}\n\n.CE_icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  width: 30px;\n  background: transparent;\n  border: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  font-size: 1em;\n}\n\n.CE_icon.backgroundColor {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  padding: 10px;\n  background-color: #ccf !important;\n}\n\n.CE_icon.strokeColor {\n  border: solid 4px #ccf !important;\n}\n\n.CE_icon:active {\n  outline: none;\n  border: none;\n  -webkit-transform: scale(0.85);\n          transform: scale(0.85);\n}\n\n.CE_icon:focus {\n  outline: none;\n  border: solid 1px rgba(0, 0, 255, .3);\n}\n\n.CE_icon.active {\n  background-color: rgba(0, 0, 255, .3) !important;\n}\n\n.CE_btn {\n  height: 40px;\n  border: none;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  background-color: #68f;\n  color: white;\n  font-size: 1em;\n  text-transform: uppercase;\n}\n\n.CE_mask {\n  display: block;\n  position: fixed;\n  left: 0;\n  top: 0;\n  height: 100vh;\n  width: 100vw;\n  z-index: 999;\n}\n\n.CE_highlight {\n  position: relative;\n}\n\n.CE_highlight::after {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(0, 0, 0, .3);\n  border: solid 4px #dada8e;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n.rangeSlider-wrapper {\n  margin: 20px 20px !important;\n  width: auto !important;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  margin: 5px;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column wrap;\n          flex-flow: column wrap;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div .CE_icon {\n  margin: 0 10px 0 15px;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div > input {\n  width: 60px;\n  height: 30px;\n  text-align: center;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div > * {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div > *:not(:first-child) {\n  margin-left: 5px;\n}", ""]);
+exports.push([module.i, "#CE_wrapper {\n  width: 100%;\n  height: 100%;\n  overflow: hidden;\n  position: relative;\n  background-color: #fcfcfc;\n}\n\n#CE_wrapper #CE_zoom {\n  position: fixed;\n  bottom: 10px;\n  right: 10px;\n  width: 220px;\n  height: 40px;\n  z-index: 4;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n#CE_wrapper #CE_zoom > div {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n}\n\n#CE_wrapper .CE_click-catch-mask {\n  z-index: 0;\n  position: absolute;\n  left: 0;\n  top: 0;\n  height: 100%;\n  width: 100%;\n}\n\n#CE_wrapper #CE_tools-wrapper {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: row;\n          flex-flow: row;\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  padding: 5px;\n  margin: 0;\n  background-color: #584e53;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  z-index: 2;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column;\n          flex-flow: column;\n  overflow: auto;\n  padding-top: 5px;\n  padding-left: 5px;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper > .CE_freeContainer_wrapper {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  position: static;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_container-wrapper > .CE_freeContainer_wrapper:not(:first-child) {\n  margin-top: 5px;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  height: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column;\n          flex-flow: column;\n  overflow: auto;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > * {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  background-color: #363134;\n  color: white;\n  height: 40px;\n  width: 40px;\n  margin-top: 5px;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *:hover {\n  background-color: #222122;\n}\n\n#CE_wrapper #CE_tools-wrapper #CE_tools-container > *.object::before {\n  content: \"\\e921\";\n}\n\n#CE_wrapper #CE_canvasContainer {\n  position: absolute;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  z-index: 1;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container:not(:first-child) {\n  margin-left: 30px;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container {\n  margin: 15px;\n  -webkit-box-shadow: 2px 2px 1px 2px #0f0f0f;\n          box-shadow: 2px 2px 1px 2px #0f0f0f;\n}\n\n#CE_wrapper #CE_canvasContainer > .canvas-container.active {\n  -webkit-box-shadow: 2px 2px 1px 2px #250a6e;\n          box-shadow: 2px 2px 1px 2px #250a6e;\n}\n\n.CE_icon {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  height: 30px;\n  width: 30px;\n  background: transparent;\n  border: none;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  font-size: 1em;\n}\n\n.CE_icon.backgroundColor {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n  padding: 10px;\n  background-color: #ccf !important;\n}\n\n.CE_icon.strokeColor {\n  border: solid 4px #ccf !important;\n}\n\n.CE_icon:active {\n  outline: none;\n  border: none;\n  -webkit-transform: scale(0.85);\n          transform: scale(0.85);\n}\n\n.CE_icon:focus {\n  outline: none;\n  border: solid 1px rgba(0, 0, 255, .3);\n}\n\n.CE_icon.active {\n  background-color: rgba(0, 0, 255, .3) !important;\n}\n\n.CE_btn {\n  height: 40px;\n  border: none;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  background-color: #68f;\n  color: white;\n  font-size: 1em;\n  text-transform: uppercase;\n}\n\n.CE_mask {\n  display: block;\n  position: fixed;\n  left: 0;\n  top: 0;\n  height: 100vh;\n  width: 100vw;\n  z-index: 999;\n}\n\n.CE_highlight {\n  position: relative;\n}\n\n.CE_highlight::after {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(0, 0, 0, .3);\n  border: solid 4px #dada8e;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n.rangeSlider-wrapper {\n  margin: 20px 20px !important;\n  width: auto !important;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  margin: 5px;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-flow: column wrap;\n          flex-flow: column wrap;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div .CE_icon {\n  margin: 0 10px 0 15px;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div > input {\n  width: 60px;\n  height: 30px;\n  text-align: center;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div > * {\n  -ms-flex-negative: 0;\n      flex-shrink: 0;\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box;\n}\n\n.CE_dropshadow-tool .CE_dropshadow-controls > div > *:not(:first-child) {\n  margin-left: 5px;\n}", ""]);
 
 
 
@@ -35164,7 +35418,7 @@ if(false) {}
 
 exports = module.exports = __webpack_require__(15)(false);
 // Module
-exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  background-color: white;\n  -webkit-transform-origin: top;\n          transform-origin: top;\n  z-index: 999;\n  border-radius: 2px;\n  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n          box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n}\n\n.CE_contextmenu > * {\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  min-width: 200px;\n  min-height: 30px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 10px;\n  font-size: 0.8em;\n  font-weight: 500;\n  cursor: default;\n}\n\n.CE_contextmenu > *:not(:last-child) {\n  border-bottom: solid 1px rgba(0, 0, 0, .4);\n}\n\n.CE_contextmenu > *:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_contextmenu > *.disabled {\n  color: #ccc;\n}\n\n.CE_contextmenu > *.disabled:hover {\n  background-color: white;\n}\n\n.CE_contextmenu *[data-expandable] {\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.CE_contextmenu .CE_icon_text span {\n  width: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: row;\n          flex-direction: row;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.CE_contextmenu .CE_icon_text span .CE_icon {\n  margin: 0;\n  width: 30px;\n}", ""]);
+exports.push([module.i, ".CE_contextmenu {\n  position: fixed;\n  left: 0;\n  top: 0;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  background-color: white;\n  -webkit-transform-origin: top;\n          transform-origin: top;\n  z-index: 999;\n  border-radius: 2px;\n  -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n          box-shadow: 4px 4px 20px rgba(0, 0, 56, .2);\n}\n\n.CE_contextmenu > * {\n  position: relative;\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n  min-width: 200px;\n  min-height: 30px;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  padding: 0 10px;\n  font-size: 0.8em;\n  font-weight: 500;\n  cursor: default;\n}\n\n.CE_contextmenu > * > .CE_contextmenu {\n  display: none;\n  position: absolute;\n  left: 100%;\n  bottom: 0;\n  min-height: 30px;\n  height: -webkit-fit-content;\n  height: -moz-fit-content;\n  height: fit-content;\n}\n\n.CE_contextmenu > *:not(:last-child) {\n  border-bottom: solid 1px rgba(0, 0, 0, .4);\n}\n\n.CE_contextmenu > *:hover {\n  background-color: rgba(0, 0, 0, .2);\n}\n\n.CE_contextmenu > *:hover > .CE_contextmenu {\n  display: block;\n}\n\n.CE_contextmenu > *.disabled {\n  color: #ccc;\n}\n\n.CE_contextmenu > *.disabled:hover {\n  background-color: white;\n}\n\n.CE_contextmenu *[data-expandable] {\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n}\n\n.CE_contextmenu .CE_icon_text span {\n  width: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: horizontal;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: row;\n          flex-direction: row;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n}\n\n.CE_contextmenu .CE_icon_text span .CE_icon {\n  margin: 0;\n  width: 30px;\n}", ""]);
 
 
 
@@ -35263,6 +35517,135 @@ module.exports = __webpack_require__.p + "fonts/carddesigner.svg";
 
 /***/ }),
 /* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/*
+ * JavaScript Canvas to Blob
+ * https://github.com/blueimp/JavaScript-Canvas-to-Blob
+ *
+ * Copyright 2012, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * https://opensource.org/licenses/MIT
+ *
+ * Based on stackoverflow user Stoive's code snippet:
+ * http://stackoverflow.com/q/4998908
+ */
+
+/* global atob, Blob, define */
+
+;(function (window) {
+  'use strict'
+
+  var CanvasPrototype =
+    window.HTMLCanvasElement && window.HTMLCanvasElement.prototype
+  var hasBlobConstructor =
+    window.Blob &&
+    (function () {
+      try {
+        return Boolean(new Blob())
+      } catch (e) {
+        return false
+      }
+    })()
+  var hasArrayBufferViewSupport =
+    hasBlobConstructor &&
+    window.Uint8Array &&
+    (function () {
+      try {
+        return new Blob([new Uint8Array(100)]).size === 100
+      } catch (e) {
+        return false
+      }
+    })()
+  var BlobBuilder =
+    window.BlobBuilder ||
+    window.WebKitBlobBuilder ||
+    window.MozBlobBuilder ||
+    window.MSBlobBuilder
+  var dataURIPattern = /^data:((.*?)(;charset=.*?)?)(;base64)?,/
+  var dataURLtoBlob =
+    (hasBlobConstructor || BlobBuilder) &&
+    window.atob &&
+    window.ArrayBuffer &&
+    window.Uint8Array &&
+    function (dataURI) {
+      var matches,
+        mediaType,
+        isBase64,
+        dataString,
+        byteString,
+        arrayBuffer,
+        intArray,
+        i,
+        bb
+      // Parse the dataURI components as per RFC 2397
+      matches = dataURI.match(dataURIPattern)
+      if (!matches) {
+        throw new Error('invalid data URI')
+      }
+      // Default to text/plain;charset=US-ASCII
+      mediaType = matches[2]
+        ? matches[1]
+        : 'text/plain' + (matches[3] || ';charset=US-ASCII')
+      isBase64 = !!matches[4]
+      dataString = dataURI.slice(matches[0].length)
+      if (isBase64) {
+        // Convert base64 to raw binary data held in a string:
+        byteString = atob(dataString)
+      } else {
+        // Convert base64/URLEncoded data component to raw binary:
+        byteString = decodeURIComponent(dataString)
+      }
+      // Write the bytes of the string to an ArrayBuffer:
+      arrayBuffer = new ArrayBuffer(byteString.length)
+      intArray = new Uint8Array(arrayBuffer)
+      for (i = 0; i < byteString.length; i += 1) {
+        intArray[i] = byteString.charCodeAt(i)
+      }
+      // Write the ArrayBuffer (or ArrayBufferView) to a blob:
+      if (hasBlobConstructor) {
+        return new Blob([hasArrayBufferViewSupport ? intArray : arrayBuffer], {
+          type: mediaType
+        })
+      }
+      bb = new BlobBuilder()
+      bb.append(arrayBuffer)
+      return bb.getBlob(mediaType)
+    }
+  if (window.HTMLCanvasElement && !CanvasPrototype.toBlob) {
+    if (CanvasPrototype.mozGetAsFile) {
+      CanvasPrototype.toBlob = function (callback, type, quality) {
+        var self = this
+        setTimeout(function () {
+          if (quality && CanvasPrototype.toDataURL && dataURLtoBlob) {
+            callback(dataURLtoBlob(self.toDataURL(type, quality)))
+          } else {
+            callback(self.mozGetAsFile('blob', type))
+          }
+        })
+      }
+    } else if (CanvasPrototype.toDataURL && dataURLtoBlob) {
+      CanvasPrototype.toBlob = function (callback, type, quality) {
+        var self = this
+        setTimeout(function () {
+          callback(dataURLtoBlob(self.toDataURL(type, quality)))
+        })
+      }
+    }
+  }
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_RESULT__ = (function () {
+      return dataURLtoBlob
+    }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+  } else {}
+})(window)
+
+
+/***/ }),
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!

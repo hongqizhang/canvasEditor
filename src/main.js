@@ -15,6 +15,7 @@ import './css/res/style.css';
 import {
   contextMenu
 } from './components/contextmenu';
+import b64ToBlob from 'blueimp-canvas-to-blob';
 
 const html = require('html-element-js').default;
 
@@ -99,18 +100,18 @@ export function CanvasEditor(parentel, opts) {
     })
   };
   let arrangeOptions = {
+    sendBackwards: html.span({
+      textContent: 'Send backward'
+    }),
     bringForward: html.span({
       textContent: 'Bring forward'
     }),
     bringToFront: html.span({
       textContent: 'Bring front'
     }),
-    sendBackward: html.span({
-      textContent: 'Send backward'
-    }),
     sendToBack: html.span({
       textContent: 'Send back'
-    }),
+    })
   }
   let alignOptions = {
     center: html.span({
@@ -137,6 +138,7 @@ export function CanvasEditor(parentel, opts) {
   let mouseEvent = null;
 
   let pages = {};
+  pages.page = {};
   pages.length = 0;
   /**
    * @type {fabric.Canvas}
@@ -152,6 +154,14 @@ export function CanvasEditor(parentel, opts) {
    * @type {fabric.ActiveSelection[]}
    */
   let lockedObjects = [];
+  let scale = 1;
+  let translate = {};
+  let zoom = html.rangeSlider({
+    min: 0.5,
+    max: 2,
+    value: 1,
+    step: 0.001
+  });
 
   init();
 
@@ -167,6 +177,7 @@ export function CanvasEditor(parentel, opts) {
     let text = new fabric.Textbox(value, props);
     activeCanvas.add(text);
     activeCanvas.centerObject(text);
+    activeCanvas.setActiveObject(text);
   }
 
   function addImage(img, props) {
@@ -194,12 +205,12 @@ export function CanvasEditor(parentel, opts) {
 
       image.scaleToHeight(height);
     }
-
+    activeCanvas.setActiveObject(image);
   }
 
   function addRect(props) {
     props = props || {
-      fill: 'red',
+      fill: colorPicker ? colorPicker.color : '#000',
       width: 50,
       height: 50
     };
@@ -207,22 +218,24 @@ export function CanvasEditor(parentel, opts) {
     activeCanvas.add(rect);
 
     activeCanvas.centerObject(rect);
+    activeCanvas.setActiveObject(rect);
   }
 
   function addCircle(props) {
     props = props || {
-      fill: 'red',
+      fill: colorPicker ? colorPicker.color : '#000',
       radius: 25
     };
 
     let circle = new fabric.Circle(props);
     activeCanvas.add(circle);
     activeCanvas.centerObject(circle);
+    activeCanvas.setActiveObject(circle);
   }
 
   function addTriangle(props) {
     props = props || {
-      fill: 'red',
+      fill: colorPicker ? colorPicker.color : '#000',
       height: 50,
       width: 50
     };
@@ -230,6 +243,7 @@ export function CanvasEditor(parentel, opts) {
     let triangle = new fabric.Triangle(props);
     activeCanvas.add(triangle);
     activeCanvas.centerObject(triangle);
+    activeCanvas.setActiveObject(triangle);
   }
 
   function addPage() {
@@ -252,7 +266,10 @@ export function CanvasEditor(parentel, opts) {
       DOMElement: page,
       name: pageName
     };
-    pages[pageName] = canvas;
+    /**
+     * @type {fabric.Canvas}
+     */
+    pages.page[pageName] = canvas;
 
     canvas.on('mouse:down', updateActiveCanvas);
 
@@ -301,29 +318,104 @@ export function CanvasEditor(parentel, opts) {
     };
   }
 
-  function saveAsPng() {
+  /**
+   *   
+   * @param {Number} [scaling=1]
+   * @param {Boolean} [retinaScaling=true] 
+   */
+  function saveAsPng(scaling = 1, retinaScaling = true) {
+    let images = saveAsBase64({
+      quality: quality,
+      multiplier: scaling,
+      enableRetinaScaling: retinaScaling
+    });
 
+    let blobs = {};
+    for (let image in images) {
+      blobs[image] = b64ToBlob(images[image]);
+    }
+
+    return blobs;
   }
 
-  function saveAsJPEG() {
+  /**
+   * 
+   * @param {Number} [quality=0.9]  
+   * @param {Number} [scaling=1]
+   * @param {Boolean} [retinaScaling=true] 
+   */
+  function saveAsJPEG(quality = 0.9, scaling = 1, retinaScaling = true) {
+    let images = saveAsBase64({
+      quality: quality,
+      multiplier: scaling,
+      enableRetinaScaling: retinaScaling
+    });
 
+    let blobs = {};
+    for (let image in images) {
+      blobs[image] = b64ToBlob(images[image]);
+    }
+
+    return blobs;
   }
 
-  function saveAsBase64() {
-
+  /**
+   * 
+   * @param {Object} [options]
+   * @param {String} [options.format] image format possible value 'jpeg' of 'png'
+   * @param {Number} [options.quality] quality for jpeg min 0 max 1
+   * @param {Number} [options.multiplier] Multiplier to scale by, to have consistent
+   * @param {Number} [options.left] Cropping left offset
+   * @param {Number} [options.right] Cropping right offset
+   * @param {Number} [options.width] Cropping width offset
+   * @param {Number} [options.height] Cropping height offset
+   * @param {Boolean} [options.enableRetinaScaling] Enable retina scaling for clone image
+   */
+  function saveAsBase64(options) {
+    let images = {};
+    let canvases = pages.page;
+    for (let page in canvases) {
+      images[page] = pages.page[page].toDataURL(options)
+    }
+    return images;
   }
 
   function toJSON() {
-    let json = [];
-    for (let page of pages) {
-      json.push(page.toJSON());
+    let json = {};
+    let canvases = pages.page;
+    for (let page in canvases) {
+      json[page] = {};
+      json[page].name = pages.page[page].page.name;
+      json[page].data = pages.page[page].toJSON();
+      json[page].data.width = pages.page[page].getWidth();
+      json[page].data.height = pages.page[page].getHeight();
     }
 
     return JSON.stringify(json);
   }
 
-  function loadJSON() {
-
+  function loadJSON(json) {
+    try {
+      json = JSON.parse(json);
+      mainWrapper.style.cursor = 'progress';
+      mainWrapper.style.pointerEvents = 'none';
+      for (let page in json) {
+        if (activeCanvas.getObjects().length !== 0) {
+          addPage();
+        }
+        activeCanvas.page.name = json[page].name;
+        activeCanvas.setWidth(json[page].data.width);
+        activeCanvas.setHeight(json[page].data.height);
+        activeCanvas.loadFromJSON(json[page].data, function () {
+          mainWrapper.style.removeProperty('cursor');
+          mainWrapper.style.removeProperty('pointer-events');
+          activeCanvas.renderAll();
+          fixPagesContainerPosition();
+        });
+      }
+    } catch (error) {
+      alert('Cannot load json, Error: ' + error);
+    }
   }
 
   function init() {
@@ -335,9 +427,36 @@ export function CanvasEditor(parentel, opts) {
     });
     fabric.Canvas.prototype.preserveObjectStacking = true;
     fabric.Object.prototype.onSelect = objectOnSelect;
+
+    mainWrapper.appendChild(html.div({
+      id: 'CE_zoom',
+      children: [
+        html.span({
+          className: 'CE_icon zoom-out',
+          onmousedown: function () {
+            scale = parseFloat((scale + '').substr(0, 3));
+            if (scale > 0.5) scale -= 0.1;
+            zoom.setvalue(scale);
+          }
+        }),
+        zoom,
+        html.span({
+          className: 'CE_icon zoom-in',
+          onmousedown: function () {
+            scale = parseFloat((scale + '').substr(0, 3));
+            if (scale < 2) scale += 0.1;
+            zoom.setvalue(scale);
+          }
+        })
+      ]
+    }));
     mainWrapper.appendChild(clickCatchMask);
     mainWrapper.appendChild(canvasContainer);
     parentel.appendChild(mainWrapper);
+
+    zoom.onchange = function (value) {
+      updateScaling(value);
+    }
 
     clickCatchMask.addEventListener('click', deselectObjects);
 
@@ -356,13 +475,16 @@ export function CanvasEditor(parentel, opts) {
     colorPickerContainer = freeContainer({
       parentElement: containerWrapper,
       drop: wrapper,
-      title: 'Color picker'
+      title: 'Color picker',
     });
 
     colorPicker = picker.createPicker(colorPickerContainer.DOMElements.body, {
       showHSL: false,
       showHEX: false,
-      palette: 'PALETTE_MATERIAL_CHROME'
+      palette: 'PALETTE_MATERIAL_CHROME',
+      showAlpha: true,
+      color: 'rgb(205, 220, 57)',
+      paletteEditable: true
     });
   }
 
@@ -382,93 +504,145 @@ export function CanvasEditor(parentel, opts) {
       tools.addText.addEventListener('click', () => addText());
 
       tools.openImage.addEventListener('change', handleImage);
+      tools.loadSVG.addEventListener('change', handleSVG);
 
       tools.backgroundColor.addEventListener('click', () => {
         colorPickerContainer.setTitle('Color picker - fill');
         colorPickerContainer.setVisiblity(true);
         colorPicker.onchange = function (e) {
-          let activeObjects = activeCanvas.getActiveObjects();
+          let activeObject = activeCanvas.getActiveObject();
           let hexColor = e.rgbhex;
-          for (let activeObject of activeObjects) {
-            applyStyle(activeObject, 'fill', hexColor);
-          }
+          applyStyle(activeObject, 'fill', hexColor);
         }
       });
-      tools.strokeColor.addEventListener('click', () => {
-        colorPickerContainer.setTitle('Color picker - stroke');
-        colorPickerContainer.setVisiblity(true);
-        colorPicker.onchange = function (e) {
-          let activeObjects = activeCanvas.getActiveObjects();
-          let hexColor = e.rgbhex;
-          for (let activeObject of activeObjects) {
-            applyStyle(activeObject, 'stroke', hexColor);
+
+      tools.grab.addEventListener('click', function () {
+        canvasContainer.style.cursor = 'grab';
+        let children = canvasContainer.children;
+        let start = {
+          x: 0,
+          y: 0
+        }
+        for (let child of children) {
+          child.style.pointerEvents = 'none';
+        }
+
+        canvasContainer.onmousedown = mousedown;
+        canvasContainer.ontouchstart = mousedown;
+        /**
+         * 
+         * @param {MouseEvent | TouchEvent} e 
+         */
+        function mousedown(e) {
+          canvasContainer.style.cursor = 'grabbing';
+          start.x = e.clientX || e.touches[0].clientX;
+          start.y = e.clientY || e.touches[0].clientY;
+
+          document.onmousemove = mousemove;
+          document.ontouchmove = mousemove;
+          document.onmouseup = mouseup;
+          document.ontouchend = mouseup;
+        }
+
+        /**
+         * 
+         * @param {MouseEvent | TouchEvent} e 
+         */
+        function mousemove(e) {
+          let x = e.clientX || e.touches[0].clientX;
+          let y = e.clientY || e.touches[0].clientY;
+
+          let dsX = x - start.x;
+          let dsY = y - start.y;
+
+          start = {
+            x,
+            y
+          };
+
+          let cc = /translate\((.*),(.*)\)/g.exec(canvasContainer.style.transform);
+          let transform = {
+            x: parseFloat(cc[1]),
+            y: parseFloat(cc[2])
           }
+
+          translate = {
+            x: transform.x + dsX,
+            y: transform.y + dsY
+          }
+          canvasContainer.style.transform = `translate(${translate.x}px, ${translate.y}px) scale(${scale})`;
+        }
+
+        function mouseup() {
+          canvasContainer.style.cursor = 'grab';
+          document.onmousemove = null;
+          document.onmouseup = null;
+          document.ontouchmove = null;
+          document.ontouchend = null;
         }
       });
+
+      tools.selection.addEventListener('click', function () {
+        canvasContainer.style.cursor = 'default';
+        let children = canvasContainer.children;
+        for (let child of children) {
+          child.style.removeProperty('pointer-events');
+        }
+        canvasContainer.onmousedown = null;
+        canvasContainer.ontouchstart = null;
+      })
     })();
 
     (function initTextSettings() {
       textSettings.fontFamily.addEventListener('change', function () {
         let fontFamily = this.value;
-        let activeObjects = activeCanvas.getActiveObjects();
-        for (let activeObject of activeObjects) {
-          if (activeObject.type !== 'textbox') continue;
-          applyStyle(activeObject, 'fontFamily', fontFamily);
-        }
+        let activeObject = activeCanvas.getActiveObject();
+        if (activeObject.type !== 'textbox') return;
+        applyStyle(activeObject, 'fontFamily', fontFamily);
       });
       textSettings.fontSize.addEventListener('input', function () {
         let fontSize = this.value;
-        let activeObjects = activeCanvas.getActiveObjects();
-        for (let activeObject of activeObjects) {
-          if (activeObject.type !== 'textbox') continue;
-          applyStyle(activeObject, 'fontSize', fontSize);
-        }
+        let activeObject = activeCanvas.getActiveObject();
+        if (activeObject.type !== 'textbox') return;
+        applyStyle(activeObject, 'fontSize', fontSize);
       });
       textSettings.fontWeight.addEventListener('input', function () {
         let fontWeight = this.value;
-        let activeObjects = activeCanvas.getActiveObjects();
-        for (let activeObject of activeObjects) {
-          if (activeObject.type !== 'textbox') continue;
-          applyStyle(activeObject, 'fontWeight', fontWeight);
-        }
+        let activeObject = activeCanvas.getActiveObject();
+        if (activeObject.type !== 'textbox') return;
+        applyStyle(activeObject, 'fontWeight', fontWeight);
       });
       textSettings.underline.addEventListener('click', function () {
-        let activeObjects = activeCanvas.getActiveObjects();
-        for (let activeObject of activeObjects) {
-          if (activeObject.type !== 'textbox') continue;
-          if (activeObject.underline) {
-            this.classList.remove('active');
-            applyStyle(activeObject, 'underline', false);
-          } else {
-            this.classList.add('active');
-            applyStyle(activeObject, 'underline', true);
-          }
+        let activeObject = activeCanvas.getActiveObject();
+        if (activeObject.type !== 'textbox') return;
+        if (activeObject.underline) {
+          this.classList.remove('active');
+          applyStyle(activeObject, 'underline', false);
+        } else {
+          this.classList.add('active');
+          applyStyle(activeObject, 'underline', true);
         }
       });
       textSettings.italic.addEventListener('click', function () {
-        let activeObjects = activeCanvas.getActiveObjects();
-        for (let activeObject of activeObjects) {
-          if (activeObject.type !== 'textbox') continue;
-          if (activeObject.fontStyle === 'italic') {
-            this.classList.remove('active');
-            applyStyle(activeObject, 'fontStyle', 'normal');
-          } else {
-            this.classList.add('active');
-            applyStyle(activeObject, 'fontStyle', 'italic');
-          }
+        let activeObject = activeCanvas.getActiveObject();
+        if (activeObject.type !== 'textbox') return;
+        if (activeObject.fontStyle === 'italic') {
+          this.classList.remove('active');
+          applyStyle(activeObject, 'fontStyle', 'normal');
+        } else {
+          this.classList.add('active');
+          applyStyle(activeObject, 'fontStyle', 'italic');
         }
       });
       textSettings.strikethrough.addEventListener('click', function () {
-        let activeObjects = activeCanvas.getActiveObjects();
-        for (let activeObject of activeObjects) {
-          if (activeObject.type !== 'textbox') continue;
-          if (activeObject.linethrough) {
-            this.classList.remove('active');
-            applyStyle(activeObject, 'linethrough', false);
-          } else {
-            this.classList.add('active');
-            applyStyle(activeObject, 'linethrough', true);
-          }
+        let activeObject = activeCanvas.getActiveObject();
+        if (activeObject.type !== 'textbox') return;
+        if (activeObject.linethrough) {
+          this.classList.remove('active');
+          applyStyle(activeObject, 'linethrough', false);
+        } else {
+          this.classList.add('active');
+          applyStyle(activeObject, 'linethrough', true);
         }
       });
     })();
@@ -579,6 +753,30 @@ export function CanvasEditor(parentel, opts) {
           activeCanvas.renderAll();
         }
       }
+
+      objectSettings.strokeColor.addEventListener('click', () => {
+        colorPickerContainer.setTitle('Color picker - stroke');
+        colorPickerContainer.setVisiblity(true);
+        colorPicker.onchange = function (e) {
+          let activeObject = activeCanvas.getActiveObject();
+          let hexColor = e.rgbhex;
+          applyStyle(activeObject, 'stroke', hexColor);
+        }
+      });
+
+      objectSettings.strokeToggle.onchange = function () {
+        if (this.value) {
+          let width = parseFloat(objectSettings.strokeWidth.value.substr(0, 3)) || 1;
+          applyStyle(activeCanvas.getActiveObject(), 'strokeWidth', width);
+        } else {
+          applyStyle(activeCanvas.getActiveObject(), 'strokeWidth', 0);
+        }
+      }
+
+      objectSettings.strokeWidth.oninput = function () {
+        let width = parseFloat(this.value.substr(0, 3));
+        applyStyle(activeCanvas.getActiveObject(), 'strokeWidth', width);
+      }
     })();
   }
 
@@ -593,33 +791,12 @@ export function CanvasEditor(parentel, opts) {
       lock
     } = objectContextMenuOptions;
 
-    arrange.addEventListener('click', arrangeOnclick);
-    align.addEventListener('click', alignOnclick);
+    objectContextMenu.childMenu(Object.values(arrangeOptions), arrange);
+    objectContextMenu.childMenu(Object.values(alignOptions), align);
 
     arrangeContextMenu.itemOnclick = alignContextMenu.itemOnclick = arrangeContextMenu.maskOnclick = alignContextMenu.maskOnclick = function () {
       objectContextMenu.hide();
     }
-
-    function arrangeOnclick() {
-      showSecondContext.bind(this)(arrangeContextMenu);
-    }
-
-    function alignOnclick() {
-      showSecondContext.bind(this)(alignContextMenu)
-    }
-
-    function showSecondContext(contextMenu) {
-      /**
-       * @type {HTMLElement}
-       */
-      let el = this;
-      let elClient = el.getBoundingClientRect();
-      contextMenu.show({
-        clientX: elClient.right,
-        clientY: elClient.top
-      });
-    }
-
 
     canvasContextMenuOptions.delete.addEventListener('click', deleteCanvas);
     canvasContextMenuOptions.paste.addEventListener('click', pasteObject);
@@ -715,10 +892,10 @@ export function CanvasEditor(parentel, opts) {
     activeCanvas = null;
     --pages.length;
     page.DOMElement.parentElement.removeChild(page.DOMElement);
-    delete pages[page.name];
-    for (let key in pages) {
+    delete pages.page[page.name];
+    for (let key in pages.page) {
       if (key !== 'length') {
-        updateActiveCanvas(pages[key]);
+        updateActiveCanvas(pages.page[key]);
         break;
       }
     }
@@ -769,7 +946,7 @@ export function CanvasEditor(parentel, opts) {
     let pageName = this.getAttribute('data-name');
 
     if (activeCanvas.page.pageName !== pageName) {
-      updateActiveCanvas(pages[pageName]);
+      updateActiveCanvas(pages.page[pageName]);
     }
 
     let group = objectContextMenuOptions.group;
@@ -823,7 +1000,16 @@ export function CanvasEditor(parentel, opts) {
     let y = CcontainerParentClient.height / 2 - CcontainerClient.height / 2;
     let x = CcontainerParentClient.width / 2 - CcontainerClient.width / 2;
 
-    canvasContainer.style.transform = `translate(${x}px, ${y}px)`;
+    translate = {
+      x,
+      y
+    };
+    canvasContainer.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+  }
+
+  function updateScaling(val) {
+    scale = val;
+    canvasContainer.style.transform = `translate(${translate.x}px, ${translate.y}px) scale(${scale})`;
   }
 
   function handleImage() {
@@ -837,8 +1023,36 @@ export function CanvasEditor(parentel, opts) {
         addImage(imgObj);
       };
     }
-
     reader.readAsDataURL(this.files[0]);
+  }
+
+  function handleSVG() {
+    mainWrapper.style.pointerEvents = 'none';
+    mainWrapper.style.cursor = 'progress';
+    let reader = new FileReader();
+    reader.onload = readerOnLoad;
+    /**
+     * 
+     * @param {ProgressEvent} e 
+     */
+    function readerOnLoad(e) {
+      let svg = e.target.result;
+
+      fabric.loadSVGFromString(svg, function (result, options) {
+        if (activeCanvas.getObjects().length !== 0) {
+          addPage();
+        }
+
+        activeCanvas.setHeight(options.height);
+        activeCanvas.setWidth(options.width);
+        activeCanvas.add(...result);
+
+        mainWrapper.style.removeProperty('pointer-events');
+        mainWrapper.style.removeProperty('cursor');
+      });
+    }
+
+    reader.readAsText(this.files[0]);
   }
 
   /**
@@ -858,69 +1072,104 @@ export function CanvasEditor(parentel, opts) {
   }
 
   function objectOnSelect() {
-    setTimeout(() => {
-      let activeObject = activeCanvas.getActiveObject();
-      let textSettings = alltools.textSettings;
-      let objectSettings = alltools.objectSettings;
-      if (!activeObject) return;
+    /**
+     * @type {fabric.ActiveSelection | fabric.Object}
+     */
+    let activeObject = this || activeCanvas.getActiveObject();
 
-      if (activeObject.type === 'textbox') {
-        /**
-         * @type {fabric.Textbox}
-         */
-        let object = activeObject;
-        let fontSize = object.fontSize;
-        let fontFamily = object.fontFamily;
-        let fontWeight = object.fontWeight;
+    if (['activeSelection', 'group'].indexOf(activeObject.type) > -1) return;
 
-        if (object.underline) {
-          textSettings.underline.classList.add('active');
-        } else {
-          textSettings.underline.classList.remove('active');
-        }
+    colorPickerContainer.setVisiblity(false);
 
-        if (object.fontStyle === 'italic') {
-          textSettings.italic.classList.add('active');
-        } else {
-          textSettings.italic.classList.remove('active');
-        }
+    let textSettings = alltools.textSettings;
+    let objectSettings = alltools.objectSettings;
 
-        if (object.linethrough) {
-          textSettings.strikethrough.classList.add('active');
-        } else {
-          textSettings.strikethrough.classList.remove('active');
-        }
+    if (activeObject.type === 'text') {
+      var text = activeObject.text;
+      var textobj = activeObject.toObject();
+      delete textobj.text;
+      delete textobj.type;
+      var clonedtextobj = JSON.parse(JSON.stringify(textobj));
 
-        textSettings.fontFamily.value = fontFamily;
-        textSettings.fontWeight.value = fontWeight;
-        textSettings.fontSize.value = fontSize;
-      }
+      var textbox = new fabric.Textbox(text, clonedtextobj);
 
-      objectSettings.opacity.setValue(activeObject.opacity);
-      if (activeObject.shadow) {
-        objectSettings.offsetX.value = activeObject.shadow.offsetX;
-        objectSettings.offsetY.value = activeObject.shadow.offsetY;
-        objectSettings.blur.value = activeObject.shadow.blur;
-      }
-      if (!activeObject.get('shadow')) {
-        objectSettings.dropShadow.setvalue(false);
+      deleteObject();
+      activeObject = textbox;
+      activeCanvas.add(textbox);
+      activeCanvas.setActiveObject(textbox);
+    }
+
+    if (activeObject.type === 'textbox') {
+      let fontSize = activeObject.fontSize;
+      let fontFamily = activeObject.fontFamily;
+      let fontWeight = activeObject.fontWeight;
+
+      if (activeObject.underline) {
+        textSettings.underline.classList.add('active');
       } else {
-        objectSettings.dropShadow.setvalue(true);
+        textSettings.underline.classList.remove('active');
       }
-    }, 10);
+
+      if (activeObject.fontStyle === 'italic') {
+        textSettings.italic.classList.add('active');
+      } else {
+        textSettings.italic.classList.remove('active');
+      }
+
+      if (activeObject.linethrough) {
+        textSettings.strikethrough.classList.add('active');
+      } else {
+        textSettings.strikethrough.classList.remove('active');
+      }
+
+      textSettings.fontFamily.value = fontFamily;
+      textSettings.fontWeight.value = fontWeight;
+      textSettings.fontSize.value = fontSize;
+    }
+
+    if (activeObject.strokeWidth > 0) {
+      objectSettings.strokeToggle.setvalue(true);
+      objectSettings.strokeWidth.value = activeObject.strokeWidth;
+    } else {
+      objectSettings.strokeToggle.setvalue(false);
+    }
+
+    objectSettings.opacity.setvalue(activeObject.opacity);
+    if (activeObject.shadow) {
+      objectSettings.offsetX.value = activeObject.shadow.offsetX;
+      objectSettings.offsetY.value = activeObject.shadow.offsetY;
+      objectSettings.blur.value = activeObject.shadow.blur;
+    }
+    if (!activeObject.get('shadow')) {
+      objectSettings.dropShadow.setvalue(false);
+    } else {
+      objectSettings.dropShadow.setvalue(true);
+    }
   }
 
+  /**
+   * 
+   * @param {fabric.ActiveSelection | fabric.Object | fabric.Group} object 
+   * @param {String} style 
+   * @param {String|Number} value 
+   */
   function applyStyle(object, style, value) {
-    object[style] = value;
-    object.set({
-      dirty: true
-    });
+    if (object.type === 'activeSelection' || object.type === 'group') {
+      return false;
+    } else {
+      object[style] = value;
+      object.set({
+        dirty: true
+      });
+    }
     activeCanvas.renderAll();
   }
 
   return {
     saveAsBase64,
     saveAsPng,
-    saveAsJPEG
+    saveAsJPEG,
+    toJSON,
+    loadJSON
   }
 }

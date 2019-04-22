@@ -39,7 +39,8 @@ export function freeContainer(opts = {}) {
   });
   let mover = html.create('span', {
     className: 'CE_mover',
-    onmousedown: onmousedown
+    onmousedown: onmousedown,
+    ontouchstart: onmousedown
   });
   let mainParent = html.get('#CE_wrapper');
   let parentElement = opts.parentElement || mainParent;
@@ -135,12 +136,12 @@ export function freeContainer(opts = {}) {
 
   /**
    * 
-   * @param {MouseEvent} e 
+   * @param {MouseEvent | TouchEvent} e 
    */
   function onmousedown(e) {
     e.preventDefault();
-    start.x = e.clientX;
-    start.y = e.clientY;
+    start.x = e.clientX || e.touches[0].clientX;
+    start.y = e.clientY || e.touches[0].clientY;
     let wrapperClient = wrapper.getBoundingClientRect();
     let wrapperPClient = mainParent.getBoundingClientRect();
     let x = wrapperClient.x - wrapperPClient.x;
@@ -150,7 +151,9 @@ export function freeContainer(opts = {}) {
     mainParent.appendChild(wrapper);
 
     document.onmousemove = onmousemove;
+    document.ontouchmove = onmousemove;
     document.onmouseup = onmouseup;
+    document.ontouchend = onmouseup;
   }
 
   /**
@@ -159,10 +162,12 @@ export function freeContainer(opts = {}) {
    */
   function onmousemove(e) {
     e.preventDefault();
-    move.x = e.clientX - start.x;
-    move.y = e.clientY - start.y;
-    start.x = e.clientX;
-    start.y = e.clientY;
+    let cx = e.clientX || e.touches[0].clientX;;
+    let cy = e.clientY || e.touches[0].clientY;
+    move.x = cx - start.x;
+    move.y = cy - start.y;
+    start.x = cx;
+    start.y = cy;
 
     let wrapperClient = wrapper.getBoundingClientRect();
     let wrapperPClient = mainParent.getBoundingClientRect();
@@ -194,7 +199,9 @@ export function freeContainer(opts = {}) {
       mainParent.appendChild(wrapper);
     }
     document.onmouseup = null;
+    document.ontouchend = null;
     document.onmousemove = null;
+    document.ontouchmove = null;
   }
 
   /**

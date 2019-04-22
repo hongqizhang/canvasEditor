@@ -15,6 +15,7 @@ const html = require('html-element-js').default;
  * @property {function(number, number):void} setPosition
  * @property {function(HTMLElement):void} itemOnclick
  * @property {function():void} maskOnclick
+ * @property {function(HTMLElement[], HTMLElement):void} childMenu
  */
 
 /**
@@ -48,9 +49,9 @@ export function contextMenu(children = null, x = 0, y = 0) {
     addItems,
     removeItem,
     insertBefore,
-    setPosition
+    setPosition,
+    childMenu
   };
-
   returnable.itemOnclick = function () {
     return;
   };
@@ -95,10 +96,17 @@ export function contextMenu(children = null, x = 0, y = 0) {
       position.x -= cmClient.width;
     }
 
+    if (position.x < 0) {
+      position.x -= (0 - position.x);
+    }
+
+    if (position.y < 0) {
+      position.y -= (0 - position.y);
+    }
+
     if (position.y + cmClient.height > innerHeight) {
       position.y -= cmClient.height;
     }
-
     setPosition(position.x, position.y);
   }
 
@@ -151,6 +159,48 @@ export function contextMenu(children = null, x = 0, y = 0) {
 
   function insertBefore(el, refEl) {
     cm.insertBefore(el, refEl);
+  }
+
+  /**
+   * 
+   * @param {HTMLAllCollection | HTMLElement[]} items 
+   * @param {HTMLElement} item 
+   */
+  function childMenu(items, item) {
+    let childCM = html.div({
+      className: 'CE_contextmenu'
+    });
+
+    if (items.constructor.name === 'NodeList') {
+      items = items.values();
+    }
+
+    for (let el of items) {
+      childCM.appendChild(el);
+    }
+
+    if (item.parentElement === cm) {
+      item.appendChild(childCM);
+
+      item.addEventListener('mouseover', function () {
+        let cmClient = childCM.getBoundingClientRect();
+        if (cmClient.x + cmClient.width > innerWidth) {
+          childCM.style.left = '-100%';
+        }
+
+        if (cmClient.x < 0) {
+          childCM.style.left = '100%';
+        }
+
+        if (cmClient.y < 0) {
+          childCM.style.top = '100%';
+        }
+
+        if (cmClient.y + cmClient.height > innerHeight) {
+          childCM.style.top = '-100%';
+        }
+      });
+    }
   }
 
   function setPosition(x, y) {
