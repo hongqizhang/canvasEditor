@@ -1,9 +1,10 @@
 const webpack = require('webpack');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const path = require('path');
 
 module.exports = {
   context: __dirname,
-  mode: "none",
+  mode: "production",
   entry: './src/main.js',
   output: {
     path: path.resolve(__dirname, 'build'),
@@ -12,6 +13,9 @@ module.exports = {
     libraryExport: 'CanvasEditor',
     libraryTarget: 'umd'
   },
+  plugins: [
+    // new BundleAnalyzerPlugin()
+  ],
   module: {
     rules: [{
         test: /\.m?js$/,
@@ -46,5 +50,19 @@ module.exports = {
         },
       },
     ]
+  },
+  externals: {
+    'canvas-prebuilt': 'undefined',
+    'canvas': 'undefined',
+    'jsdom/lib/jsdom/utils': JSON.stringify({
+      Canvas: null
+    }),
+    'jsdom/lib/jsdom/living/generated/utils': JSON.stringify({
+      implForWrapper: null
+    }),
+    'jsdom': 'null',
+    'xmldom': JSON.stringify({
+      DOMParser: null
+    }),
   }
 }

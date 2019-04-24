@@ -18,6 +18,7 @@ const html = require('html-element-js').default;
  * creates a new freeContaier
  * @param {Object} [opts]
  * @param {Boolean} [opts.disableCloseBtn]
+ * @param {Boolean} [opts.enableMask]
  * @param {HTMLElement} [opts.parentElement]
  * @param {HTMLElement} [opts.drop]
  * @returns {freeContainer}
@@ -42,6 +43,7 @@ export function freeContainer(opts = {}) {
     onmousedown: onmousedown,
     ontouchstart: onmousedown
   });
+  let mask = null;
   let mainParent = html.get('#CE_wrapper');
   let parentElement = opts.parentElement || mainParent;
 
@@ -59,6 +61,14 @@ export function freeContainer(opts = {}) {
 
   if (opts.title) {
     setTitle(opts.title);
+  }
+
+  if (opts.enableMask) {
+    mask = html.create('div', {
+      className: 'CE_mask',
+      onclick: () => setVisiblity(false)
+    });
+    wrapper.style.zIndex = 1000;
   }
 
   mover.addEventListener('mousedown', function addGrabbing() {
@@ -89,12 +99,17 @@ export function freeContainer(opts = {}) {
    * @param {Boolean} bool
    */
   function setVisiblity(bool) {
-    if (bool) {
-      if (!wrapper.parentElement)
-        parentElement.appendChild(wrapper);
-      wrapper.style.display = '';
-    } else if (!bool) {
-      wrapper.style.display = 'none';
+    if (bool && !wrapper.parentElement) {
+      parentElement.appendChild(wrapper);
+      if (mask) {
+        parentElement.appendChild(mask);
+      }
+
+    } else if (!bool && wrapper.parentElement) {
+      parentElement.removeChild(wrapper);
+      if (mask) {
+        parentElement.removeChild(mask);
+      }
     }
   }
 
@@ -109,6 +124,13 @@ export function freeContainer(opts = {}) {
 
     if (wrapper.parentElement) {
       wrapper.parentElement.removeChild(wrapper);
+      wrapper = null;
+    }
+
+    if (mask) {
+      mask.removeEvents();
+      mask.parentElement.removeChild(mask);
+      mask = null;
     }
   }
 

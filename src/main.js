@@ -1,5 +1,4 @@
-import 'fabric';
-// import html from './html';
+import './fabric.min';
 import {
   freeContainer
 } from './components/freeContainer';
@@ -38,6 +37,8 @@ export function CanvasEditor(parentel, opts) {
   let canvasContainer = html.create('div', {
     id: 'CE_canvasContainer'
   });
+  let objectFillColor = '#000';
+  let strokeColor = '#000';
   let colorPickerContainer = null;
   let colorPicker = null;
   let canvasContextMenuOptions = {
@@ -165,13 +166,110 @@ export function CanvasEditor(parentel, opts) {
 
   init();
 
+  function init() {
+
+    fabric.Object.prototype.set({
+      transparentCorners: false,
+      cornerColor: '#88f',
+      borderColor: '#88f',
+      cornerSize: 6,
+      strokeWidth: 0
+    });
+    fabric.Canvas.prototype.preserveObjectStacking = true;
+    fabric.Object.prototype.onSelect = objectOnSelect;
+
+    mainWrapper.appendChild(html.div({
+      id: 'CE_zoom',
+      children: [
+        html.span({
+          className: 'CE_icon zoom-out',
+          onmousedown: function () {
+            scale = parseFloat((scale + '').substr(0, 3));
+            if (scale > 0.5) scale -= 0.1;
+            zoom.setvalue(scale);
+          }
+        }),
+        zoom,
+        html.span({
+          className: 'CE_icon zoom-in',
+          onmousedown: function () {
+            scale = parseFloat((scale + '').substr(0, 3));
+            if (scale < 2) scale += 0.1;
+            zoom.setvalue(scale);
+          }
+        })
+      ]
+    }));
+    mainWrapper.appendChild(clickCatchMask);
+    mainWrapper.appendChild(canvasContainer);
+    parentel.appendChild(mainWrapper);
+
+    zoom.onchange = function (value) {
+      updateScaling(value);
+    }
+
+    clickCatchMask.addEventListener('click', deselectObjects);
+
+    /**
+     * @type {tools}
+     */
+    alltools = toolsContainer();
+
+    addPage();
+    initTools();
+    initContextMenu();
+    fixPagesContainerPosition();
+    window.addEventListener('resize', fixPagesContainerPosition);
+    let containerWrapper = html.get('#CE_container-wrapper');
+    colorPickerContainer = freeContainer({
+      parentElement: containerWrapper,
+      title: 'Color picker',
+      disableCloseBtn: true,
+      enableMask: true,
+      center: true
+    });
+
+    colorPicker = picker.createPicker(colorPickerContainer.DOMElements.body, {
+      showHSL: false,
+      showHEX: false,
+      palette: 'PALETTE_MATERIAL_CHROME',
+      showAlpha: true,
+      showHEX: true,
+      color: 'rgb(205, 220, 57)',
+      paletteEditable: true
+    });
+
+    if ('fonts' in sessionStorage && alltools) {
+      let fonts = sessionStorage.getItem('fonts');
+      try {
+        fonts = JSON.parse(fonts);
+
+        if (Array.isArray(fonts)) {
+          let fontFamily = alltools.textSettings.fontFamily;
+
+          for (let font of fonts) {
+            fontFamily.appendChild(html.create('option', {
+              value: font,
+              textContent: font
+            }));
+          }
+        }
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
   function addText(value, props) {
     value = value || 'hello';
     props = props || {
       editable: true,
       fontSize: 40,
       top: 100,
-      left: 100
+      left: 100,
+      fill: objectFillColor,
+      stroke: strokeColor
     }
 
     let text = new fabric.Textbox(value, props);
@@ -210,9 +308,10 @@ export function CanvasEditor(parentel, opts) {
 
   function addRect(props) {
     props = props || {
-      fill: colorPicker ? colorPicker.color : '#000',
+      fill: objectFillColor,
       width: 50,
-      height: 50
+      height: 50,
+      stroke: strokeColor
     };
     let rect = new fabric.Rect(props);
     activeCanvas.add(rect);
@@ -223,8 +322,9 @@ export function CanvasEditor(parentel, opts) {
 
   function addCircle(props) {
     props = props || {
-      fill: colorPicker ? colorPicker.color : '#000',
-      radius: 25
+      fill: objectFillColor,
+      radius: 25,
+      stroke: strokeColor
     };
 
     let circle = new fabric.Circle(props);
@@ -235,9 +335,10 @@ export function CanvasEditor(parentel, opts) {
 
   function addTriangle(props) {
     props = props || {
-      fill: colorPicker ? colorPicker.color : '#000',
+      fill: objectFillColor,
       height: 50,
-      width: 50
+      width: 50,
+      strokeColor
     };
 
     let triangle = new fabric.Triangle(props);
@@ -318,176 +419,6 @@ export function CanvasEditor(parentel, opts) {
     };
   }
 
-  /**
-   *   
-   * @param {Number} [scaling=1]
-   * @param {Boolean} [retinaScaling=true] 
-   */
-  function saveAsPng(scaling = 1, retinaScaling = true) {
-    let images = saveAsBase64({
-      quality: quality,
-      multiplier: scaling,
-      enableRetinaScaling: retinaScaling
-    });
-
-    let blobs = {};
-    for (let image in images) {
-      blobs[image] = b64ToBlob(images[image]);
-    }
-
-    return blobs;
-  }
-
-  /**
-   * 
-   * @param {Number} [quality=0.9]  
-   * @param {Number} [scaling=1]
-   * @param {Boolean} [retinaScaling=true] 
-   */
-  function saveAsJPEG(quality = 0.9, scaling = 1, retinaScaling = true) {
-    let images = saveAsBase64({
-      quality: quality,
-      multiplier: scaling,
-      enableRetinaScaling: retinaScaling
-    });
-
-    let blobs = {};
-    for (let image in images) {
-      blobs[image] = b64ToBlob(images[image]);
-    }
-
-    return blobs;
-  }
-
-  /**
-   * 
-   * @param {Object} [options]
-   * @param {String} [options.format] image format possible value 'jpeg' of 'png'
-   * @param {Number} [options.quality] quality for jpeg min 0 max 1
-   * @param {Number} [options.multiplier] Multiplier to scale by, to have consistent
-   * @param {Number} [options.left] Cropping left offset
-   * @param {Number} [options.right] Cropping right offset
-   * @param {Number} [options.width] Cropping width offset
-   * @param {Number} [options.height] Cropping height offset
-   * @param {Boolean} [options.enableRetinaScaling] Enable retina scaling for clone image
-   */
-  function saveAsBase64(options) {
-    let images = {};
-    let canvases = pages.page;
-    for (let page in canvases) {
-      images[page] = pages.page[page].toDataURL(options)
-    }
-    return images;
-  }
-
-  function toJSON() {
-    let json = {};
-    let canvases = pages.page;
-    for (let page in canvases) {
-      json[page] = {};
-      json[page].name = pages.page[page].page.name;
-      json[page].data = pages.page[page].toJSON();
-      json[page].data.width = pages.page[page].getWidth();
-      json[page].data.height = pages.page[page].getHeight();
-    }
-
-    return JSON.stringify(json);
-  }
-
-  function loadJSON(json) {
-    try {
-      json = JSON.parse(json);
-      mainWrapper.style.cursor = 'progress';
-      mainWrapper.style.pointerEvents = 'none';
-      for (let page in json) {
-        if (activeCanvas.getObjects().length !== 0) {
-          addPage();
-        }
-        activeCanvas.page.name = json[page].name;
-        activeCanvas.setWidth(json[page].data.width);
-        activeCanvas.setHeight(json[page].data.height);
-        activeCanvas.loadFromJSON(json[page].data, function () {
-          mainWrapper.style.removeProperty('cursor');
-          mainWrapper.style.removeProperty('pointer-events');
-          activeCanvas.renderAll();
-          fixPagesContainerPosition();
-        });
-      }
-    } catch (error) {
-      alert('Cannot load json, Error: ' + error);
-    }
-  }
-
-  function init() {
-    fabric.Object.prototype.set({
-      transparentCorners: false,
-      cornerColor: '#88f',
-      borderColor: '#88f',
-      cornerSize: 6
-    });
-    fabric.Canvas.prototype.preserveObjectStacking = true;
-    fabric.Object.prototype.onSelect = objectOnSelect;
-
-    mainWrapper.appendChild(html.div({
-      id: 'CE_zoom',
-      children: [
-        html.span({
-          className: 'CE_icon zoom-out',
-          onmousedown: function () {
-            scale = parseFloat((scale + '').substr(0, 3));
-            if (scale > 0.5) scale -= 0.1;
-            zoom.setvalue(scale);
-          }
-        }),
-        zoom,
-        html.span({
-          className: 'CE_icon zoom-in',
-          onmousedown: function () {
-            scale = parseFloat((scale + '').substr(0, 3));
-            if (scale < 2) scale += 0.1;
-            zoom.setvalue(scale);
-          }
-        })
-      ]
-    }));
-    mainWrapper.appendChild(clickCatchMask);
-    mainWrapper.appendChild(canvasContainer);
-    parentel.appendChild(mainWrapper);
-
-    zoom.onchange = function (value) {
-      updateScaling(value);
-    }
-
-    clickCatchMask.addEventListener('click', deselectObjects);
-
-    /**
-     * @type {tools}
-     */
-    alltools = toolsContainer();
-
-    addPage();
-    initTools();
-    initContextMenu();
-    fixPagesContainerPosition();
-    window.addEventListener('resize', fixPagesContainerPosition);
-    let containerWrapper = html.get('#CE_container-wrapper');
-    let wrapper = html.get('#CE_tools-wrapper');
-    colorPickerContainer = freeContainer({
-      parentElement: containerWrapper,
-      drop: wrapper,
-      title: 'Color picker',
-    });
-
-    colorPicker = picker.createPicker(colorPickerContainer.DOMElements.body, {
-      showHSL: false,
-      showHEX: false,
-      palette: 'PALETTE_MATERIAL_CHROME',
-      showAlpha: true,
-      color: 'rgb(205, 220, 57)',
-      paletteEditable: true
-    });
-  }
-
   function initTools() {
     let {
       tools,
@@ -506,13 +437,13 @@ export function CanvasEditor(parentel, opts) {
       tools.openImage.addEventListener('change', handleImage);
       tools.loadSVG.addEventListener('change', handleSVG);
 
-      tools.backgroundColor.addEventListener('click', () => {
+      tools.backgroundColor.addEventListener('click', (e) => {
         colorPickerContainer.setTitle('Color picker - fill');
         colorPickerContainer.setVisiblity(true);
-        colorPicker.onchange = function (e) {
+        colorPicker.onchange = function (e, color) {
           let activeObject = activeCanvas.getActiveObject();
-          let hexColor = e.rgbhex;
-          applyStyle(activeObject, 'fill', hexColor);
+          objectFillColor = color;
+          applyStyle(activeObject, 'fill', color);
         }
       });
 
@@ -740,14 +671,14 @@ export function CanvasEditor(parentel, opts) {
         colorPickerContainer.setTitle('Color picker - shadow');
         colorPickerContainer.setVisiblity(true);
 
-        colorPicker.onchange = function (color) {
+        colorPicker.onchange = function (e, color) {
           let activeObjects = activeCanvas.getActiveObjects();
 
           if (activeObjects.length === 0) return;
 
           for (let object of activeObjects) {
             if (!object.shadow) return;
-            object.shadow.color = color.rgbhex;
+            object.shadow.color = color;
           }
 
           activeCanvas.renderAll();
@@ -757,10 +688,10 @@ export function CanvasEditor(parentel, opts) {
       objectSettings.strokeColor.addEventListener('click', () => {
         colorPickerContainer.setTitle('Color picker - stroke');
         colorPickerContainer.setVisiblity(true);
-        colorPicker.onchange = function (e) {
+        colorPicker.onchange = function (e, color) {
           let activeObject = activeCanvas.getActiveObject();
-          let hexColor = e.rgbhex;
-          applyStyle(activeObject, 'stroke', hexColor);
+          strokeColor = color;
+          applyStyle(activeObject, 'stroke', strokeColor);
         }
       });
 
@@ -804,8 +735,8 @@ export function CanvasEditor(parentel, opts) {
     canvasContextMenuOptions.background.addEventListener('click', function () {
       colorPickerContainer.setTitle('Color picker - background');
       colorPickerContainer.setVisiblity(true);
-      colorPicker.onchange = function (color) {
-        activeCanvas.setBackgroundColor(color.rgbhex, activeCanvas.renderAll.bind(activeCanvas));
+      colorPicker.onchange = function (e, color) {
+        activeCanvas.setBackgroundColor(color, activeCanvas.renderAll.bind(activeCanvas));
       }
     });
 
@@ -887,6 +818,9 @@ export function CanvasEditor(parentel, opts) {
   function deleteCanvas() {
     if (pages.length === 1) return;
     let page = activeCanvas.page;
+
+    if (!confirm('Delete ' + page.name + '?')) return;
+
     activeCanvas.page = null;
     activeCanvas.dispose();
     activeCanvas = null;
@@ -1165,9 +1099,120 @@ export function CanvasEditor(parentel, opts) {
     activeCanvas.renderAll();
   }
 
+  /**
+   *   
+   * @param {Number} [scaling=1]
+   * @param {Boolean} [retinaScaling=true] 
+   */
+  function saveAsPNG(scaling = 1, retinaScaling = true) {
+    let images = saveAsBase64({
+      quality: quality,
+      multiplier: scaling,
+      enableRetinaScaling: retinaScaling
+    });
+
+    let blobs = {};
+    for (let image in images) {
+      blobs[image] = b64ToBlob(images[image]);
+    }
+
+    return blobs;
+  }
+
+  /**
+   * 
+   * @param {Number} [quality=0.9]  
+   * @param {Number} [scaling=1]
+   * @param {Boolean} [retinaScaling=true] 
+   */
+  function saveAsJPEG(quality = 0.9, scaling = 1, retinaScaling = true) {
+    let images = saveAsBase64({
+      format: 'jpeg',
+      quality: quality,
+      multiplier: scaling,
+      enableRetinaScaling: retinaScaling
+    });
+
+    let blobs = {};
+    for (let image in images) {
+      blobs[image] = b64ToBlob(images[image]);
+    }
+
+    return blobs;
+  }
+
+  /**
+   * 
+   * @param {Object} [options]
+   * @param {String} [options.format] image format possible value 'jpeg' of 'png'
+   * @param {Number} [options.quality] quality for jpeg min 0 max 1
+   * @param {Number} [options.multiplier] Multiplier to scale by, to have consistent
+   * @param {Number} [options.left] Cropping left offset
+   * @param {Number} [options.right] Cropping right offset
+   * @param {Number} [options.width] Cropping width offset
+   * @param {Number} [options.height] Cropping height offset
+   * @param {Boolean} [options.enableRetinaScaling] Enable retina scaling for clone image
+   */
+  function saveAsBase64(options) {
+    let images = {};
+    let canvases = pages.page;
+    for (let page in canvases) {
+      images[page] = pages.page[page].toDataURL(options)
+    }
+    return images;
+  }
+
+  function toJSON() {
+    let json = {};
+    let canvases = pages.page;
+    for (let page in canvases) {
+      json[page] = {};
+      json[page].name = pages.page[page].page.name;
+      json[page].data = pages.page[page].toJSON();
+      json[page].data.width = pages.page[page].getWidth();
+      json[page].data.height = pages.page[page].getHeight();
+    }
+
+    return JSON.stringify(json);
+  }
+
+  function loadJSON(json) {
+    try {
+      json = JSON.parse(json);
+      mainWrapper.style.cursor = 'progress';
+      mainWrapper.style.pointerEvents = 'none';
+      render(json);
+
+      function render(json) {
+        let page = {};
+        let key = Object.keys(json)[0];
+        if (!key) return;
+        else {
+          page = json[key];
+          delete json[key];
+        }
+        if (activeCanvas.getObjects().length !== 0) {
+          addPage();
+        }
+        activeCanvas.page.name = page.name;
+        activeCanvas.setWidth(page.data.width);
+        activeCanvas.setHeight(page.data.height);
+        activeCanvas.loadFromJSON(page.data, function () {
+          activeCanvas.renderAll();
+          render(json);
+        });
+      }
+      mainWrapper.style.removeProperty('cursor');
+      mainWrapper.style.removeProperty('pointer-events');
+      fixPagesContainerPosition();
+    } catch (error) {
+      alert('Cannot load json, Error: ' + error);
+    }
+  }
+
   return {
     saveAsBase64,
-    saveAsPng,
+    saveAsPNG,
     saveAsJPEG,
     toJSON,
     loadJSON

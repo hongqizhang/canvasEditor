@@ -33,6 +33,16 @@
       alert('saved');
     }
 
+    saveJPEG.onclick = function () {
+      let jpeg = ce.saveAsJPEG();
+      console.log(jpeg);
+    }
+
+    savePNG.onclick = function () {
+      let jpeg = ce.saveAsPNG();
+      console.log(jpeg);
+    }
+
     if ('saved' in localStorage) {
       ce.loadJSON(localStorage.getItem('saved'));
     }

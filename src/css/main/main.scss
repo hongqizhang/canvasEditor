@@ -43,6 +43,24 @@
     box-sizing: border-box;
     z-index: 2;
 
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgb(106, 161, 243);
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    * {
+      scrollbar-width: 4px;
+      scrollbar-color: rgb(106, 161, 243);
+    }
+
     #CE_container-wrapper {
       width: fit-content;
       display: flex;
@@ -151,7 +169,8 @@
 }
 
 .CE_btn {
-  height: 40px;
+  height: 30px;
+  border-radius: 2px;
   border: none;
   display: flex;
   align-items: center;
@@ -193,11 +212,16 @@
   width: auto !important;
 }
 
-.CE_dropshadow-tool {
-  .CE_dropshadow-controls {
+.CE_controlers {
+  .CE_controlers-tools {
     display: flex;
     margin: 5px;
     flex-flow: column wrap;
+
+    >input {
+      height: 30px;
+      text-indent: 10px;
+    }
 
     >div {
       display: flex;

@@ -282,20 +282,54 @@ export function toolsContainer() {
 
 
     function pageonclick() {
-      let dimension = html.div({
-        className: 'CE_inline_input CE_tool',
+      let pageAr = [];
+
+      pageAr.push(html.div({
+        className: 'CE_tool CE_controlers',
         children: [
           html.span({
-            textContent: 'w: '
+            textContent: 'Page name'
           }),
-          page.pageWidth,
-          html.span({
-            textContent: 'h: '
-          }),
-          page.pageHeight
+          html.div({
+            className: 'CE_controlers-tools',
+            children: [
+              page.pageName
+            ]
+          })
         ]
-      });
-      newContainer.bind(this)('Page', [page.pageName, dimension, page.addPage], 'CE_col');
+      }));
+
+      pageAr.push(html.div({
+        className: 'CE_tool CE_controlers',
+        children: [
+          html.span({
+            textContent: 'Dimension'
+          }),
+          html.div({
+            className: 'CE_controlers-tools',
+            children: [html.div({
+              children: [
+                page.pageHeight,
+                page.pageWidth
+              ]
+            })]
+          })
+        ]
+      }));
+
+      pageAr.push(html.div({
+        className: 'CE_tool CE_controlers',
+        children: [
+          html.div({
+            className: 'CE_controlers-tools',
+            children: [
+              page.addPage
+            ]
+          })
+        ]
+      }));
+
+      newContainer.bind(this)('Page', pageAr, 'CE_col');
     }
 
     function textonclick() {
@@ -318,19 +352,19 @@ export function toolsContainer() {
       }));
 
       objectSettingsAr.push(html.div({
-        className: 'CE_tool CE_dropshadow-tool',
+        className: 'CE_tool CE_controlers',
         children: [
           html.span({
             textContent: 'Drop shadow'
           }),
           html.div({
-            className: 'CE_dropshadow-controls',
+            className: 'CE_controlers-tools',
             children: [
               object.dropShadow
             ]
           }),
           html.div({
-            className: 'CE_dropshadow-controls',
+            className: 'CE_controlers-tools',
             children: [
               html.create('small', {
                 textContent: 'Set color'
@@ -339,7 +373,7 @@ export function toolsContainer() {
             ]
           }),
           html.div({
-            className: 'CE_dropshadow-controls',
+            className: 'CE_controlers-tools',
             children: [
               html.create('small', {
                 textContent: 'Set axis'
@@ -353,7 +387,7 @@ export function toolsContainer() {
             ]
           }),
           html.div({
-            className: 'CE_dropshadow-controls',
+            className: 'CE_controlers-tools',
             children: [
               html.create('small', {
                 textContent: 'Set blur'
@@ -369,19 +403,19 @@ export function toolsContainer() {
       }));
 
       objectSettingsAr.push(html.div({
-        className: 'CE_tool CE_dropshadow-tool',
+        className: 'CE_tool CE_controlers',
         children: [
           html.span({
             textContent: 'Stroke'
           }),
           html.div({
-            className: 'CE_dropshadow-controls',
+            className: 'CE_controlers-tools',
             children: [
               object.strokeToggle
             ]
           }),
           html.div({
-            className: 'CE_dropshadow-controls',
+            className: 'CE_controlers-tools',
             children: [
               html.create('small', {
                 textContent: 'Stroke width'
@@ -394,7 +428,7 @@ export function toolsContainer() {
             ]
           }),
           html.div({
-            className: 'CE_dropshadow-controls',
+            className: 'CE_controlers-tools',
             children: [
               html.create('small', {
                 textContent: 'Set stroke color'

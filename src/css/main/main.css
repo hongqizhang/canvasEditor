@@ -57,6 +57,24 @@
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   z-index: 2;
+  /* Handle on hover */
+}
+
+#CE_wrapper #CE_tools-wrapper ::-webkit-scrollbar {
+  width: 4px;
+}
+
+#CE_wrapper #CE_tools-wrapper ::-webkit-scrollbar-thumb {
+  background: #6aa1f3;
+}
+
+#CE_wrapper #CE_tools-wrapper ::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+#CE_wrapper #CE_tools-wrapper * {
+  scrollbar-width: 4px;
+  scrollbar-color: #6aa1f3;
 }
 
 #CE_wrapper #CE_tools-wrapper #CE_container-wrapper {
@@ -195,7 +213,8 @@
 }
 
 .CE_btn {
-  height: 40px;
+  height: 30px;
+  border-radius: 2px;
   border: none;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -244,7 +263,7 @@
   width: auto !important;
 }
 
-.CE_dropshadow-tool .CE_dropshadow-controls {
+.CE_controlers .CE_controlers-tools {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -255,30 +274,35 @@
           flex-flow: column wrap;
 }
 
-.CE_dropshadow-tool .CE_dropshadow-controls > div {
+.CE_controlers .CE_controlers-tools > input {
+  height: 30px;
+  text-indent: 10px;
+}
+
+.CE_controlers .CE_controlers-tools > div {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
 
-.CE_dropshadow-tool .CE_dropshadow-controls > div .CE_icon {
+.CE_controlers .CE_controlers-tools > div .CE_icon {
   margin: 0 10px 0 15px;
 }
 
-.CE_dropshadow-tool .CE_dropshadow-controls > div > input {
+.CE_controlers .CE_controlers-tools > div > input {
   width: 60px;
   height: 30px;
   text-align: center;
 }
 
-.CE_dropshadow-tool .CE_dropshadow-controls > div > * {
+.CE_controlers .CE_controlers-tools > div > * {
   -ms-flex-negative: 0;
       flex-shrink: 0;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
 }
 
-.CE_dropshadow-tool .CE_dropshadow-controls > div > *:not(:first-child) {
+.CE_controlers .CE_controlers-tools > div > *:not(:first-child) {
   margin-left: 5px;
 }
 /*# sourceMappingURL=main.css.map */

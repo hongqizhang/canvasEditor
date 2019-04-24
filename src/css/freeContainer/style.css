@@ -173,9 +173,6 @@
 
 .CE_freeContainer_wrapper > .CE_body.CE_col > .CE_tool,
 .CE_freeContainer_wrapper > .CE_body > .CE_col > .CE_tool {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
@@ -218,30 +215,5 @@
 .CE_freeContainer_wrapper > .CE_body .CE_stroke-color {
   border-radius: 4px;
   border: solid 2px #f97;
-}
-
-.CE_freeContainer_wrapper .CE_inline_input {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  height: 30px;
-}
-
-.CE_freeContainer_wrapper .CE_inline_input * {
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-  text-align: center;
-}
-
-.CE_freeContainer_wrapper .CE_inline_input input {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
-  width: 40px;
-  height: 100%;
 }
 /*# sourceMappingURL=style.css.map */
