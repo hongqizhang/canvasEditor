@@ -15,8 +15,7 @@ import {
   contextMenu
 } from './components/contextmenu';
 import b64ToBlob from 'blueimp-canvas-to-blob';
-
-const html = require('html-element-js').default;
+import html from 'html-element-js';
 
 /**
  * 

@@ -7,8 +7,7 @@ import {
   contextMenu
 } from './contextmenu';
 
-
-const html = require('html-element-js').default;
+import html from 'html-element-js';
 
 /**
  * @typedef {Object} tools
@@ -183,15 +182,9 @@ export function toolsContainer() {
     fontWeight: html.create('select', {
       className: 'CE_tool'
     }),
-    fontSize: html.create('label', {
-      className: 'CE_inline_input CE_tool',
-      children: [
-        icon('font-size'),
-        html.create('input', {
-          type: 'number',
-          value: 40
-        })
-      ]
+    fontSize: html.create('input', {
+      type: 'number',
+      value: 40
     }),
     addText: html.button(null, {
       className: 'CE_tool CE_btn',
@@ -261,11 +254,6 @@ export function toolsContainer() {
 
     mainTools.selection.classList.add('active');
 
-    let textStyleContainer = html.div({
-      className: 'CE_tool CE_row',
-      children: Object.values(textStyle)
-    });
-
     mainTools.page.addEventListener('click', pageonclick);
     mainTools.text.addEventListener('click', textonclick);
     mainTools.shapes.addEventListener('click', cm_shapes.show);
@@ -333,9 +321,78 @@ export function toolsContainer() {
     }
 
     function textonclick() {
-      let textOptionsAr = Object.values(textOptions);
-      textOptionsAr.push(textStyleContainer);
-      newContainer.bind(this)('Text', textOptionsAr, 'CE_col');
+      let textOptionsAr = [];
+
+      textOptionsAr.push(html.div({
+        className: 'CE_tool CE_controlers',
+        children: [
+          html.span({
+            textContent: 'Font Family'
+          }),
+          html.div({
+            className: 'CE_controlers-tools',
+            children: [
+              textOptions.fontFamily
+            ]
+          })
+        ]
+      }));
+
+      textOptionsAr.push(html.div({
+        className: 'CE_tool CE_controlers',
+        children: [
+          html.span({
+            textContent: 'Font Weight'
+          }),
+          html.div({
+            className: 'CE_controlers-tools',
+            children: [
+              textOptions.fontWeight
+            ]
+          })
+        ]
+      }));
+
+      textOptionsAr.push(html.div({
+        className: 'CE_tool CE_controlers',
+        children: [
+          html.div({
+            className: 'CE_controlers-tools',
+            children: [html.div({
+              children: [
+                icon('font-size'),
+                textOptions.fontSize
+              ]
+            })]
+          })
+        ]
+      }));
+
+      textOptionsAr.push(html.div({
+        className: 'CE_tool CE_controlers',
+        children: [
+          html.div({
+            className: 'CE_controlers-tools',
+            children: [html.div({
+              children: Object.values(textStyle)
+            })]
+          })
+        ]
+      }));
+
+
+      textOptionsAr.push(html.div({
+        className: 'CE_tool CE_controlers',
+        children: [
+          html.div({
+            className: 'CE_controlers-tools',
+            children: [
+              textOptions.addText
+            ]
+          })
+        ]
+      }));
+      newContainer.bind(this)('Text', textOptionsAr);
     }
 
     function objectonclick() {
@@ -554,7 +611,7 @@ export function toolsContainer() {
     textSettings: {
       ...textOptions,
       ...textStyle,
-      fontSize: textOptions.fontSize.querySelector('input')
+      fontSize: textOptions.fontSize
     },
     pageSettings: {
       ...page

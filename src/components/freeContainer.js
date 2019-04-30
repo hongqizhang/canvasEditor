@@ -1,4 +1,4 @@
-const html = require('html-element-js').default;
+import html from 'html-element-js';
 
 /**
  * @typedef {Object} freeContainer
@@ -106,9 +106,9 @@ export function freeContainer(opts = {}) {
       }
 
     } else if (!bool && wrapper.parentElement) {
-      parentElement.removeChild(wrapper);
+      wrapper.parentElement.removeChild(wrapper);
       if (mask) {
-        parentElement.removeChild(mask);
+        mask.parentElement.removeChild(mask);
       }
     }
   }

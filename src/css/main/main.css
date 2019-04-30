@@ -285,10 +285,6 @@
   display: flex;
 }
 
-.CE_controlers .CE_controlers-tools > div .CE_icon {
-  margin: 0 10px 0 15px;
-}
-
 .CE_controlers .CE_controlers-tools > div > input {
   width: 60px;
   height: 30px;
