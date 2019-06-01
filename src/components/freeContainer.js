@@ -1,23 +1,24 @@
-import html from 'html-element-js';
+import * as html from '../../node_modules/html-element-js/src/html';
 
 /**
  * @typedef {Object} freeContainer
- * @property {function(bool):void} setVisiblity
- * @property {function(el):void} addItem
- * @property {function(el, refel):void} insertBefore
- * @property {function(el):void} removeItems
- * @property {function(title):void} setTitle
+ * @property {function(Boolean):void} setVisiblity
+ * @property {function(Element):void} addItem
+ * @property {function(Element, Element):void} insertBefore
+ * @property {function(Element):void} removeItems
+ * @property {function(String):void} setTitle
  * @property {function():void} del
  * @property {Object} DOMElements
- * @property {HTMlElement} DOMElements.wrapper
- * @property {HTMlElement} DOMElements.body
- * @property {HTMlElement} closeBtn
+ * @property {Element} DOMElements.wrapper
+ * @property {Element} DOMElements.body
+ * @property {Element} closeBtn
  */
 
 /**
  * creates a new freeContaier
  * @param {Object} [opts]
  * @param {Boolean} [opts.disableCloseBtn]
+ * @param {String} [opts.title]
  * @param {Boolean} [opts.enableMask]
  * @param {HTMLElement} [opts.parentElement]
  * @param {HTMLElement} [opts.drop]
@@ -68,7 +69,7 @@ export function freeContainer(opts = {}) {
       className: 'CE_mask',
       onclick: () => setVisiblity(false)
     });
-    wrapper.style.zIndex = 1000;
+    wrapper.style.zIndex = '1000';
   }
 
   mover.addEventListener('mousedown', function addGrabbing() {
@@ -82,7 +83,7 @@ export function freeContainer(opts = {}) {
       handel.classList.add('grab');
       handel.classList.remove('grabbing');
     }, 10);
-  })
+  });
 
   handel.appendChild(mover);
   if (opts && opts.disableCloseBtn) {
@@ -180,11 +181,11 @@ export function freeContainer(opts = {}) {
 
   /**
    * 
-   * @param {MouseEvent} e 
+   * @param {MouseEvent|TouchEvent} e
    */
   function onmousemove(e) {
     e.preventDefault();
-    let cx = e.clientX || e.touches[0].clientX;;
+    let cx = e.clientX || e.touches[0].clientX;
     let cy = e.clientY || e.touches[0].clientY;
     move.x = cx - start.x;
     move.y = cy - start.y;

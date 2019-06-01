@@ -1,4 +1,4 @@
-const html = require('html-element-js').default;
+import * as html from '../../node_modules/html-element-js/src/html';
 
 /**
  * @callback itemOnclick
@@ -8,7 +8,7 @@ const html = require('html-element-js').default;
 /**
  * @typedef contextMenu
  * @property {function():void} dispose
- * @property {function():void} show
+ * @property {function(MouseEvent):void} show
  * @property {function():void} hide
  * @property {function(HTMLElement[]):void} addItems
  * @property {function(HTMLElement):void} removeItem
@@ -19,13 +19,10 @@ const html = require('html-element-js').default;
  */
 
 /**
- * 
- * @param {Object} [opts] 
- * @param {HTMLElement[]} [opts.children=null] children to append
- * @param {Number} [opts.x] x position 
- * @param {Number} [opts.y] y position
- * @param {itemOnclick} [opts.itemOnclick]
- * @param {function} [opts.maskOnclick]
+ *
+ * @param {HTMLElement[]} [children=null] children to append
+ * @param {Number} [x] x position
+ * @param {Number} [y] y position
  * @returns {contextMenu}
  */
 export function contextMenu(children = null, x = 0, y = 0) {
@@ -34,7 +31,7 @@ export function contextMenu(children = null, x = 0, y = 0) {
     oncontextmenu: () => false
   });
   let mask = html.create('span', {
-    className: 'CE_mask',
+    className: 'CE_mask CE_cm',
     oncontextmenu: maskOnclick,
     onclick: maskOnclick
   });
@@ -53,10 +50,8 @@ export function contextMenu(children = null, x = 0, y = 0) {
     childMenu
   };
   returnable.itemOnclick = function () {
-    return;
   };
   returnable.maskOnclick = function () {
-    return;
   };
 
   function maskOnclick(e) {

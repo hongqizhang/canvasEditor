@@ -12,7 +12,7 @@
   background-color: white;
   -webkit-transform-origin: top;
           transform-origin: top;
-  z-index: 999;
+  z-index: 9999;
   border-radius: 2px;
   -webkit-box-shadow: 4px 4px 20px rgba(0, 0, 56, 0.2);
           box-shadow: 4px 4px 20px rgba(0, 0, 56, 0.2);
@@ -35,6 +35,7 @@
   font-size: 0.8em;
   font-weight: 500;
   cursor: default;
+  background-color: white;
 }
 
 .CE_contextmenu > * > .CE_contextmenu {
@@ -46,6 +47,7 @@
   height: -webkit-fit-content;
   height: -moz-fit-content;
   height: fit-content;
+  background-color: white;
 }
 
 .CE_contextmenu > *:not(:last-child) {
@@ -53,18 +55,18 @@
 }
 
 .CE_contextmenu > *:hover {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: #b7b7b7;
 }
 
 .CE_contextmenu > *:hover > .CE_contextmenu {
   display: block;
 }
 
-.CE_contextmenu > *.disabled {
+.CE_contextmenu > *.CE_disabled {
   color: #ccc;
 }
 
-.CE_contextmenu > *.disabled:hover {
+.CE_contextmenu > *.CE_disabled:hover {
   background-color: white;
 }
 

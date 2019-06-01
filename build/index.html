@@ -1,52 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="./css/index.css">
-  <script src="./canvasEditor.js"></script>
-  <title>Canvas Editor</title>
-</head>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./css/index.css">
+    <script src="./canvasEditor.js"></script>
+    <title>Canvas Editor</title>
+  </head>
 
-<body>
-  <header>
-    <h1>Canvas Editor</h1>
-    <div class="file-menu">
-      <span class="menu-toggler">file</span>
-      <ul class="menu">
-        <li id="open">Open</li>
-        <li id="save">Save</li>
-        <li id="saveJPEG">Save as jpeg</li>
-        <li id="savePNG">Save as png</li>
-      </ul>
-    </div>
-  </header>
-  <div id="editor"></div>
-  <script>
-    const ce = CanvasEditor(editor);
+  <body>
+    <header>
+      <h1>Canvas Editor</h1>
+      <div class="file-menu">
+        <span class="menu-toggler">file</span>
+        <ul class="menu">
+          <li id="open">Open</li>
+          <li id="save">Save</li>
+          <li id="saveJPEG">Save as jpeg</li>
+          <li id="savePNG">Save as png</li>
+        </ul>
+      </div>
+    </header>
+    <div id="editor"></div>
+    <script>
+      let editor = document.querySelector('#editor');
+      let save = document.querySelector('#save');
+      let saveJPEG = document.querySelector('#saveJPEG');
+      let savePNG = document.querySelector('#savePNG');
 
-    save.onclick = function () {
-      let json = ce.toJSON();
-      localStorage.setItem('saved', json);
-      alert('saved');
-    }
+      const ce = CanvasEditor(editor);
+      save.onclick = function () {
+        let json = ce.toJSON();
+        localStorage.setItem('saved', json);
+        alert('saved');
+      };
 
-    saveJPEG.onclick = function () {
-      let jpeg = ce.saveAsJPEG();
-      console.log(jpeg);
-    }
+      saveJPEG.onclick = function () {
+        let jpeg = ce.saveAsJPEG();
+        console.log(jpeg);
+      };
 
-    savePNG.onclick = function () {
-      let jpeg = ce.saveAsPNG();
-      console.log(jpeg);
-    }
+      savePNG.onclick = function () {
+        let jpeg = ce.saveAsPNG();
+        console.log(jpeg);
+      };
 
-    if ('saved' in localStorage) {
-      ce.loadJSON(localStorage.getItem('saved'));
-    }
-  </script>
-</body>
+      if ('saved' in localStorage) {
+        ce.loadJSON(localStorage.getItem('saved'));
+      }
+
+      let options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+
+      for (let i = 0; i < 10; ++i) {
+        ce.addFont(options[i]);
+      }
+
+      ce.onFontScrollEnd(function () {
+        console.log('scroll end')
+      });
+      ce.getRequireFonts(loadFonts);
+
+      function loadFonts(fonts, exec) {
+        console.log(fonts);
+        exec();
+      }
+
+    </script>
+  </body>
 
 </html>

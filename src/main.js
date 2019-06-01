@@ -11,22 +11,29 @@ import './css/freeContainer/style.css';
 import './css/inputs/style.css';
 import './css/contextmenu/style.css';
 import './css/res/style.css';
+import '../node_modules/html-element-js/src/css/main.css';
+
 import {
   contextMenu
 } from './components/contextmenu';
 import b64ToBlob from 'blueimp-canvas-to-blob';
-import html from 'html-element-js';
-
+import * as html from '../node_modules/html-element-js/src/html';
+import {rangeSlider} from '../node_modules/html-element-js/src/rangeSlider';
+import * as picker from 'a-color-picker';
 /**
  * 
- * @param {HTMLDivElement} parentel 
- * @param {Object} opts 
+ * @param {Element} parentel
+ * @param {Object} [opts]
  */
-export function CanvasEditor(parentel, opts) {
-  if (!parentel) return console.error('pranetel undefined!');
+export function CanvasEditor(parentel, opts={}) {
+  if (!parentel) return console.error('Parent element is undefined!');
 
-  const picker = require('a-color-picker');
-
+  let fontLoader = html.span({
+    textContent: 'loading font',
+    id: 'CE_font-loader'
+  });
+  let fontloaderTimeout;
+  let requireFonts = [];
   let clickCatchMask = html.div({
     className: 'CE_click-catch-mask'
   });
@@ -118,37 +125,28 @@ export function CanvasEditor(parentel, opts) {
       textContent: 'Center'
     }),
     hCenter: html.span({
-      textContent: 'Horizontaly center'
+      textContent: 'Horizontally center'
     }),
     vCenter: html.span({
-      textContent: 'Verticaly center'
+      textContent: 'Vertically center'
     })
   };
   let canvasContextMenu = contextMenu(Object.values(canvasContextMenuOptions));
   let objectContextMenu = contextMenu(Object.values(objectContextMenuOptions));
   let arrangeContextMenu = contextMenu(Object.values(arrangeOptions));
   let alignContextMenu = contextMenu(Object.values(alignOptions));
-  /**
-   * @type {fabric.ActiveSelection}
-   */
-  let copiedObject = null;
-  /**
-   * @type {MouseEvent}
-   */
-  let mouseEvent = null;
+  let copiedObject;
+  let mouseEvent;
 
   let pages = {};
   pages.page = {};
   pages.length = 0;
-  /**
-   * @type {fabric.Canvas}
-   */
   let activeCanvas;
 
   /**
    * @type {toolsContainer}
    */
-  let alltools = null;
+  let alltools;
 
   /**
    * @type {fabric.ActiveSelection[]}
@@ -156,8 +154,8 @@ export function CanvasEditor(parentel, opts) {
   let lockedObjects = [];
   let scale = 1;
   let translate = {};
-  let zoom = html.rangeSlider({
-    min: 0.5,
+  let zoom = rangeSlider({
+    min: 0.001,
     max: 2,
     value: 1,
     step: 0.001
@@ -205,7 +203,7 @@ export function CanvasEditor(parentel, opts) {
 
     zoom.onchange = function (value) {
       updateScaling(value);
-    }
+    };
 
     clickCatchMask.addEventListener('click', deselectObjects);
 
@@ -230,7 +228,6 @@ export function CanvasEditor(parentel, opts) {
 
     colorPicker = picker.createPicker(colorPickerContainer.DOMElements.body, {
       showHSL: false,
-      showHEX: false,
       palette: 'PALETTE_MATERIAL_CHROME',
       showAlpha: true,
       showHEX: true,
@@ -269,7 +266,7 @@ export function CanvasEditor(parentel, opts) {
       left: 100,
       fill: objectFillColor,
       stroke: strokeColor
-    }
+    };
 
     let text = new fabric.Textbox(value, props);
     activeCanvas.add(text);
@@ -281,7 +278,7 @@ export function CanvasEditor(parentel, opts) {
     props = props || {
       left: 0,
       top: 0
-    }
+    };
     let image = new fabric.Image(img, props);
     activeCanvas.add(image);
 
@@ -314,7 +311,6 @@ export function CanvasEditor(parentel, opts) {
     };
     let rect = new fabric.Rect(props);
     activeCanvas.add(rect);
-
     activeCanvas.centerObject(rect);
     activeCanvas.setActiveObject(rect);
   }
@@ -391,9 +387,9 @@ export function CanvasEditor(parentel, opts) {
     if (activeCanvas === canvas) return;
 
     if (pages.length === 1) {
-      canvasContextMenuOptions.delete.classList.add('disabled');
+      canvasContextMenuOptions.delete.classList.add('CE_disabled');
     } else {
-      canvasContextMenuOptions.delete.classList.remove('disabled');
+      canvasContextMenuOptions.delete.classList.remove('CE_disabled');
     }
 
     deselectObjects();
@@ -452,7 +448,7 @@ export function CanvasEditor(parentel, opts) {
         let start = {
           x: 0,
           y: 0
-        }
+        };
         for (let child of children) {
           child.style.pointerEvents = 'none';
         }
@@ -499,7 +495,7 @@ export function CanvasEditor(parentel, opts) {
           translate = {
             x: transform.x + dsX,
             y: transform.y + dsY
-          }
+          };
           canvasContainer.style.transform = `translate(${translate.x}px, ${translate.y}px) scale(${scale})`;
         }
 
@@ -524,24 +520,55 @@ export function CanvasEditor(parentel, opts) {
     })();
 
     (function initTextSettings() {
-      textSettings.fontFamily.addEventListener('change', function () {
-        let fontFamily = this.value;
+      textSettings.fontFamily.onchange = function (value) {
+        if (fontloaderTimeout) clearTimeout(fontloaderTimeout);
+        let fontFamily = value;
         let activeObject = activeCanvas.getActiveObject();
-        if (activeObject.type !== 'textbox') return;
-        applyStyle(activeObject, 'fontFamily', fontFamily);
-      });
-      textSettings.fontSize.addEventListener('input', function () {
+        if (activeObject && activeObject.type !== 'textbox' || !activeObject) return;
+        if (!fontLoader) {
+          mainWrapper.appendChild(fontLoader);
+        }
+        fontLoader.style.fontWeight = activeObject.fontWeight;
+        fontLoader.style.fontFamily = value;
+        fontLoader.style.opacity = 1;
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => {
+            applyStyle(activeObject, 'fontFamily', fontFamily);
+            fontLoader.style.opacity = 0 + '';
+          });
+        } else {
+          setTimeout(() => {
+            applyStyle(activeObject, 'fontFamily', fontFamily);
+            fontLoader.style.opacity = 0 + '';
+          }, 100);
+        }
+      };
+      textSettings.fontSize.oninput = function () {
         let fontSize = this.value;
         let activeObject = activeCanvas.getActiveObject();
         if (activeObject.type !== 'textbox') return;
         applyStyle(activeObject, 'fontSize', fontSize);
-      });
-      textSettings.fontWeight.addEventListener('input', function () {
-        let fontWeight = this.value;
+      };
+      textSettings.fontWeight.onchange = function (value) {
+        if (fontloaderTimeout) clearTimeout(fontloaderTimeout);
+        let fontWeight = value;
         let activeObject = activeCanvas.getActiveObject();
-        if (activeObject.type !== 'textbox') return;
-        applyStyle(activeObject, 'fontWeight', fontWeight);
-      });
+        if (activeObject && activeObject.type !== 'textbox' || !activeObject) return;
+        fontLoader.style.fontWeight = value;
+        fontLoader.style.fontFamily = activeObject.fontFamily;
+        fontLoader.style.opacity = 1;
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => {
+            applyStyle(activeObject, 'fontWeight', fontWeight);
+            fontLoader.style.opacity = 0 + '';
+          });
+        } else {
+          setTimeout(() => {
+            applyStyle(activeObject, 'fontWeight', fontWeight);
+            fontLoader.style.opacity = 0 + '';
+          }, 100);
+        }
+      };
       textSettings.underline.addEventListener('click', function () {
         let activeObject = activeCanvas.getActiveObject();
         if (activeObject.type !== 'textbox') return;
@@ -591,8 +618,7 @@ export function CanvasEditor(parentel, opts) {
         fixPagesContainerPosition();
       });
       pageSettings.pageName.addEventListener('blur', function () {
-        let name = this.value;
-        activeCanvas.page.name = name;
+        activeCanvas.page.name = this.value;
       });
     })();
 
@@ -606,7 +632,7 @@ export function CanvasEditor(parentel, opts) {
           }
         }
         activeCanvas.renderAll();
-      }
+      };
 
       objectSettings.dropShadow.onchange = function () {
         let activeObjects = activeCanvas.getActiveObjects();
@@ -627,7 +653,7 @@ export function CanvasEditor(parentel, opts) {
         }
 
         activeCanvas.renderAll();
-      }
+      };
 
       objectSettings.offsetX.oninput = function () {
         let activeObjects = activeCanvas.getActiveObjects();
@@ -639,7 +665,7 @@ export function CanvasEditor(parentel, opts) {
         }
 
         activeCanvas.renderAll();
-      }
+      };
       objectSettings.offsetY.oninput = function () {
         let activeObjects = activeCanvas.getActiveObjects();
 
@@ -651,7 +677,7 @@ export function CanvasEditor(parentel, opts) {
         }
 
         activeCanvas.renderAll();
-      }
+      };
 
       objectSettings.blur.oninput = function () {
         let activeObjects = activeCanvas.getActiveObjects();
@@ -664,7 +690,7 @@ export function CanvasEditor(parentel, opts) {
         }
 
         activeCanvas.renderAll();
-      }
+      };
 
       objectSettings.color.onclick = function () {
         colorPickerContainer.setTitle('Color picker - shadow');
@@ -682,7 +708,7 @@ export function CanvasEditor(parentel, opts) {
 
           activeCanvas.renderAll();
         }
-      }
+      };
 
       objectSettings.strokeColor.addEventListener('click', () => {
         colorPickerContainer.setTitle('Color picker - stroke');
@@ -701,7 +727,7 @@ export function CanvasEditor(parentel, opts) {
         } else {
           applyStyle(activeCanvas.getActiveObject(), 'strokeWidth', 0);
         }
-      }
+      };
 
       objectSettings.strokeWidth.oninput = function () {
         let width = parseFloat(this.value.substr(0, 3));
@@ -726,7 +752,7 @@ export function CanvasEditor(parentel, opts) {
 
     arrangeContextMenu.itemOnclick = alignContextMenu.itemOnclick = arrangeContextMenu.maskOnclick = alignContextMenu.maskOnclick = function () {
       objectContextMenu.hide();
-    }
+    };
 
     canvasContextMenuOptions.delete.addEventListener('click', deleteCanvas);
     canvasContextMenuOptions.paste.addEventListener('click', pasteObject);
@@ -761,7 +787,6 @@ export function CanvasEditor(parentel, opts) {
 
   function setObjectAlignment(alignment) {
     let activeObject = activeCanvas.getActiveObject();
-    let pos = null;
     switch (alignment) {
       case 'center':
         activeCanvas.centerObject(activeObject);
@@ -826,11 +851,9 @@ export function CanvasEditor(parentel, opts) {
     --pages.length;
     page.DOMElement.parentElement.removeChild(page.DOMElement);
     delete pages.page[page.name];
-    for (let key in pages.page) {
-      if (key !== 'length') {
-        updateActiveCanvas(pages.page[key]);
-        break;
-      }
+    for (let key in pages.page) if (key !== 'length') {
+      updateActiveCanvas(pages.page[key]);
+      break;
     }
     fixPagesContainerPosition();
   }
@@ -888,20 +911,20 @@ export function CanvasEditor(parentel, opts) {
     if (activeObject) {
       objectContextMenu.show(e);
       if (length > 1 && activeObject.type === 'activeSelection') {
-        group.classList.remove('disabled');
+        group.classList.remove('CE_disabled');
         group.textContent = 'Group';
         group.onclick = function () {
           activeObject.toGroup();
         }
       } else if (activeObject.type === 'group') {
-        group.classList.remove('disabled');
+        group.classList.remove('CE_disabled');
         group.textContent = 'Ungroup';
         group.onclick = function () {
           activeObject.toActiveSelection();
         }
       } else {
         group.textContent = 'Group';
-        group.classList.add('disabled');
+        group.classList.add('CE_disabled');
       }
 
       if (activeObject.lockUniScaling) {
@@ -912,26 +935,26 @@ export function CanvasEditor(parentel, opts) {
 
     } else {
       if (copiedObject) {
-        canvasContextMenuOptions.paste.classList.remove('disabled');
+        canvasContextMenuOptions.paste.classList.remove('CE_disabled');
       } else {
-        canvasContextMenuOptions.paste.classList.add('disabled');
+        canvasContextMenuOptions.paste.classList.add('CE_disabled');
       }
 
       if (lockedObjects.length > 0) {
-        canvasContextMenuOptions.unlockAll.classList.remove('disabled');
+        canvasContextMenuOptions.unlockAll.classList.remove('CE_disabled');
       } else {
-        canvasContextMenuOptions.unlockAll.classList.add('disabled');
+        canvasContextMenuOptions.unlockAll.classList.add('CE_disabled');
       }
       canvasContextMenu.show(e);
     }
   }
 
   function fixPagesContainerPosition() {
-    let CcontainerClient = canvasContainer.getBoundingClientRect();
-    let CcontainerParentClient = canvasContainer.parentElement.getBoundingClientRect();
+    let ContainerClient = canvasContainer.getBoundingClientRect();
+    let ContainerParentClient = canvasContainer.parentElement.getBoundingClientRect();
 
-    let y = CcontainerParentClient.height / 2 - CcontainerClient.height / 2;
-    let x = CcontainerParentClient.width / 2 - CcontainerClient.width / 2;
+    let y = ContainerParentClient.height / 2 - ContainerClient.height / 2;
+    let x = ContainerParentClient.width / 2 - ContainerClient.width / 2;
 
     translate = {
       x,
@@ -964,10 +987,7 @@ export function CanvasEditor(parentel, opts) {
     mainWrapper.style.cursor = 'progress';
     let reader = new FileReader();
     reader.onload = readerOnLoad;
-    /**
-     * 
-     * @param {ProgressEvent} e 
-     */
+
     function readerOnLoad(e) {
       let svg = e.target.result;
 
@@ -1005,9 +1025,6 @@ export function CanvasEditor(parentel, opts) {
   }
 
   function objectOnSelect() {
-    /**
-     * @type {fabric.ActiveSelection | fabric.Object}
-     */
     let activeObject = this || activeCanvas.getActiveObject();
 
     if (['activeSelection', 'group'].indexOf(activeObject.type) > -1) return;
@@ -1018,13 +1035,13 @@ export function CanvasEditor(parentel, opts) {
     let objectSettings = alltools.objectSettings;
 
     if (activeObject.type === 'text') {
-      var text = activeObject.text;
-      var textobj = activeObject.toObject();
+      let text = activeObject.text;
+      let textobj = activeObject.toObject();
       delete textobj.text;
       delete textobj.type;
-      var clonedtextobj = JSON.parse(JSON.stringify(textobj));
+      let clonedtextobj = JSON.parse(JSON.stringify(textobj));
 
-      var textbox = new fabric.Textbox(text, clonedtextobj);
+      let textbox = new fabric.Textbox(text, clonedtextobj);
 
       deleteObject();
       activeObject = textbox;
@@ -1055,8 +1072,8 @@ export function CanvasEditor(parentel, opts) {
         textSettings.strikethrough.classList.remove('active');
       }
 
-      textSettings.fontFamily.value = fontFamily;
-      textSettings.fontWeight.value = fontWeight;
+      textSettings.fontFamily.setvalue(fontFamily);
+      textSettings.fontWeight.setvalue(fontWeight);
       textSettings.fontSize.value = fontSize;
     }
 
@@ -1082,9 +1099,9 @@ export function CanvasEditor(parentel, opts) {
 
   /**
    * 
-   * @param {fabric.ActiveSelection | fabric.Object | fabric.Group} object 
+   * @param {Object} object
    * @param {String} style 
-   * @param {String|Number} value 
+   * @param {String|Number|Boolean} value
    */
   function applyStyle(object, style, value) {
     if (object.type === 'activeSelection' || object.type === 'group') {
@@ -1098,12 +1115,50 @@ export function CanvasEditor(parentel, opts) {
     activeCanvas.renderAll();
   }
 
+  function addFont(font, weight) {
+    if (fontloaderTimeout) clearTimeout(fontloaderTimeout);
+    alltools.textSettings.fontFamily.addOption(font, font);
+
+    fontLoader.style.fontFamily = font;
+    if (weight) {
+      fontLoader.style.fontWeight = weight;
+    }
+
+    if (!fontLoader.parentElement) {
+      if (mainWrapper.parentElement) {
+        mainWrapper.appendChild(fontLoader);
+      } else if (parentel.parentElement) {
+        parentel.appendChild(fontLoader);
+      } else {
+        document.body.appendChild(fontLoader);
+      }
+    }
+    fontLoader.style.opacity = '1';
+
+    fontloaderTimeout = setTimeout(() => {
+      fontLoader.style.opacity = '0';
+    }, 1500);
+  }
+
+  function removeFont(font) { 
+    alltools.textSettings.fontFamily.removeOption(font);
+  }
+
+  function onFontScrollEnd(fun) {
+    alltools.textSettings.fontFamily.customSelect.onscroll = function (e) {
+      if (this.offsetHeight + this.scrollTop >= this.scrollHeight) {
+        fun();
+      }
+    }
+  }
+
   /**
-   *   
+   *
+   * @param {Number} [quality=1]
    * @param {Number} [scaling=1]
-   * @param {Boolean} [retinaScaling=true] 
+   * @param {Boolean} [retinaScaling=true]
    */
-  function saveAsPNG(scaling = 1, retinaScaling = true) {
+  function saveAsPNG(scaling = 1, retinaScaling = true, quality = 1) {
     let images = saveAsBase64({
       quality: quality,
       multiplier: scaling,
@@ -1181,32 +1236,48 @@ export function CanvasEditor(parentel, opts) {
       mainWrapper.style.cursor = 'progress';
       mainWrapper.style.pointerEvents = 'none';
       render(json);
-
-      function render(json) {
-        let page = {};
-        let key = Object.keys(json)[0];
-        if (!key) return;
-        else {
-          page = json[key];
-          delete json[key];
-        }
-        if (activeCanvas.getObjects().length !== 0) {
-          addPage();
-        }
-        activeCanvas.page.name = page.name;
-        activeCanvas.setWidth(page.data.width);
-        activeCanvas.setHeight(page.data.height);
-        activeCanvas.loadFromJSON(page.data, function () {
-          activeCanvas.renderAll();
-          render(json);
-        });
-      }
       mainWrapper.style.removeProperty('cursor');
       mainWrapper.style.removeProperty('pointer-events');
       fixPagesContainerPosition();
     } catch (error) {
       alert('Cannot load json, Error: ' + error);
     }
+
+    function render(json) {
+      let page = {};
+      let key = Object.keys(json)[0];
+      if (!key) return;
+      else {
+        page = json[key];
+        delete json[key];
+      }
+      if (activeCanvas.getObjects().length !== 0) {
+        addPage();
+      }
+      activeCanvas.page.name = page.name;
+      activeCanvas.setWidth(page.data.width);
+      activeCanvas.setHeight(page.data.height);
+      activeCanvas.loadFromJSON(page.data, function () {
+        activeCanvas.renderAll();
+        let allObjects = activeCanvas.getObjects();
+        for (let object of allObjects) {
+          if (object.type && (object.type === 'textbox' || object.type === 'text' || object.type === 'itext')) {
+            requireFonts.push(object.fontFamily);
+          }
+        }
+        render(json);
+      });
+    }
+  }
+
+  function getRequireFonts(loadfont) {
+    function exec() {
+      for (let key in pages.page) {
+        pages.page[key].renderAll();
+        console.log("page: " + key + " rendered.");
+      }
+    }
+    loadfont([... new Set(requireFonts)], exec);
   }
 
   return {
@@ -1214,6 +1285,10 @@ export function CanvasEditor(parentel, opts) {
     saveAsPNG,
     saveAsJPEG,
     toJSON,
-    loadJSON
+    loadJSON,
+    addFont,
+    onFontScrollEnd,
+    getRequireFonts,
+    removeFont
   }
 }

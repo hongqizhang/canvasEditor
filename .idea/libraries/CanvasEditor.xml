@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="CanvasEditor" type="javaScript">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../maa kalyani printers/client/image-editor/canvasEditor.js" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

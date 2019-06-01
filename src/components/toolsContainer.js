@@ -1,5 +1,3 @@
-// import * as html from 'html-element-js';
-
 import {
   freeContainer
 } from './freeContainer';
@@ -7,7 +5,10 @@ import {
   contextMenu
 } from './contextmenu';
 
-import html from 'html-element-js';
+import * as html from '../../node_modules/html-element-js/src/html';
+import {select} from '../../node_modules/html-element-js/src/custom-select';
+import {rangeSlider} from '../../node_modules/html-element-js/src/rangeSlider';
+import {toggler} from '../../node_modules/html-element-js/src/toggler';
 
 /**
  * @typedef {Object} tools
@@ -66,7 +67,7 @@ export function toolsContainer() {
   /**
    * @type {HTMLDivElement}
    */
-  let root = CE_wrapper;
+  let root = document.querySelector('#CE_wrapper');
   let wrapper = html.create('div', {
     id: 'CE_tools-wrapper'
   });
@@ -77,37 +78,13 @@ export function toolsContainer() {
     id: 'CE_tools-container'
   });
   let mainTools = {
-    /**
-     * @type {HTMLElement}
-     */
     text: null,
-    /**
-     * @type {HTMLElement}
-     */
     shapes: null,
-    /**
-     * @type {HTMLElement}
-     */
     image: null,
-    /**
-     * @type {HTMLElement}
-     */
     page: null,
-    /**
-     * @type {HTMLElement}
-     */
     object: null,
-    /**
-     * @type {HTMLElement}
-     */
     selection: null,
-    /**
-     * @type {HTMLElement}
-     */
     hand: null,
-    /**
-     * @type {HTMLElement}
-     */
     backgroundColor: null
   };
   let page = {
@@ -135,13 +112,13 @@ export function toolsContainer() {
     }),
   };
   let object = {
-    opacity: html.rangeSlider({
+    opacity: rangeSlider({
       min: 0,
       max: 1,
       value: 1,
       step: 0.01
     }),
-    dropShadow: html.toggler({
+    dropShadow: toggler({
       size: 20
     }),
     offsetX: html.input({
@@ -162,7 +139,7 @@ export function toolsContainer() {
     color: html.span({
       className: 'CE_icon backgroundColor'
     }),
-    strokeToggle: html.toggler({
+    strokeToggle: toggler({
       size: 20
     }),
     strokeWidth: html.input({
@@ -176,12 +153,8 @@ export function toolsContainer() {
     })
   }
   let textOptions = {
-    fontFamily: html.create('select', {
-      className: 'CE_tool'
-    }),
-    fontWeight: html.create('select', {
-      className: 'CE_tool'
-    }),
+    fontFamily: select({spead: 2, height: 30, maxheight: 300}),
+    fontWeight: select({spead: 2, height: 30, maxheight: 300}),
     fontSize: html.create('input', {
       type: 'number',
       value: 40
@@ -192,24 +165,15 @@ export function toolsContainer() {
     })
   }
   let textStyle = {
-    /**
-     * @type {HTMLElement}
-     */
     underline: null,
-    /**
-     * @type {HTMLElement}
-     */
     italic: null,
-    /**
-     * @type {HTMLElement}
-     */
     strikethrough: null
-  }
+  };
   let shapes = {
     circle: icon('circle', 'Add circle'),
     rectangle: icon('rectangle', 'Add rectangle'),
     triangle: icon('triangle', 'Add triangle')
-  }
+  };
   let imageOptions = {
     openImage: html.create('label', {
       className: 'CE_icon_text',
@@ -237,12 +201,12 @@ export function toolsContainer() {
         })
       ]
     })
-  }
+  };
 
   let cm_shapes = contextMenu(Object.values(shapes));
   let cm_imageOptions = contextMenu(Object.values(imageOptions));
 
-  let defaultFontFamilies = ['Arial', 'Helvetica', 'Courier New', 'Courier', 'Times New Roman', 'Times'];
+  let defaultFontFamilies = [];
   let defaultFontWeight = ['lighter', 'normal', 'bold', 'bolder', 100, 200, 300, 400, 500, 600, 700, 800, 900];
 
   init();
@@ -267,7 +231,6 @@ export function toolsContainer() {
     wrapper.append(containerWrapper);
     container.append(Object.values(mainTools));
     root.appendChild(wrapper);
-
 
     function pageonclick() {
       let pageAr = [];
@@ -332,7 +295,7 @@ export function toolsContainer() {
           html.div({
             className: 'CE_controlers-tools',
             children: [
-              textOptions.fontFamily
+              textOptions.fontFamily.select
             ]
           })
         ]
@@ -347,7 +310,7 @@ export function toolsContainer() {
           html.div({
             className: 'CE_controlers-tools',
             children: [
-              textOptions.fontWeight
+              textOptions.fontWeight.select
             ]
           })
         ]
@@ -523,7 +486,7 @@ export function toolsContainer() {
     if (className) {
       container.DOMElements.body.classList.add(className);
     }
-    container.setTitle(title)
+    container.setTitle(title);
     container.setVisiblity(true);
     container.addItems(tools);
     container.closeBtn.onclick = () => {
@@ -535,16 +498,11 @@ export function toolsContainer() {
   /**
    * 
    * @param {String[]} options 
-   * @param {HTMLElement} selectElement 
    */
   function arrayToOptions(options, selectElement) {
     for (let option of options) {
-      let optionElement = html.create('option', {
-        textContent: option,
-        value: option
-      });
-
-      selectElement.appendChild(optionElement);
+      if (typeof option === 'number') option += '';
+      selectElement.addOption(option, option);
     }
   }
 
@@ -579,7 +537,7 @@ export function toolsContainer() {
 
   /**
    * @param {Object} array
-   * @param {Object} [args]
+   * @return {Object}
    */
   function iconsFromObject(array) {
     form(array);
