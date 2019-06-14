@@ -1,4 +1,4 @@
-import * as html from '../../node_modules/html-element-js/src/html';
+import tag from '../../node_modules/html-element-js/src/tag';
 
 /**
  * @callback itemOnclick
@@ -26,11 +26,11 @@ import * as html from '../../node_modules/html-element-js/src/html';
  * @returns {contextMenu}
  */
 export function contextMenu(children = null, x = 0, y = 0) {
-  let cm = html.create('div', {
+  let cm = tag ('div', {
     className: 'CE_contextmenu',
     oncontextmenu: () => false
   });
-  let mask = html.create('span', {
+  let mask = tag ('span', {
     className: 'CE_mask CE_cm',
     oncontextmenu: maskOnclick,
     onclick: maskOnclick
@@ -162,7 +162,7 @@ export function contextMenu(children = null, x = 0, y = 0) {
    * @param {HTMLElement} item 
    */
   function childMenu(items, item) {
-    let childCM = html.div({
+    let childCM = tag('div', {
       className: 'CE_contextmenu'
     });
 

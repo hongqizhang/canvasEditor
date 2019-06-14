@@ -17,30 +17,30 @@ import {
   contextMenu
 } from './components/contextmenu';
 import b64ToBlob from 'blueimp-canvas-to-blob';
-import * as html from '../node_modules/html-element-js/src/html';
-import {rangeSlider} from '../node_modules/html-element-js/src/rangeSlider';
+import tag from '../node_modules/html-element-js/src/tag';
+import rangeSlider from '../node_modules/html-element-js/src/rangeSlider';
 import * as picker from 'a-color-picker';
 /**
- * 
+ *
  * @param {Element} parentel
  * @param {Object} [opts]
  */
 export function CanvasEditor(parentel, opts={}) {
   if (!parentel) return console.error('Parent element is undefined!');
 
-  let fontLoader = html.span({
+  let fontLoader = tag('span', {
     textContent: 'loading font',
     id: 'CE_font-loader'
   });
   let fontloaderTimeout;
   let requireFonts = [];
-  let clickCatchMask = html.div({
+  let clickCatchMask = tag('div', {
     className: 'CE_click-catch-mask'
   });
-  let mainWrapper = html.create('div', {
+  let mainWrapper = tag ('div', {
     id: 'CE_wrapper'
   });
-  let canvasContainer = html.create('div', {
+  let canvasContainer = tag ('div', {
     id: 'CE_canvasContainer'
   });
   let objectFillColor = '#000';
@@ -48,24 +48,24 @@ export function CanvasEditor(parentel, opts={}) {
   let colorPickerContainer = null;
   let colorPicker = null;
   let canvasContextMenuOptions = {
-    background: html.span({
+    background: tag('span', {
       textContent: 'Background color'
     }),
-    delete: html.span({
+    delete: tag('span', {
       textContent: 'Delete'
     }),
-    paste: html.span({
+    paste: tag('span', {
       textContent: 'Paste'
     }),
-    unlockAll: html.span({
+    unlockAll: tag('span', {
       textContent: 'Unlock All'
     }),
   };
   let objectContextMenuOptions = {
-    arrange: html.span({
+    arrange: tag('span', {
       textContent: 'Arrange',
       children: [
-        html.create('i', {
+        tag ('i', {
           className: 'CE_icon select-down',
           style: {
             transform: 'rotate(-90deg)'
@@ -76,10 +76,10 @@ export function CanvasEditor(parentel, opts={}) {
         'data-expandable': 'true'
       }
     }),
-    align: html.span({
+    align: tag('span', {
       textContent: 'Align',
       children: [
-        html.create('i', {
+        tag ('i', {
           className: 'CE_icon select-down',
           style: {
             transform: 'rotate(-90deg)'
@@ -90,44 +90,44 @@ export function CanvasEditor(parentel, opts={}) {
         'data-expandable': 'true'
       }
     }),
-    cut: html.span({
+    cut: tag('span', {
       textContent: 'Cut'
     }),
-    copy: html.span({
+    copy: tag('span', {
       textContent: 'Copy'
     }),
-    deleteBtn: html.span({
+    deleteBtn: tag('span', {
       textContent: 'Delete'
     }),
-    group: html.span({
+    group: tag('span', {
       textContent: 'Group'
     }),
-    lock: html.span({
+    lock: tag('span', {
       textContent: 'Lock'
     })
   };
   let arrangeOptions = {
-    sendBackwards: html.span({
+    sendBackwards: tag('span', {
       textContent: 'Send backward'
     }),
-    bringForward: html.span({
+    bringForward: tag('span', {
       textContent: 'Bring forward'
     }),
-    bringToFront: html.span({
+    bringToFront: tag('span', {
       textContent: 'Bring front'
     }),
-    sendToBack: html.span({
+    sendToBack: tag('span', {
       textContent: 'Send back'
     })
   }
   let alignOptions = {
-    center: html.span({
+    center: tag('span', {
       textContent: 'Center'
     }),
-    hCenter: html.span({
+    hCenter: tag('span', {
       textContent: 'Horizontally center'
     }),
-    vCenter: html.span({
+    vCenter: tag('span', {
       textContent: 'Vertically center'
     })
   };
@@ -175,10 +175,10 @@ export function CanvasEditor(parentel, opts={}) {
     fabric.Canvas.prototype.preserveObjectStacking = true;
     fabric.Object.prototype.onSelect = objectOnSelect;
 
-    mainWrapper.appendChild(html.div({
+    mainWrapper.appendChild(tag('div', {
       id: 'CE_zoom',
       children: [
-        html.span({
+        tag('span', {
           className: 'CE_icon zoom-out',
           onmousedown: function () {
             scale = parseFloat((scale + '').substr(0, 3));
@@ -187,7 +187,7 @@ export function CanvasEditor(parentel, opts={}) {
           }
         }),
         zoom,
-        html.span({
+        tag('span', {
           className: 'CE_icon zoom-in',
           onmousedown: function () {
             scale = parseFloat((scale + '').substr(0, 3));
@@ -217,7 +217,7 @@ export function CanvasEditor(parentel, opts={}) {
     initContextMenu();
     fixPagesContainerPosition();
     window.addEventListener('resize', fixPagesContainerPosition);
-    let containerWrapper = html.get('#CE_container-wrapper');
+    let containerWrapper = document.querySelector('#CE_container-wrapper');
     colorPickerContainer = freeContainer({
       parentElement: containerWrapper,
       title: 'Color picker',
@@ -244,7 +244,7 @@ export function CanvasEditor(parentel, opts={}) {
           let fontFamily = alltools.textSettings.fontFamily;
 
           for (let font of fonts) {
-            fontFamily.appendChild(html.create('option', {
+            fontFamily.appendChild(tag ('option', {
               value: font,
               textContent: font
             }));
@@ -343,7 +343,7 @@ export function CanvasEditor(parentel, opts={}) {
   }
 
   function addPage() {
-    let page = html.create('canvas');
+    let page = tag ('canvas');
     let canvas = new fabric.Canvas();
 
     canvasContainer.appendChild(page);
@@ -378,8 +378,8 @@ export function CanvasEditor(parentel, opts={}) {
   }
 
   /**
-   * 
-   * @param {fabric.Canvas} canvas 
+   *
+   * @param {fabric.Canvas} canvas
    */
   function updateActiveCanvas(canvas) {
     canvas = canvas instanceof fabric.Canvas ? canvas : this;
@@ -456,8 +456,8 @@ export function CanvasEditor(parentel, opts={}) {
         canvasContainer.onmousedown = mousedown;
         canvasContainer.ontouchstart = mousedown;
         /**
-         * 
-         * @param {MouseEvent | TouchEvent} e 
+         *
+         * @param {MouseEvent | TouchEvent} e
          */
         function mousedown(e) {
           canvasContainer.style.cursor = 'grabbing';
@@ -471,8 +471,8 @@ export function CanvasEditor(parentel, opts={}) {
         }
 
         /**
-         * 
-         * @param {MouseEvent | TouchEvent} e 
+         *
+         * @param {MouseEvent | TouchEvent} e
          */
         function mousemove(e) {
           let x = e.clientX || e.touches[0].clientX;
@@ -893,8 +893,8 @@ export function CanvasEditor(parentel, opts={}) {
     }
   }
   /**
-   * 
-   * @param {MouseEvent} e 
+   *
+   * @param {MouseEvent} e
    */
   function canvasContextMenuTrigger(e) {
     e.preventDefault();
@@ -1009,18 +1009,18 @@ export function CanvasEditor(parentel, opts={}) {
   }
 
   /**
-   * 
-   * @param {fabric.Canvas} canvas 
+   *
+   * @param {fabric.Canvas} canvas
    */
   function updateActiveContainer(canvas) {
     if (activeCanvas) {
       let pageName = activeCanvas.page.name;
-      let el = html.get(`div[data-name=${pageName}]`);
+      let el = document.querySelector(`div[data-name=${pageName}]`);
       if (el) el.classList.remove('active');
     }
 
     let pageName = canvas.page.name;
-    let el = html.get(`div[data-name=${pageName}]`);
+    let el = document.querySelector(`div[data-name=${pageName}]`);
     if (el) el.classList.add('active');
   }
 
@@ -1098,9 +1098,9 @@ export function CanvasEditor(parentel, opts={}) {
   }
 
   /**
-   * 
+   *
    * @param {Object} object
-   * @param {String} style 
+   * @param {String} style
    * @param {String|Number|Boolean} value
    */
   function applyStyle(object, style, value) {
@@ -1140,7 +1140,7 @@ export function CanvasEditor(parentel, opts={}) {
     }, 1500);
   }
 
-  function removeFont(font) { 
+  function removeFont(font) {
     alltools.textSettings.fontFamily.removeOption(font);
   }
 
@@ -1174,10 +1174,10 @@ export function CanvasEditor(parentel, opts={}) {
   }
 
   /**
-   * 
-   * @param {Number} [quality=0.9]  
+   *
+   * @param {Number} [quality=0.9]
    * @param {Number} [scaling=1]
-   * @param {Boolean} [retinaScaling=true] 
+   * @param {Boolean} [retinaScaling=true]
    */
   function saveAsJPEG(quality = 0.9, scaling = 1, retinaScaling = true) {
     let images = saveAsBase64({
@@ -1196,7 +1196,7 @@ export function CanvasEditor(parentel, opts={}) {
   }
 
   /**
-   * 
+   *
    * @param {Object} [options]
    * @param {String} [options.format] image format possible value 'jpeg' of 'png'
    * @param {Number} [options.quality] quality for jpeg min 0 max 1

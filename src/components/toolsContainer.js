@@ -5,10 +5,10 @@ import {
   contextMenu
 } from './contextmenu';
 
-import * as html from '../../node_modules/html-element-js/src/html';
-import {select} from '../../node_modules/html-element-js/src/custom-select';
-import {rangeSlider} from '../../node_modules/html-element-js/src/rangeSlider';
-import {toggler} from '../../node_modules/html-element-js/src/toggler';
+import tag from '../../node_modules/html-element-js/src/tag';
+import comboBox from '../../node_modules/html-element-js/src/comboBox';
+import rangeSlider from '../../node_modules/html-element-js/src/rangeSlider';
+import toggler from '../../node_modules/html-element-js/src/toggler';
 
 /**
  * @typedef {Object} tools
@@ -68,13 +68,13 @@ export function toolsContainer() {
    * @type {HTMLDivElement}
    */
   let root = document.querySelector('#CE_wrapper');
-  let wrapper = html.create('div', {
+  let wrapper = tag('div', {
     id: 'CE_tools-wrapper'
   });
-  let containerWrapper = html.div({
+  let containerWrapper = tag('div', {
     id: 'CE_container-wrapper'
   });
-  let container = html.create('div', {
+  let container = tag('div', {
     id: 'CE_tools-container'
   });
   let mainTools = {
@@ -88,25 +88,25 @@ export function toolsContainer() {
     backgroundColor: null
   };
   let page = {
-    pageName: html.input({
+    pageName: tag('input', {
       className: 'CE_tool',
       type: 'text',
       value: 'page-1',
       placeholder: 'page name'
     }),
-    pageHeight: html.input({
+    pageHeight: tag('input', {
       className: 'CE_tool',
       type: 'number',
       value: '500',
       placeholder: 'h'
     }),
-    pageWidth: html.input({
+    pageWidth: tag('input', {
       className: 'CE_tool',
       type: 'number',
       value: '500',
       placeholder: 'w'
     }),
-    addPage: html.button(null, {
+    addPage: tag('button', {
       className: 'CE_tool CE_btn',
       textContent: 'add new page'
     }),
@@ -121,45 +121,45 @@ export function toolsContainer() {
     dropShadow: toggler({
       size: 20
     }),
-    offsetX: html.input({
+    offsetX: tag('input', {
       type: 'number',
       placeholder: 'x',
       value: 2
     }),
-    offsetY: html.input({
+    offsetY: tag('input', {
       type: 'number',
       placeholder: 'y',
       value: 2
     }),
-    blur: html.input({
+    blur: tag('input', {
       type: 'number',
       placeholder: 'blur',
       value: 2
     }),
-    color: html.span({
+    color: tag('span', {
       className: 'CE_icon backgroundColor'
     }),
     strokeToggle: toggler({
       size: 20
     }),
-    strokeWidth: html.input({
+    strokeWidth: tag('input', {
       min: 1,
       type: 'number',
       placeholder: 'stroke',
       value: 1
     }),
-    strokeColor: html.span({
+    strokeColor: tag('span', {
       className: 'CE_icon CE_tool strokeColor'
     })
   }
   let textOptions = {
-    fontFamily: select({spead: 2, height: 30, maxheight: 300}),
-    fontWeight: select({spead: 2, height: 30, maxheight: 300}),
-    fontSize: html.create('input', {
+    fontFamily: comboBox({spead: 2, height: 30, maxheight: 300}),
+    fontWeight: comboBox({spead: 2, height: 30, maxheight: 300}),
+    fontSize: tag('input', {
       type: 'number',
       value: 40
     }),
-    addText: html.button(null, {
+    addText: tag('button', {
       className: 'CE_tool CE_btn',
       textContent: 'add text'
     })
@@ -175,11 +175,11 @@ export function toolsContainer() {
     triangle: icon('triangle', 'Add triangle')
   };
   let imageOptions = {
-    openImage: html.create('label', {
+    openImage: tag('label', {
       className: 'CE_icon_text',
       children: [
         icon('image', 'Open an image'),
-        html.create('input', {
+        tag('input', {
           type: 'file',
           accept: 'image/x-png, image/jpeg',
           style: {
@@ -188,11 +188,11 @@ export function toolsContainer() {
         })
       ]
     }),
-    loadSVG: html.create('label', {
+    loadSVG: tag('label', {
       className: 'CE_icon_text',
       children: [
         icon('image', 'Open SVG file'),
-        html.create('input', {
+        tag('input', {
           type: 'file',
           accept: '.svg',
           style: {
@@ -235,13 +235,13 @@ export function toolsContainer() {
     function pageonclick() {
       let pageAr = [];
 
-      pageAr.push(html.div({
+      pageAr.push(tag('div', {
         className: 'CE_tool CE_controlers',
         children: [
-          html.span({
+          tag('span', {
             textContent: 'Page name'
           }),
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
             children: [
               page.pageName
@@ -250,15 +250,15 @@ export function toolsContainer() {
         ]
       }));
 
-      pageAr.push(html.div({
+      pageAr.push(tag('div', {
         className: 'CE_tool CE_controlers',
         children: [
-          html.span({
+          tag('span', {
             textContent: 'Dimension'
           }),
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
-            children: [html.div({
+            children: [tag('div', {
               children: [
                 page.pageHeight,
                 page.pageWidth
@@ -268,10 +268,10 @@ export function toolsContainer() {
         ]
       }));
 
-      pageAr.push(html.div({
+      pageAr.push(tag('div', {
         className: 'CE_tool CE_controlers',
         children: [
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
             children: [
               page.addPage
@@ -286,13 +286,13 @@ export function toolsContainer() {
     function textonclick() {
       let textOptionsAr = [];
 
-      textOptionsAr.push(html.div({
+      textOptionsAr.push(tag('div', {
         className: 'CE_tool CE_controlers',
         children: [
-          html.span({
+          tag('span', {
             textContent: 'Font Family'
           }),
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
             children: [
               textOptions.fontFamily.select
@@ -301,13 +301,13 @@ export function toolsContainer() {
         ]
       }));
 
-      textOptionsAr.push(html.div({
+      textOptionsAr.push(tag('div', {
         className: 'CE_tool CE_controlers',
         children: [
-          html.span({
+          tag('span', {
             textContent: 'Font Weight'
           }),
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
             children: [
               textOptions.fontWeight.select
@@ -316,12 +316,12 @@ export function toolsContainer() {
         ]
       }));
 
-      textOptionsAr.push(html.div({
+      textOptionsAr.push(tag('div', {
         className: 'CE_tool CE_controlers',
         children: [
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
-            children: [html.div({
+            children: [tag('div', {
               children: [
                 icon('font-size'),
                 textOptions.fontSize
@@ -331,12 +331,12 @@ export function toolsContainer() {
         ]
       }));
 
-      textOptionsAr.push(html.div({
+      textOptionsAr.push(tag('div', {
         className: 'CE_tool CE_controlers',
         children: [
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
-            children: [html.div({
+            children: [tag('div', {
               children: Object.values(textStyle)
             })]
           })
@@ -344,10 +344,10 @@ export function toolsContainer() {
       }));
 
 
-      textOptionsAr.push(html.div({
+      textOptionsAr.push(tag('div', {
         className: 'CE_tool CE_controlers',
         children: [
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
             children: [
               textOptions.addText
@@ -361,44 +361,44 @@ export function toolsContainer() {
     function objectonclick() {
       let objectSettingsAr = [];
 
-      objectSettingsAr.push(html.div({
+      objectSettingsAr.push(tag('div', {
         className: 'CE_tool',
         children: [
-          html.span({
+          tag('span', {
             textContent: 'Opacity'
           }),
           object.opacity
         ]
       }));
 
-      objectSettingsAr.push(html.div({
+      objectSettingsAr.push(tag('div', {
         className: 'CE_tool CE_controlers',
         children: [
-          html.span({
+          tag('span', {
             textContent: 'Drop shadow'
           }),
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
             children: [
               object.dropShadow
             ]
           }),
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
             children: [
-              html.create('small', {
+              tag('small', {
                 textContent: 'Set color'
               }),
               object.color
             ]
           }),
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
             children: [
-              html.create('small', {
+              tag('small', {
                 textContent: 'Set axis'
               }),
-              html.div({
+              tag('div', {
                 children: [
                   object.offsetX,
                   object.offsetY
@@ -406,13 +406,13 @@ export function toolsContainer() {
               })
             ]
           }),
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
             children: [
-              html.create('small', {
+              tag('small', {
                 textContent: 'Set blur'
               }),
-              html.div({
+              tag('div', {
                 children: [
                   object.blur
                 ]
@@ -422,35 +422,35 @@ export function toolsContainer() {
         ]
       }));
 
-      objectSettingsAr.push(html.div({
+      objectSettingsAr.push(tag('div', {
         className: 'CE_tool CE_controlers',
         children: [
-          html.span({
+          tag('span', {
             textContent: 'Stroke'
           }),
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
             children: [
               object.strokeToggle
             ]
           }),
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
             children: [
-              html.create('small', {
+              tag('small', {
                 textContent: 'Stroke width'
               }),
-              html.div({
+              tag('div', {
                 children: [
                   object.strokeWidth
                 ]
               })
             ]
           }),
-          html.div({
+          tag('div', {
             className: 'CE_controlers-tools',
             children: [
-              html.create('small', {
+              tag('small', {
                 textContent: 'Set stroke color'
               }),
               object.strokeColor
@@ -470,7 +470,7 @@ export function toolsContainer() {
        */
       let el = this;
 
-      let activeel = html.get('.CE_icon.active');
+      let activeel = document.querSelector ('.CE_icon.active');
       if (activeel) activeel.classList.remove('active');
       el.classList.add('active');
     }
@@ -514,14 +514,14 @@ export function toolsContainer() {
    */
   function icon(iconname, text, pos) {
     if (text && pos) {
-      return html.create('span', {
+      return tag('span', {
         textContent: text,
         children: [
           icon(iconname)
         ]
       })
     } else if (text) {
-      let el = html.create('span', {
+      let el = tag('span', {
         children: [
           icon(iconname)
         ]
@@ -529,7 +529,7 @@ export function toolsContainer() {
       el.appendChild(document.createTextNode(text));
       return el;
     } else {
-      return html.create('span', {
+      return tag('span', {
         className: 'CE_tool CE_icon ' + iconname
       });
     }

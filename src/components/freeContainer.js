@@ -1,4 +1,4 @@
-import * as html from '../../node_modules/html-element-js/src/html';
+import tag from '../../node_modules/html-element-js/src/tag';
 
 /**
  * @typedef {Object} freeContainer
@@ -25,27 +25,27 @@ import * as html from '../../node_modules/html-element-js/src/html';
  * @returns {freeContainer}
  */
 export function freeContainer(opts = {}) {
-  let wrapper = html.create('div', {
+  let wrapper = tag('div', {
     className: 'CE_freeContainer_wrapper'
   });
-  let handel = html.create('div', {
+  let handel = tag('div', {
     className: 'CE_controls grab'
   });
-  let body = html.create('div', {
+  let body = tag('div', {
     className: 'CE_body',
     onmousemove: bodyonmousemove
   });
-  let closeBtn = html.create('button', {
+  let closeBtn = tag('button', {
     className: 'CE_icon times',
     onclick: () => setVisiblity(false)
   });
-  let mover = html.create('span', {
+  let mover = tag('span', {
     className: 'CE_mover',
     onmousedown: onmousedown,
     ontouchstart: onmousedown
   });
   let mask = null;
-  let mainParent = html.get('#CE_wrapper');
+  let mainParent = document.querySelector('#CE_wrapper');
   let parentElement = opts.parentElement || mainParent;
 
   let start = {
@@ -65,7 +65,7 @@ export function freeContainer(opts = {}) {
   }
 
   if (opts.enableMask) {
-    mask = html.create('div', {
+    mask = tag('div', {
       className: 'CE_mask',
       onclick: () => setVisiblity(false)
     });
