@@ -3,7 +3,7 @@
   height: 100%;
   overflow: hidden;
   position: relative;
-  background-color: rgb(252, 252, 252);
+  background-color: #434770;
 
   #CE_zoom {
     position: fixed;
@@ -15,7 +15,7 @@
     display: flex;
     align-items: center;
 
-    >div {
+    > div {
       flex: 1;
     }
   }
@@ -39,7 +39,7 @@
     height: 100%;
     padding: 5px;
     margin: 0;
-    background-color: #584e53;
+    background-color: inherit;
     box-sizing: border-box;
     z-index: 2;
 
@@ -70,7 +70,7 @@
       padding-left: 5px;
       align-items: center;
 
-      >.CE_freeContainer_wrapper {
+      > .CE_freeContainer_wrapper {
         flex-shrink: 0;
         position: static;
 
@@ -87,7 +87,7 @@
       flex-flow: column;
       overflow: auto;
 
-      >* {
+      > * {
         flex-shrink: 0;
         background-color: #363134;
         color: white;
@@ -115,11 +115,11 @@
     display: flex;
     z-index: 1;
 
-    >.canvas-container:not(:first-child) {
+    > .canvas-container:not(:first-child) {
       margin-left: 30px;
     }
 
-    >.canvas-container {
+    > .canvas-container {
       margin: 15px;
       box-shadow: 2px 2px 1px 2px rgb(15, 15, 15);
 
@@ -144,7 +144,7 @@
   &.backgroundColor {
     box-sizing: border-box;
     padding: 10px;
-    background-color: #ccf !important;
+    background-color: #2e3155 !important;
   }
 
   &.strokeColor {
@@ -160,11 +160,11 @@
 
   &:focus {
     outline: none;
-    border: solid 1px rgba(0, 0, 255, 0.3);
+    border: solid 1px #202453;
   }
 
   &.active {
-    background-color: rgba(0, 0, 255, 0.3) !important;
+    background-color: #191c3a !important;
   }
 }
 
@@ -190,7 +190,7 @@
   width: 100vw;
   z-index: 999;
 
-  &.CE_cm{
+  &.CE_cm {
     z-index: 9999;
   }
 }
@@ -199,7 +199,7 @@
   position: relative;
 
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -222,21 +222,21 @@
     margin: 5px;
     flex-flow: column wrap;
 
-    >input {
+    > input {
       height: 30px;
       text-indent: 10px;
     }
 
-    >div {
+    > div {
       display: flex;
 
-      >input {
+      > input {
         width: 60px;
         height: 30px;
         text-align: center;
       }
 
-      >* {
+      > * {
         flex-shrink: 0;
         box-sizing: border-box;
 
@@ -248,25 +248,25 @@
   }
 }
 
-@keyframes CE_loading{
-  0%{
-    content: '.';
+@keyframes CE_loading {
+  0% {
+    content: ".";
   }
-  25%{
-    content: '..';
+  25% {
+    content: "..";
   }
-  50%{
-    content: '...';
+  50% {
+    content: "...";
   }
-  75%{
-    content: '....';
+  75% {
+    content: "....";
   }
-  100%{
-    content: '.';
+  100% {
+    content: ".";
   }
 }
 
-#CE_font-loader{
+#CE_font-loader {
   position: absolute;
   display: flex;
   align-items: center;
@@ -282,8 +282,8 @@
   transition: opacity 300ms ease;
   z-index: 99999;
 
-  &::after{
-    content: '';
+  &::after {
+    content: "";
     font-size: 1em;
     width: 60px;
     height: 30px;

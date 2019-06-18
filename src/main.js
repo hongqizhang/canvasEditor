@@ -1,134 +1,128 @@
-import './fabric.min';
-import {
-  freeContainer
-} from './components/freeContainer';
-import {
-  toolsContainer
-} from './components/toolsContainer';
+import "./fabric.min";
+import { freeContainer } from "./components/freeContainer";
+import { toolsContainer } from "./components/toolsContainer";
 
-import './css/main/main.css';
-import './css/freeContainer/style.css';
-import './css/inputs/style.css';
-import './css/contextmenu/style.css';
-import './css/res/style.css';
-import '../node_modules/html-element-js/src/css/main.css';
+import "./css/main/main.css";
+import "./css/freeContainer/style.css";
+import "./css/inputs/style.css";
+import "./css/contextmenu/style.css";
+import "./css/res/style.css";
+import "../node_modules/html-element-js/src/css/main.css";
 
-import {
-  contextMenu
-} from './components/contextmenu';
-import b64ToBlob from 'blueimp-canvas-to-blob';
-import tag from '../node_modules/html-element-js/src/tag';
-import rangeSlider from '../node_modules/html-element-js/src/rangeSlider';
-import * as picker from 'a-color-picker';
+import { contextMenu } from "./components/contextmenu";
+import b64ToBlob from "blueimp-canvas-to-blob";
+import tag from "../node_modules/html-element-js/src/tag";
+import rangeSlider from "../node_modules/html-element-js/src/rangeSlider";
+import * as picker from "a-color-picker";
 /**
  *
  * @param {Element} parentel
  * @param {Object} [opts]
  */
-export function CanvasEditor(parentel, opts={}) {
-  if (!parentel) return console.error('Parent element is undefined!');
+export function CanvasEditor(parentel, opts = {}) {
+  if (!parentel) return console.error("Parent element is undefined!");
 
-  let fontLoader = tag('span', {
-    textContent: 'loading font',
-    id: 'CE_font-loader'
+  let fontLoader = tag("span", {
+    textContent: "loading font",
+    id: "CE_font-loader"
   });
   let fontloaderTimeout;
   let requireFonts = [];
-  let clickCatchMask = tag('div', {
-    className: 'CE_click-catch-mask'
+  let clickCatchMask = tag("div", {
+    className: "CE_click-catch-mask"
   });
-  let mainWrapper = tag ('div', {
-    id: 'CE_wrapper'
+  let mainWrapper = tag("div", {
+    id: "CE_wrapper"
   });
-  let canvasContainer = tag ('div', {
-    id: 'CE_canvasContainer'
+  let canvasContainer = tag("div", {
+    id: "CE_canvasContainer"
   });
-  let objectFillColor = '#000';
-  let strokeColor = '#000';
+  let objectFillColor = "#000";
+  let strokeColor = "#000";
   let colorPickerContainer = null;
   let colorPicker = null;
   let canvasContextMenuOptions = {
-    background: tag('span', {
-      textContent: 'Background color'
+    background: tag("span", {
+      textContent: "Background color"
     }),
-    delete: tag('span', {
-      textContent: 'Delete'
+    delete: tag("span", {
+      textContent: "Delete"
     }),
-    paste: tag('span', {
-      textContent: 'Paste'
+    paste: tag("span", {
+      textContent: "Paste"
     }),
-    unlockAll: tag('span', {
-      textContent: 'Unlock All'
-    }),
+    unlockAll: tag("span", {
+      textContent: "Unlock All"
+    })
   };
   let objectContextMenuOptions = {
-    arrange: tag('span', {
-      textContent: 'Arrange',
+    arrange: tag("span", {
+      textContent: "Arrange",
       children: [
-        tag ('i', {
-          className: 'CE_icon select-down',
+        tag("i", {
+          className: "CE_icon select-down",
           style: {
-            transform: 'rotate(-90deg)'
+            transform: "rotate(-90deg)"
           }
         })
       ],
       attr: {
-        'data-expandable': 'true'
+        "data-expandable": "true"
       }
     }),
-    align: tag('span', {
-      textContent: 'Align',
+    align: tag("span", {
+      textContent: "Align",
       children: [
-        tag ('i', {
-          className: 'CE_icon select-down',
+        tag("i", {
+          className: "CE_icon select-down",
           style: {
-            transform: 'rotate(-90deg)'
+            transform: "rotate(-90deg)"
           }
         })
       ],
       attr: {
-        'data-expandable': 'true'
+        "data-expandable": "true"
       }
     }),
-    cut: tag('span', {
-      textContent: 'Cut'
+    cut: tag("span", {
+      textContent: "Cut"
     }),
-    copy: tag('span', {
-      textContent: 'Copy'
+    copy: tag("span", {
+      textContent: "Copy"
     }),
-    deleteBtn: tag('span', {
-      textContent: 'Delete'
+    deleteBtn: tag("span", {
+      textContent: "Delete"
     }),
-    group: tag('span', {
-      textContent: 'Group'
+    group: tag("span", {
+      textContent: "Group"
     }),
-    lock: tag('span', {
-      textContent: 'Lock'
+    lock: tag("span", {
+      textContent: "Lock"
     })
   };
   let arrangeOptions = {
-    sendBackwards: tag('span', {
-      textContent: 'Send backward'
+    sendBackwards: tag("span", {
+      textContent: "Send backward"
     }),
-    bringForward: tag('span', {
-      textContent: 'Bring forward'
+    bringForward: tag("span", {
+      textContent: "Bring forward"
     }),
-    bringToFront: tag('span', {
-      textContent: 'Bring front'
+    bringToFront: tag("span", {
+      textContent: "Bring front"
     }),
-    sendToBack: tag('span', {
-      textContent: 'Send back'
+    sendToBack: tag("span", {
+      textContent: "Send back"
     })
-  }
+  };
   let alignOptions = {
-    center: tag('span', {
-      textContent: 'Center'
+    center: tag("span", {
+      textContent: "Center"
     }),
-    hCenter: tag('span', {
-      textContent: 'Horizontally center'
+    hCenter: tag("span", {
+      textContent: "Horizontally center"
     }),
-    vCenter: tag('span', {
-      textContent: 'Vertically center'
+    vCenter: tag("span", {
+      textContent: "Vertically center"
     })
   };
   let canvasContextMenu = contextMenu(Object.values(canvasContextMenuOptions));
@@ -164,48 +158,49 @@ export function CanvasEditor(parentel, opts={}) {
   init();
 
   function init() {
-
     fabric.Object.prototype.set({
       transparentCorners: false,
-      cornerColor: '#88f',
-      borderColor: '#88f',
+      cornerColor: "#88f",
+      borderColor: "#88f",
       cornerSize: 6,
       strokeWidth: 0
     });
     fabric.Canvas.prototype.preserveObjectStacking = true;
     fabric.Object.prototype.onSelect = objectOnSelect;
 
-    mainWrapper.appendChild(tag('div', {
-      id: 'CE_zoom',
-      children: [
-        tag('span', {
-          className: 'CE_icon zoom-out',
-          onmousedown: function () {
-            scale = parseFloat((scale + '').substr(0, 3));
-            if (scale > 0.5) scale -= 0.1;
-            zoom.setvalue(scale);
-          }
-        }),
-        zoom,
-        tag('span', {
-          className: 'CE_icon zoom-in',
-          onmousedown: function () {
-            scale = parseFloat((scale + '').substr(0, 3));
-            if (scale < 2) scale += 0.1;
-            zoom.setvalue(scale);
-          }
-        })
-      ]
-    }));
+    mainWrapper.appendChild(
+      tag("div", {
+        id: "CE_zoom",
+        children: [
+          tag("span", {
+            className: "CE_icon zoom-out",
+            onmousedown: function() {
+              scale = parseFloat((scale + "").substr(0, 3));
+              if (scale > 0.5) scale -= 0.1;
+              zoom.setvalue(scale);
+            }
+          }),
+          zoom,
+          tag("span", {
+            className: "CE_icon zoom-in",
+            onmousedown: function() {
+              scale = parseFloat((scale + "").substr(0, 3));
+              if (scale < 2) scale += 0.1;
+              zoom.setvalue(scale);
+            }
+          })
+        ]
+      })
+    );
     mainWrapper.appendChild(clickCatchMask);
     mainWrapper.appendChild(canvasContainer);
     parentel.appendChild(mainWrapper);
 
-    zoom.onchange = function (value) {
+    zoom.onchange = function(value) {
       updateScaling(value);
     };
 
-    clickCatchMask.addEventListener('click', deselectObjects);
+    clickCatchMask.addEventListener("click", deselectObjects);
 
     /**
      * @type {tools}
@@ -216,11 +211,11 @@ export function CanvasEditor(parentel, opts={}) {
     initTools();
     initContextMenu();
     fixPagesContainerPosition();
-    window.addEventListener('resize', fixPagesContainerPosition);
-    let containerWrapper = document.querySelector('#CE_container-wrapper');
+    window.addEventListener("resize", fixPagesContainerPosition);
+    let containerWrapper = document.querySelector("#CE_container-wrapper");
     colorPickerContainer = freeContainer({
       parentElement: containerWrapper,
-      title: 'Color picker',
+      title: "Color picker",
       disableCloseBtn: true,
       enableMask: true,
       center: true
@@ -228,15 +223,15 @@ export function CanvasEditor(parentel, opts={}) {
 
     colorPicker = picker.createPicker(colorPickerContainer.DOMElements.body, {
       showHSL: false,
-      palette: 'PALETTE_MATERIAL_CHROME',
+      palette: "PALETTE_MATERIAL_CHROME",
       showAlpha: true,
       showHEX: true,
-      color: 'rgb(205, 220, 57)',
+      color: "rgb(205, 220, 57)",
       paletteEditable: true
     });
 
-    if ('fonts' in sessionStorage && alltools) {
-      let fonts = sessionStorage.getItem('fonts');
+    if ("fonts" in sessionStorage && alltools) {
+      let fonts = sessionStorage.getItem("fonts");
       try {
         fonts = JSON.parse(fonts);
 
@@ -244,13 +239,14 @@ export function CanvasEditor(parentel, opts={}) {
           let fontFamily = alltools.textSettings.fontFamily;
 
           for (let font of fonts) {
-            fontFamily.appendChild(tag ('option', {
-              value: font,
-              textContent: font
-            }));
+            fontFamily.appendChild(
+              tag("option", {
+                value: font,
+                textContent: font
+              })
+            );
           }
         }
-
       } catch (error) {
         console.error(error);
       }
@@ -258,7 +254,7 @@ export function CanvasEditor(parentel, opts={}) {
   }
 
   function addText(value, props) {
-    value = value || 'hello';
+    value = value || "hello";
     props = props || {
       editable: true,
       fontSize: 40,
@@ -343,12 +339,12 @@ export function CanvasEditor(parentel, opts={}) {
   }
 
   function addPage() {
-    let page = tag ('canvas');
+    let page = tag("canvas");
     let canvas = new fabric.Canvas();
 
     canvasContainer.appendChild(page);
     canvas.initialize(page);
-    canvas.setBackgroundColor('#fff');
+    canvas.setBackgroundColor("#fff");
 
     let height = alltools.pageSettings.pageHeight.value;
     let width = alltools.pageSettings.pageWidth.value;
@@ -356,7 +352,7 @@ export function CanvasEditor(parentel, opts={}) {
     canvas.setWidth(width);
 
     let i = canvasContainer.childElementCount;
-    let pageName = 'page-' + i;
+    let pageName = "page-" + i;
     ++pages.length;
     canvas.page = {
       DOMElement: page,
@@ -367,11 +363,11 @@ export function CanvasEditor(parentel, opts={}) {
      */
     pages.page[pageName] = canvas;
 
-    canvas.on('mouse:down', updateActiveCanvas);
+    canvas.on("mouse:down", updateActiveCanvas);
 
     let element = canvas.getElement().parentElement;
-    element.setAttribute('data-name', pageName);
-    element.addEventListener('contextmenu', canvasContextMenuTrigger);
+    element.setAttribute("data-name", pageName);
+    element.addEventListener("contextmenu", canvasContextMenuTrigger);
 
     fixPagesContainerPosition();
     updateActiveCanvas(canvas);
@@ -387,9 +383,9 @@ export function CanvasEditor(parentel, opts={}) {
     if (activeCanvas === canvas) return;
 
     if (pages.length === 1) {
-      canvasContextMenuOptions.delete.classList.add('CE_disabled');
+      canvasContextMenuOptions.delete.classList.add("CE_disabled");
     } else {
-      canvasContextMenuOptions.delete.classList.remove('CE_disabled');
+      canvasContextMenuOptions.delete.classList.remove("CE_disabled");
     }
 
     deselectObjects();
@@ -411,46 +407,41 @@ export function CanvasEditor(parentel, opts={}) {
     if (activeCanvas) {
       activeCanvas.discardActiveObject();
       activeCanvas.renderAll();
-    };
+    }
   }
 
   function initTools() {
-    let {
-      tools,
-      textSettings,
-      pageSettings,
-      objectSettings
-    } = alltools;
+    let { tools, textSettings, pageSettings, objectSettings } = alltools;
 
     (function initPrimitiveTools() {
-      tools.addPage.addEventListener('click', () => addPage());
-      tools.circle.addEventListener('click', () => addCircle());
-      tools.rectangle.addEventListener('click', () => addRect());
-      tools.triangle.addEventListener('click', () => addTriangle());
-      tools.addText.addEventListener('click', () => addText());
+      tools.addPage.addEventListener("click", () => addPage());
+      tools.circle.addEventListener("click", () => addCircle());
+      tools.rectangle.addEventListener("click", () => addRect());
+      tools.triangle.addEventListener("click", () => addTriangle());
+      tools.addText.addEventListener("click", () => addText());
 
-      tools.openImage.addEventListener('change', handleImage);
-      tools.loadSVG.addEventListener('change', handleSVG);
+      tools.openImage.addEventListener("change", handleImage);
+      tools.loadSVG.addEventListener("change", handleSVG);
 
-      tools.backgroundColor.addEventListener('click', (e) => {
-        colorPickerContainer.setTitle('Color picker - fill');
+      tools.backgroundColor.addEventListener("click", e => {
+        colorPickerContainer.setTitle("Color picker - fill");
         colorPickerContainer.setVisiblity(true);
-        colorPicker.onchange = function (e, color) {
+        colorPicker.onchange = function(e, color) {
           let activeObject = activeCanvas.getActiveObject();
           objectFillColor = color;
-          applyStyle(activeObject, 'fill', color);
-        }
+          applyStyle(activeObject, "fill", color);
+        };
       });
 
-      tools.grab.addEventListener('click', function () {
-        canvasContainer.style.cursor = 'grab';
+      tools.grab.addEventListener("click", function() {
+        canvasContainer.style.cursor = "grab";
         let children = canvasContainer.children;
         let start = {
           x: 0,
           y: 0
         };
         for (let child of children) {
-          child.style.pointerEvents = 'none';
+          child.style.pointerEvents = "none";
         }
 
         canvasContainer.onmousedown = mousedown;
@@ -460,7 +451,7 @@ export function CanvasEditor(parentel, opts={}) {
          * @param {MouseEvent | TouchEvent} e
          */
         function mousedown(e) {
-          canvasContainer.style.cursor = 'grabbing';
+          canvasContainer.style.cursor = "grabbing";
           start.x = e.clientX || e.touches[0].clientX;
           start.y = e.clientY || e.touches[0].clientY;
 
@@ -486,21 +477,25 @@ export function CanvasEditor(parentel, opts={}) {
             y
           };
 
-          let cc = /translate\((.*),(.*)\)/g.exec(canvasContainer.style.transform);
+          let cc = /translate\((.*),(.*)\)/g.exec(
+            canvasContainer.style.transform
+          );
           let transform = {
             x: parseFloat(cc[1]),
             y: parseFloat(cc[2])
-          }
+          };
 
           translate = {
             x: transform.x + dsX,
             y: transform.y + dsY
           };
-          canvasContainer.style.transform = `translate(${translate.x}px, ${translate.y}px) scale(${scale})`;
+          canvasContainer.style.transform = `translate(${translate.x}px, ${
+            translate.y
+          }px) scale(${scale})`;
         }
 
         function mouseup() {
-          canvasContainer.style.cursor = 'grab';
+          canvasContainer.style.cursor = "grab";
           document.onmousemove = null;
           document.onmouseup = null;
           document.ontouchmove = null;
@@ -508,23 +503,24 @@ export function CanvasEditor(parentel, opts={}) {
         }
       });
 
-      tools.selection.addEventListener('click', function () {
-        canvasContainer.style.cursor = 'default';
+      tools.selection.addEventListener("click", function() {
+        canvasContainer.style.cursor = "default";
         let children = canvasContainer.children;
         for (let child of children) {
-          child.style.removeProperty('pointer-events');
+          child.style.removeProperty("pointer-events");
         }
         canvasContainer.onmousedown = null;
         canvasContainer.ontouchstart = null;
-      })
+      });
     })();
 
     (function initTextSettings() {
-      textSettings.fontFamily.onchange = function (value) {
+      textSettings.fontFamily.onchange = function(value) {
         if (fontloaderTimeout) clearTimeout(fontloaderTimeout);
         let fontFamily = value;
         let activeObject = activeCanvas.getActiveObject();
-        if (activeObject && activeObject.type !== 'textbox' || !activeObject) return;
+        if ((activeObject && activeObject.type !== "textbox") || !activeObject)
+          return;
         if (!fontLoader) {
           mainWrapper.appendChild(fontLoader);
         }
@@ -533,108 +529,109 @@ export function CanvasEditor(parentel, opts={}) {
         fontLoader.style.opacity = 1;
         if (document.fonts && document.fonts.ready) {
           document.fonts.ready.then(() => {
-            applyStyle(activeObject, 'fontFamily', fontFamily);
-            fontLoader.style.opacity = 0 + '';
+            applyStyle(activeObject, "fontFamily", fontFamily);
+            fontLoader.style.opacity = 0 + "";
           });
         } else {
           setTimeout(() => {
-            applyStyle(activeObject, 'fontFamily', fontFamily);
-            fontLoader.style.opacity = 0 + '';
+            applyStyle(activeObject, "fontFamily", fontFamily);
+            fontLoader.style.opacity = 0 + "";
           }, 100);
         }
       };
-      textSettings.fontSize.oninput = function () {
+      textSettings.fontSize.oninput = function() {
         let fontSize = this.value;
         let activeObject = activeCanvas.getActiveObject();
-        if (activeObject.type !== 'textbox') return;
-        applyStyle(activeObject, 'fontSize', fontSize);
+        if (activeObject.type !== "textbox") return;
+        applyStyle(activeObject, "fontSize", fontSize);
       };
-      textSettings.fontWeight.onchange = function (value) {
+      textSettings.fontWeight.onchange = function(value) {
         if (fontloaderTimeout) clearTimeout(fontloaderTimeout);
         let fontWeight = value;
         let activeObject = activeCanvas.getActiveObject();
-        if (activeObject && activeObject.type !== 'textbox' || !activeObject) return;
+        if ((activeObject && activeObject.type !== "textbox") || !activeObject)
+          return;
         fontLoader.style.fontWeight = value;
         fontLoader.style.fontFamily = activeObject.fontFamily;
         fontLoader.style.opacity = 1;
         if (document.fonts && document.fonts.ready) {
           document.fonts.ready.then(() => {
-            applyStyle(activeObject, 'fontWeight', fontWeight);
-            fontLoader.style.opacity = 0 + '';
+            applyStyle(activeObject, "fontWeight", fontWeight);
+            fontLoader.style.opacity = 0 + "";
           });
         } else {
           setTimeout(() => {
-            applyStyle(activeObject, 'fontWeight', fontWeight);
-            fontLoader.style.opacity = 0 + '';
+            applyStyle(activeObject, "fontWeight", fontWeight);
+            fontLoader.style.opacity = 0 + "";
           }, 100);
         }
       };
-      textSettings.underline.addEventListener('click', function () {
+      textSettings.underline.addEventListener("click", function() {
         let activeObject = activeCanvas.getActiveObject();
-        if (activeObject.type !== 'textbox') return;
+        if (activeObject.type !== "textbox") return;
         if (activeObject.underline) {
-          this.classList.remove('active');
-          applyStyle(activeObject, 'underline', false);
+          this.classList.remove("active");
+          applyStyle(activeObject, "underline", false);
         } else {
-          this.classList.add('active');
-          applyStyle(activeObject, 'underline', true);
+          this.classList.add("active");
+          applyStyle(activeObject, "underline", true);
         }
       });
-      textSettings.italic.addEventListener('click', function () {
+      textSettings.italic.addEventListener("click", function() {
         let activeObject = activeCanvas.getActiveObject();
-        if (activeObject.type !== 'textbox') return;
-        if (activeObject.fontStyle === 'italic') {
-          this.classList.remove('active');
-          applyStyle(activeObject, 'fontStyle', 'normal');
+        if (activeObject.type !== "textbox") return;
+        if (activeObject.fontStyle === "italic") {
+          this.classList.remove("active");
+          applyStyle(activeObject, "fontStyle", "normal");
         } else {
-          this.classList.add('active');
-          applyStyle(activeObject, 'fontStyle', 'italic');
+          this.classList.add("active");
+          applyStyle(activeObject, "fontStyle", "italic");
         }
       });
-      textSettings.strikethrough.addEventListener('click', function () {
+      textSettings.strikethrough.addEventListener("click", function() {
         let activeObject = activeCanvas.getActiveObject();
-        if (activeObject.type !== 'textbox') return;
+        if (activeObject.type !== "textbox") return;
         if (activeObject.linethrough) {
-          this.classList.remove('active');
-          applyStyle(activeObject, 'linethrough', false);
+          this.classList.remove("active");
+          applyStyle(activeObject, "linethrough", false);
         } else {
-          this.classList.add('active');
-          applyStyle(activeObject, 'linethrough', true);
+          this.classList.add("active");
+          applyStyle(activeObject, "linethrough", true);
         }
       });
     })();
 
     (function initPageSettings() {
-      pageSettings.pageHeight.addEventListener('blur', function () {
+      pageSettings.pageHeight.addEventListener("blur", function() {
         let height = parseFloat(this.value);
         activeCanvas.setHeight(height);
         activeCanvas.renderAll();
         fixPagesContainerPosition();
       });
-      pageSettings.pageWidth.addEventListener('blur', function () {
+      pageSettings.pageWidth.addEventListener("blur", function() {
         let width = parseFloat(this.value);
         activeCanvas.setWidth(width);
         activeCanvas.renderAll();
         fixPagesContainerPosition();
       });
-      pageSettings.pageName.addEventListener('blur', function () {
+      pageSettings.pageName.addEventListener("blur", function() {
         activeCanvas.page.name = this.value;
       });
     })();
 
     (function initObjectSettings() {
-      objectSettings.opacity.onchange = function (value) {
+      objectSettings.opacity.onchange = function(value) {
         let activeObjects = activeCanvas.getActiveObjects();
         if (activeObjects.length === 0) return;
         else {
           for (let object of activeObjects) {
-            object.set('opacity', value);
+            object.set("opacity", value);
           }
         }
         activeCanvas.renderAll();
       };
 
-      objectSettings.dropShadow.onchange = function () {
+      objectSettings.dropShadow.onchange = function() {
         let activeObjects = activeCanvas.getActiveObjects();
 
         if (activeObjects.length === 0) return;
@@ -642,7 +639,7 @@ export function CanvasEditor(parentel, opts={}) {
         for (let object of activeObjects) {
           if (this.value) {
             object.setShadow({
-              color: '#000',
+              color: "#000",
               blur: objectSettings.blur.value,
               offsetX: objectSettings.offsetX.value,
               offsetY: objectSettings.offsetY.value
@@ -655,7 +652,7 @@ export function CanvasEditor(parentel, opts={}) {
         activeCanvas.renderAll();
       };
 
-      objectSettings.offsetX.oninput = function () {
+      objectSettings.offsetX.oninput = function() {
         let activeObjects = activeCanvas.getActiveObjects();
 
         if (activeObjects.length === 0) return;
@@ -666,7 +663,7 @@ export function CanvasEditor(parentel, opts={}) {
 
         activeCanvas.renderAll();
       };
-      objectSettings.offsetY.oninput = function () {
+      objectSettings.offsetY.oninput = function() {
         let activeObjects = activeCanvas.getActiveObjects();
 
         if (activeObjects.length === 0) return;
@@ -679,7 +676,7 @@ export function CanvasEditor(parentel, opts={}) {
         activeCanvas.renderAll();
       };
 
-      objectSettings.blur.oninput = function () {
+      objectSettings.blur.oninput = function() {
         let activeObjects = activeCanvas.getActiveObjects();
 
         if (activeObjects.length === 0) return;
@@ -692,11 +689,11 @@ export function CanvasEditor(parentel, opts={}) {
         activeCanvas.renderAll();
       };
 
-      objectSettings.color.onclick = function () {
-        colorPickerContainer.setTitle('Color picker - shadow');
+      objectSettings.color.onclick = function() {
+        colorPickerContainer.setTitle("Color picker - shadow");
         colorPickerContainer.setVisiblity(true);
 
-        colorPicker.onchange = function (e, color) {
+        colorPicker.onchange = function(e, color) {
           let activeObjects = activeCanvas.getActiveObjects();
 
           if (activeObjects.length === 0) return;
@@ -707,37 +704,37 @@ export function CanvasEditor(parentel, opts={}) {
           }
 
           activeCanvas.renderAll();
-        }
+        };
       };
 
-      objectSettings.strokeColor.addEventListener('click', () => {
-        colorPickerContainer.setTitle('Color picker - stroke');
+      objectSettings.strokeColor.addEventListener("click", () => {
+        colorPickerContainer.setTitle("Color picker - stroke");
         colorPickerContainer.setVisiblity(true);
-        colorPicker.onchange = function (e, color) {
+        colorPicker.onchange = function(e, color) {
           let activeObject = activeCanvas.getActiveObject();
           strokeColor = color;
-          applyStyle(activeObject, 'stroke', strokeColor);
-        }
+          applyStyle(activeObject, "stroke", strokeColor);
+        };
       });
 
-      objectSettings.strokeToggle.onchange = function () {
+      objectSettings.strokeToggle.onchange = function() {
         if (this.value) {
-          let width = parseFloat(objectSettings.strokeWidth.value.substr(0, 3)) || 1;
-          applyStyle(activeCanvas.getActiveObject(), 'strokeWidth', width);
+          let width =
+            parseFloat(objectSettings.strokeWidth.value.substr(0, 3)) || 1;
+          applyStyle(activeCanvas.getActiveObject(), "strokeWidth", width);
         } else {
-          applyStyle(activeCanvas.getActiveObject(), 'strokeWidth', 0);
+          applyStyle(activeCanvas.getActiveObject(), "strokeWidth", 0);
         }
       };
 
-      objectSettings.strokeWidth.oninput = function () {
+      objectSettings.strokeWidth.oninput = function() {
         let width = parseFloat(this.value.substr(0, 3));
-        applyStyle(activeCanvas.getActiveObject(), 'strokeWidth', width);
-      }
+        applyStyle(activeCanvas.getActiveObject(), "strokeWidth", width);
+      };
     })();
   }
 
   function initContextMenu() {
-
     let {
       align,
       arrange,
@@ -750,51 +747,53 @@ export function CanvasEditor(parentel, opts={}) {
     objectContextMenu.childMenu(Object.values(arrangeOptions), arrange);
     objectContextMenu.childMenu(Object.values(alignOptions), align);
 
-    arrangeContextMenu.itemOnclick = alignContextMenu.itemOnclick = arrangeContextMenu.maskOnclick = alignContextMenu.maskOnclick = function () {
+    arrangeContextMenu.itemOnclick = alignContextMenu.itemOnclick = arrangeContextMenu.maskOnclick = alignContextMenu.maskOnclick = function() {
       objectContextMenu.hide();
     };
 
-    canvasContextMenuOptions.delete.addEventListener('click', deleteCanvas);
-    canvasContextMenuOptions.paste.addEventListener('click', pasteObject);
-    canvasContextMenuOptions.unlockAll.addEventListener('click', unlockObjects);
-    canvasContextMenuOptions.background.addEventListener('click', function () {
-      colorPickerContainer.setTitle('Color picker - background');
+    canvasContextMenuOptions.delete.addEventListener("click", deleteCanvas);
+    canvasContextMenuOptions.paste.addEventListener("click", pasteObject);
+    canvasContextMenuOptions.unlockAll.addEventListener("click", unlockObjects);
+    canvasContextMenuOptions.background.addEventListener("click", function() {
+      colorPickerContainer.setTitle("Color picker - background");
       colorPickerContainer.setVisiblity(true);
-      colorPicker.onchange = function (e, color) {
-        activeCanvas.setBackgroundColor(color, activeCanvas.renderAll.bind(activeCanvas));
-      }
+      colorPicker.onchange = function(e, color) {
+        activeCanvas.setBackgroundColor(
+          color,
+          activeCanvas.renderAll.bind(activeCanvas)
+        );
+      };
     });
 
-    copy.addEventListener('click', copyObject);
-    cut.addEventListener('click', cutObject);
-    deleteBtn.addEventListener('click', deleteObject);
-    lock.addEventListener('click', lockObject);
+    copy.addEventListener("click", copyObject);
+    cut.addEventListener("click", cutObject);
+    deleteBtn.addEventListener("click", deleteObject);
+    lock.addEventListener("click", lockObject);
 
     for (let key in arrangeOptions) {
-      arrangeOptions[key].addEventListener('click', function () {
+      arrangeOptions[key].addEventListener("click", function() {
         let activeObject = activeCanvas.getActiveObject();
         activeObject[key]();
       });
     }
 
     for (let key in alignOptions) {
-      alignOptions[key].addEventListener('click', function () {
+      alignOptions[key].addEventListener("click", function() {
         setObjectAlignment(key);
       });
     }
-
   }
 
   function setObjectAlignment(alignment) {
     let activeObject = activeCanvas.getActiveObject();
     switch (alignment) {
-      case 'center':
+      case "center":
         activeCanvas.centerObject(activeObject);
         break;
-      case 'hCenter':
+      case "hCenter":
         activeCanvas.centerObjectH(activeObject);
         break;
-      case 'vCenter':
+      case "vCenter":
         activeCanvas.centerObjectV(activeObject);
         break;
     }
@@ -805,7 +804,7 @@ export function CanvasEditor(parentel, opts={}) {
     if (!activeCanvas) return;
     let activeObject = activeCanvas.getActiveObject();
     copiedObject = null;
-    activeObject.clone(function (object) {
+    activeObject.clone(function(object) {
       copiedObject = object;
     });
   }
@@ -820,14 +819,14 @@ export function CanvasEditor(parentel, opts={}) {
     if (mouseEvent) {
       let location = activeCanvas.getPointer(mouseEvent);
       let pos = new fabric.Point(location.x, location.y);
-      copiedObject.setPositionByOrigin(pos, 'center', 'center');
-      if (copiedObject.type !== 'activeSelection') {
+      copiedObject.setPositionByOrigin(pos, "center", "center");
+      if (copiedObject.type !== "activeSelection") {
         activeCanvas.add(copiedObject);
       } else {
         activeCanvas.add(...copiedObject.getObjects());
       }
     } else {
-      if (copiedObject.type !== 'activeSelection') {
+      if (copiedObject.type !== "activeSelection") {
         activeCanvas.add(copiedObject);
       } else {
         activeCanvas.add(...copiedObject.getObjects());
@@ -843,7 +842,7 @@ export function CanvasEditor(parentel, opts={}) {
     if (pages.length === 1) return;
     let page = activeCanvas.page;
 
-    if (!confirm('Delete ' + page.name + '?')) return;
+    if (!confirm("Delete " + page.name + "?")) return;
 
     activeCanvas.page = null;
     activeCanvas.dispose();
@@ -851,16 +850,17 @@ export function CanvasEditor(parentel, opts={}) {
     --pages.length;
     page.DOMElement.parentElement.removeChild(page.DOMElement);
     delete pages.page[page.name];
-    for (let key in pages.page) if (key !== 'length') {
-      updateActiveCanvas(pages.page[key]);
-      break;
-    }
+    for (let key in pages.page)
+      if (key !== "length") {
+        updateActiveCanvas(pages.page[key]);
+        break;
+      }
     fixPagesContainerPosition();
   }
 
   function deleteObject() {
     let activeObject = activeCanvas.getActiveObject();
-    if (activeObject.type === 'activeSelection') {
+    if (activeObject.type === "activeSelection") {
       activeCanvas.remove(...activeObject.getObjects());
     } else {
       activeCanvas.remove(activeObject);
@@ -869,7 +869,7 @@ export function CanvasEditor(parentel, opts={}) {
 
   function lockObject() {
     let activeObject = activeCanvas.getActiveObject();
-    if (activeObject.type !== 'activeSelection') {
+    if (activeObject.type !== "activeSelection") {
       lock(activeObject);
     } else {
       let objects = activeObject.getObjects();
@@ -899,7 +899,7 @@ export function CanvasEditor(parentel, opts={}) {
   function canvasContextMenuTrigger(e) {
     e.preventDefault();
     mouseEvent = e;
-    let pageName = this.getAttribute('data-name');
+    let pageName = this.getAttribute("data-name");
 
     if (activeCanvas.page.pageName !== pageName) {
       updateActiveCanvas(pages.page[pageName]);
@@ -910,40 +910,39 @@ export function CanvasEditor(parentel, opts={}) {
     let length = activeCanvas.getActiveObjects().length;
     if (activeObject) {
       objectContextMenu.show(e);
-      if (length > 1 && activeObject.type === 'activeSelection') {
-        group.classList.remove('CE_disabled');
-        group.textContent = 'Group';
-        group.onclick = function () {
+      if (length > 1 && activeObject.type === "activeSelection") {
+        group.classList.remove("CE_disabled");
+        group.textContent = "Group";
+        group.onclick = function() {
           activeObject.toGroup();
-        }
-      } else if (activeObject.type === 'group') {
-        group.classList.remove('CE_disabled');
-        group.textContent = 'Ungroup';
-        group.onclick = function () {
+        };
+      } else if (activeObject.type === "group") {
+        group.classList.remove("CE_disabled");
+        group.textContent = "Ungroup";
+        group.onclick = function() {
           activeObject.toActiveSelection();
-        }
+        };
       } else {
-        group.textContent = 'Group';
-        group.classList.add('CE_disabled');
+        group.textContent = "Group";
+        group.classList.add("CE_disabled");
       }
 
       if (activeObject.lockUniScaling) {
-        objectContextMenuOptions.lock.textContent = 'Unlock';
+        objectContextMenuOptions.lock.textContent = "Unlock";
       } else {
-        objectContextMenuOptions.lock.textContent = 'Lock';
+        objectContextMenuOptions.lock.textContent = "Lock";
       }
-
     } else {
       if (copiedObject) {
-        canvasContextMenuOptions.paste.classList.remove('CE_disabled');
+        canvasContextMenuOptions.paste.classList.remove("CE_disabled");
       } else {
-        canvasContextMenuOptions.paste.classList.add('CE_disabled');
+        canvasContextMenuOptions.paste.classList.add("CE_disabled");
       }
 
       if (lockedObjects.length > 0) {
-        canvasContextMenuOptions.unlockAll.classList.remove('CE_disabled');
+        canvasContextMenuOptions.unlockAll.classList.remove("CE_disabled");
       } else {
-        canvasContextMenuOptions.unlockAll.classList.add('CE_disabled');
+        canvasContextMenuOptions.unlockAll.classList.add("CE_disabled");
       }
       canvasContextMenu.show(e);
     }
@@ -965,7 +964,9 @@ export function CanvasEditor(parentel, opts={}) {
 
   function updateScaling(val) {
     scale = val;
-    canvasContainer.style.transform = `translate(${translate.x}px, ${translate.y}px) scale(${scale})`;
+    canvasContainer.style.transform = `translate(${translate.x}px, ${
+      translate.y
+    }px) scale(${scale})`;
   }
 
   function handleImage() {
@@ -983,15 +984,15 @@ export function CanvasEditor(parentel, opts={}) {
   }
 
   function handleSVG() {
-    mainWrapper.style.pointerEvents = 'none';
-    mainWrapper.style.cursor = 'progress';
+    mainWrapper.style.pointerEvents = "none";
+    mainWrapper.style.cursor = "progress";
     let reader = new FileReader();
     reader.onload = readerOnLoad;
 
     function readerOnLoad(e) {
       let svg = e.target.result;
 
-      fabric.loadSVGFromString(svg, function (result, options) {
+      fabric.loadSVGFromString(svg, function(result, options) {
         if (activeCanvas.getObjects().length !== 0) {
           addPage();
         }
@@ -1000,8 +1001,8 @@ export function CanvasEditor(parentel, opts={}) {
         activeCanvas.setWidth(options.width);
         activeCanvas.add(...result);
 
-        mainWrapper.style.removeProperty('pointer-events');
-        mainWrapper.style.removeProperty('cursor');
+        mainWrapper.style.removeProperty("pointer-events");
+        mainWrapper.style.removeProperty("cursor");
       });
     }
 
@@ -1016,25 +1017,25 @@ export function CanvasEditor(parentel, opts={}) {
     if (activeCanvas) {
       let pageName = activeCanvas.page.name;
       let el = document.querySelector(`div[data-name=${pageName}]`);
-      if (el) el.classList.remove('active');
+      if (el) el.classList.remove("active");
     }
 
     let pageName = canvas.page.name;
     let el = document.querySelector(`div[data-name=${pageName}]`);
-    if (el) el.classList.add('active');
+    if (el) el.classList.add("active");
   }
 
   function objectOnSelect() {
     let activeObject = this || activeCanvas.getActiveObject();
 
-    if (['activeSelection', 'group'].indexOf(activeObject.type) > -1) return;
+    if (["activeSelection", "group"].indexOf(activeObject.type) > -1) return;
 
     colorPickerContainer.setVisiblity(false);
 
     let textSettings = alltools.textSettings;
     let objectSettings = alltools.objectSettings;
 
-    if (activeObject.type === 'text') {
+    if (activeObject.type === "text") {
       let text = activeObject.text;
       let textobj = activeObject.toObject();
       delete textobj.text;
@@ -1049,27 +1050,27 @@ export function CanvasEditor(parentel, opts={}) {
       activeCanvas.setActiveObject(textbox);
     }
 
-    if (activeObject.type === 'textbox') {
+    if (activeObject.type === "textbox") {
       let fontSize = activeObject.fontSize;
       let fontFamily = activeObject.fontFamily;
       let fontWeight = activeObject.fontWeight;
 
       if (activeObject.underline) {
-        textSettings.underline.classList.add('active');
+        textSettings.underline.classList.add("active");
       } else {
-        textSettings.underline.classList.remove('active');
+        textSettings.underline.classList.remove("active");
       }
 
-      if (activeObject.fontStyle === 'italic') {
-        textSettings.italic.classList.add('active');
+      if (activeObject.fontStyle === "italic") {
+        textSettings.italic.classList.add("active");
       } else {
-        textSettings.italic.classList.remove('active');
+        textSettings.italic.classList.remove("active");
       }
 
       if (activeObject.linethrough) {
-        textSettings.strikethrough.classList.add('active');
+        textSettings.strikethrough.classList.add("active");
       } else {
-        textSettings.strikethrough.classList.remove('active');
+        textSettings.strikethrough.classList.remove("active");
       }
 
       textSettings.fontFamily.setvalue(fontFamily);
@@ -1090,7 +1091,7 @@ export function CanvasEditor(parentel, opts={}) {
       objectSettings.offsetY.value = activeObject.shadow.offsetY;
       objectSettings.blur.value = activeObject.shadow.blur;
     }
-    if (!activeObject.get('shadow')) {
+    if (!activeObject.get("shadow")) {
       objectSettings.dropShadow.setvalue(false);
     } else {
       objectSettings.dropShadow.setvalue(true);
@@ -1104,7 +1105,7 @@ export function CanvasEditor(parentel, opts={}) {
    * @param {String|Number|Boolean} value
    */
   function applyStyle(object, style, value) {
-    if (object.type === 'activeSelection' || object.type === 'group') {
+    if (object.type === "activeSelection" || object.type === "group") {
       return false;
     } else {
       object[style] = value;
@@ -1118,6 +1119,7 @@ export function CanvasEditor(parentel, opts={}) {
   function addFont(font, weight) {
     if (fontloaderTimeout) clearTimeout(fontloaderTimeout);
     alltools.textSettings.fontFamily.addOption(font, font);
+    alltools.textSettings.fontFamily.getOption(font).style.fontFamily = font;
 
     fontLoader.style.fontFamily = font;
     if (weight) {
@@ -1133,10 +1135,10 @@ export function CanvasEditor(parentel, opts={}) {
         document.body.appendChild(fontLoader);
       }
     }
-    fontLoader.style.opacity = '1';
+    fontLoader.style.opacity = "1";
 
     fontloaderTimeout = setTimeout(() => {
-      fontLoader.style.opacity = '0';
+      fontLoader.style.opacity = "0";
     }, 1500);
   }
 
@@ -1145,11 +1147,11 @@ export function CanvasEditor(parentel, opts={}) {
   }
 
   function onFontScrollEnd(fun) {
-    alltools.textSettings.fontFamily.customSelect.onscroll = function (e) {
+    alltools.textSettings.fontFamily.customSelect.onscroll = function(e) {
       if (this.offsetHeight + this.scrollTop >= this.scrollHeight) {
         fun();
       }
-    }
+    };
   }
 
   /**
@@ -1181,7 +1183,7 @@ export function CanvasEditor(parentel, opts={}) {
    */
   function saveAsJPEG(quality = 0.9, scaling = 1, retinaScaling = true) {
     let images = saveAsBase64({
-      format: 'jpeg',
+      format: "jpeg",
       quality: quality,
       multiplier: scaling,
       enableRetinaScaling: retinaScaling
@@ -1211,7 +1213,7 @@ export function CanvasEditor(parentel, opts={}) {
     let images = {};
     let canvases = pages.page;
     for (let page in canvases) {
-      images[page] = pages.page[page].toDataURL(options)
+      images[page] = pages.page[page].toDataURL(options);
     }
     return images;
   }
@@ -1233,14 +1235,14 @@ export function CanvasEditor(parentel, opts={}) {
   function loadJSON(json) {
     try {
       json = JSON.parse(json);
-      mainWrapper.style.cursor = 'progress';
-      mainWrapper.style.pointerEvents = 'none';
+      mainWrapper.style.cursor = "progress";
+      mainWrapper.style.pointerEvents = "none";
       render(json);
-      mainWrapper.style.removeProperty('cursor');
-      mainWrapper.style.removeProperty('pointer-events');
+      mainWrapper.style.removeProperty("cursor");
+      mainWrapper.style.removeProperty("pointer-events");
       fixPagesContainerPosition();
     } catch (error) {
-      alert('Cannot load json, Error: ' + error);
+      alert("Cannot load json, Error: " + error);
     }
 
     function render(json) {
@@ -1257,11 +1259,16 @@ export function CanvasEditor(parentel, opts={}) {
       activeCanvas.page.name = page.name;
       activeCanvas.setWidth(page.data.width);
       activeCanvas.setHeight(page.data.height);
-      activeCanvas.loadFromJSON(page.data, function () {
+      activeCanvas.loadFromJSON(page.data, function() {
         activeCanvas.renderAll();
         let allObjects = activeCanvas.getObjects();
         for (let object of allObjects) {
-          if (object.type && (object.type === 'textbox' || object.type === 'text' || object.type === 'itext')) {
+          if (
+            object.type &&
+            (object.type === "textbox" ||
+              object.type === "text" ||
+              object.type === "itext")
+          ) {
             requireFonts.push(object.fontFamily);
           }
         }
@@ -1277,7 +1284,7 @@ export function CanvasEditor(parentel, opts={}) {
         console.log("page: " + key + " rendered.");
       }
     }
-    loadfont([... new Set(requireFonts)], exec);
+    loadfont([...new Set(requireFonts)], exec);
   }
 
   return {
@@ -1290,5 +1297,5 @@ export function CanvasEditor(parentel, opts={}) {
     onFontScrollEnd,
     getRequireFonts,
     removeFont
-  }
+  };
 }

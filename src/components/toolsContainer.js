@@ -1,14 +1,10 @@
-import {
-  freeContainer
-} from './freeContainer';
-import {
-  contextMenu
-} from './contextmenu';
+import { freeContainer } from "./freeContainer";
+import { contextMenu } from "./contextmenu";
 
-import tag from '../../node_modules/html-element-js/src/tag';
-import comboBox from '../../node_modules/html-element-js/src/comboBox';
-import rangeSlider from '../../node_modules/html-element-js/src/rangeSlider';
-import toggler from '../../node_modules/html-element-js/src/toggler';
+import tag from "../../node_modules/html-element-js/src/tag";
+import comboBox from "../../node_modules/html-element-js/src/comboBox";
+import rangeSlider from "../../node_modules/html-element-js/src/rangeSlider";
+import toggler from "../../node_modules/html-element-js/src/toggler";
 
 /**
  * @typedef {Object} tools
@@ -26,9 +22,9 @@ import toggler from '../../node_modules/html-element-js/src/toggler';
 
 /**
  * @typedef {Object} textSettings
- * @property {HTMLSelectElement} fontFamily 
- * @property {HTMLSelectElement} fontWeight 
- * @property {HTMLInputElement} fontSize 
+ * @property {HTMLSelectElement} fontFamily
+ * @property {HTMLSelectElement} fontWeight
+ * @property {HTMLInputElement} fontSize
  */
 
 /**
@@ -58,7 +54,6 @@ import toggler from '../../node_modules/html-element-js/src/toggler';
  * @property {objectSettings} objectSettings
  */
 
-
 /**
  * @function
  * @returns {toolsContainer}
@@ -67,15 +62,15 @@ export function toolsContainer() {
   /**
    * @type {HTMLDivElement}
    */
-  let root = document.querySelector('#CE_wrapper');
-  let wrapper = tag('div', {
-    id: 'CE_tools-wrapper'
+  let root = document.querySelector("#CE_wrapper");
+  let wrapper = tag("div", {
+    id: "CE_tools-wrapper"
   });
-  let containerWrapper = tag('div', {
-    id: 'CE_container-wrapper'
+  let containerWrapper = tag("div", {
+    id: "CE_container-wrapper"
   });
-  let container = tag('div', {
-    id: 'CE_tools-container'
+  let container = tag("div", {
+    id: "CE_tools-container"
   });
   let mainTools = {
     text: null,
@@ -88,28 +83,28 @@ export function toolsContainer() {
     backgroundColor: null
   };
   let page = {
-    pageName: tag('input', {
-      className: 'CE_tool',
-      type: 'text',
-      value: 'page-1',
-      placeholder: 'page name'
+    pageName: tag("input", {
+      className: "CE_tool",
+      type: "text",
+      value: "page-1",
+      placeholder: "page name"
     }),
-    pageHeight: tag('input', {
-      className: 'CE_tool',
-      type: 'number',
-      value: '500',
-      placeholder: 'h'
+    pageHeight: tag("input", {
+      className: "CE_tool",
+      type: "number",
+      value: "500",
+      placeholder: "h"
     }),
-    pageWidth: tag('input', {
-      className: 'CE_tool',
-      type: 'number',
-      value: '500',
-      placeholder: 'w'
+    pageWidth: tag("input", {
+      className: "CE_tool",
+      type: "number",
+      value: "500",
+      placeholder: "w"
     }),
-    addPage: tag('button', {
-      className: 'CE_tool CE_btn',
-      textContent: 'add new page'
-    }),
+    addPage: tag("button", {
+      className: "CE_tool CE_btn",
+      textContent: "add new page"
+    })
   };
   let object = {
     opacity: rangeSlider({
@@ -121,82 +116,82 @@ export function toolsContainer() {
     dropShadow: toggler({
       size: 20
     }),
-    offsetX: tag('input', {
-      type: 'number',
-      placeholder: 'x',
+    offsetX: tag("input", {
+      type: "number",
+      placeholder: "x",
       value: 2
     }),
-    offsetY: tag('input', {
-      type: 'number',
-      placeholder: 'y',
+    offsetY: tag("input", {
+      type: "number",
+      placeholder: "y",
       value: 2
     }),
-    blur: tag('input', {
-      type: 'number',
-      placeholder: 'blur',
+    blur: tag("input", {
+      type: "number",
+      placeholder: "blur",
       value: 2
     }),
-    color: tag('span', {
-      className: 'CE_icon backgroundColor'
+    color: tag("span", {
+      className: "CE_icon backgroundColor"
     }),
     strokeToggle: toggler({
       size: 20
     }),
-    strokeWidth: tag('input', {
+    strokeWidth: tag("input", {
       min: 1,
-      type: 'number',
-      placeholder: 'stroke',
+      type: "number",
+      placeholder: "stroke",
       value: 1
     }),
-    strokeColor: tag('span', {
-      className: 'CE_icon CE_tool strokeColor'
+    strokeColor: tag("span", {
+      className: "CE_icon CE_tool strokeColor"
     })
-  }
+  };
   let textOptions = {
-    fontFamily: comboBox({spead: 2, height: 30, maxheight: 300}),
-    fontWeight: comboBox({spead: 2, height: 30, maxheight: 300}),
-    fontSize: tag('input', {
-      type: 'number',
+    fontFamily: comboBox({ spead: 2, height: 30, maxheight: 300 }),
+    fontWeight: comboBox({ spead: 2, height: 30, maxheight: 300 }),
+    fontSize: tag("input", {
+      type: "number",
       value: 40
     }),
-    addText: tag('button', {
-      className: 'CE_tool CE_btn',
-      textContent: 'add text'
+    addText: tag("button", {
+      className: "CE_tool CE_btn",
+      textContent: "add text"
     })
-  }
+  };
   let textStyle = {
     underline: null,
     italic: null,
     strikethrough: null
   };
   let shapes = {
-    circle: icon('circle', 'Add circle'),
-    rectangle: icon('rectangle', 'Add rectangle'),
-    triangle: icon('triangle', 'Add triangle')
+    circle: icon("circle", "Add circle"),
+    rectangle: icon("rectangle", "Add rectangle"),
+    triangle: icon("triangle", "Add triangle")
   };
   let imageOptions = {
-    openImage: tag('label', {
-      className: 'CE_icon_text',
+    openImage: tag("label", {
+      className: "CE_icon_text",
       children: [
-        icon('image', 'Open an image'),
-        tag('input', {
-          type: 'file',
-          accept: 'image/x-png, image/jpeg',
+        icon("image", "Open an image"),
+        tag("input", {
+          type: "file",
+          accept: "image/x-png, image/jpeg",
           style: {
-            display: 'none'
+            display: "none"
           }
         })
       ]
     }),
-    loadSVG: tag('label', {
-      className: 'CE_icon_text',
+    loadSVG: tag("label", {
+      className: "CE_icon_text",
       children: [
-        icon('image', 'Open SVG file'),
-        tag('input', {
-          type: 'file',
-          accept: '.svg',
+        icon("image", "Open SVG file"),
+        tag("input", {
+          type: "file",
+          accept: ".svg",
           style: {
-            display: 'none'
+            display: "none"
           }
         })
       ]
@@ -207,7 +202,21 @@ export function toolsContainer() {
   let cm_imageOptions = contextMenu(Object.values(imageOptions));
 
   let defaultFontFamilies = [];
-  let defaultFontWeight = ['lighter', 'normal', 'bold', 'bolder', 100, 200, 300, 400, 500, 600, 700, 800, 900];
+  let defaultFontWeight = [
+    "lighter",
+    "normal",
+    "bold",
+    "bolder",
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900
+  ];
 
   init();
 
@@ -216,250 +225,250 @@ export function toolsContainer() {
     arrayToOptions(defaultFontWeight, textOptions.fontWeight);
     iconsFromObject(mainTools, textStyle);
 
-    mainTools.selection.classList.add('active');
+    mainTools.selection.classList.add("active");
 
-    mainTools.page.addEventListener('click', pageonclick);
-    mainTools.text.addEventListener('click', textonclick);
-    mainTools.shapes.addEventListener('click', cm_shapes.show);
-    mainTools.image.addEventListener('click', cm_imageOptions.show);
-    mainTools.object.addEventListener('click', objectonclick);
+    mainTools.page.addEventListener("click", pageonclick);
+    mainTools.text.addEventListener("click", textonclick);
+    mainTools.shapes.addEventListener("click", cm_shapes.show);
+    mainTools.image.addEventListener("click", cm_imageOptions.show);
+    mainTools.object.addEventListener("click", objectonclick);
 
-    mainTools.hand.addEventListener('click', updateActiveTool);
-    mainTools.selection.addEventListener('click', updateActiveTool);
+    mainTools.hand.addEventListener("click", updateActiveTool);
+    mainTools.selection.addEventListener("click", updateActiveTool);
 
     wrapper.append(container);
     wrapper.append(containerWrapper);
-    container.append(Object.values(mainTools));
+    container.append(...Object.values(mainTools));
     root.appendChild(wrapper);
 
     function pageonclick() {
       let pageAr = [];
 
-      pageAr.push(tag('div', {
-        className: 'CE_tool CE_controlers',
-        children: [
-          tag('span', {
-            textContent: 'Page name'
-          }),
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [
-              page.pageName
-            ]
-          })
-        ]
-      }));
+      pageAr.push(
+        tag("div", {
+          className: "CE_tool CE_controlers",
+          children: [
+            tag("span", {
+              textContent: "Page name"
+            }),
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [page.pageName]
+            })
+          ]
+        })
+      );
 
-      pageAr.push(tag('div', {
-        className: 'CE_tool CE_controlers',
-        children: [
-          tag('span', {
-            textContent: 'Dimension'
-          }),
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [tag('div', {
+      pageAr.push(
+        tag("div", {
+          className: "CE_tool CE_controlers",
+          children: [
+            tag("span", {
+              textContent: "Dimension"
+            }),
+            tag("div", {
+              className: "CE_controlers-tools",
               children: [
-                page.pageHeight,
-                page.pageWidth
+                tag("div", {
+                  children: [page.pageHeight, page.pageWidth]
+                })
               ]
-            })]
-          })
-        ]
-      }));
+            })
+          ]
+        })
+      );
 
-      pageAr.push(tag('div', {
-        className: 'CE_tool CE_controlers',
-        children: [
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [
-              page.addPage
-            ]
-          })
-        ]
-      }));
+      pageAr.push(
+        tag("div", {
+          className: "CE_tool CE_controlers",
+          children: [
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [page.addPage]
+            })
+          ]
+        })
+      );
 
-      newContainer.bind(this)('Page', pageAr, 'CE_col');
+      newContainer.bind(this)("Page", pageAr, "CE_col");
     }
 
     function textonclick() {
       let textOptionsAr = [];
 
-      textOptionsAr.push(tag('div', {
-        className: 'CE_tool CE_controlers',
-        children: [
-          tag('span', {
-            textContent: 'Font Family'
-          }),
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [
-              textOptions.fontFamily.select
-            ]
-          })
-        ]
-      }));
+      textOptionsAr.push(
+        tag("div", {
+          className: "CE_tool CE_controlers",
+          children: [
+            tag("span", {
+              textContent: "Font Family"
+            }),
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [textOptions.fontFamily.select]
+            })
+          ]
+        })
+      );
 
-      textOptionsAr.push(tag('div', {
-        className: 'CE_tool CE_controlers',
-        children: [
-          tag('span', {
-            textContent: 'Font Weight'
-          }),
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [
-              textOptions.fontWeight.select
-            ]
-          })
-        ]
-      }));
+      textOptionsAr.push(
+        tag("div", {
+          className: "CE_tool CE_controlers",
+          children: [
+            tag("span", {
+              textContent: "Font Weight"
+            }),
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [textOptions.fontWeight.select]
+            })
+          ]
+        })
+      );
 
-      textOptionsAr.push(tag('div', {
-        className: 'CE_tool CE_controlers',
-        children: [
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [tag('div', {
+      textOptionsAr.push(
+        tag("div", {
+          className: "CE_tool CE_controlers",
+          children: [
+            tag("div", {
+              className: "CE_controlers-tools",
               children: [
-                icon('font-size'),
-                textOptions.fontSize
+                tag("div", {
+                  children: [icon("font-size"), textOptions.fontSize]
+                })
               ]
-            })]
-          })
-        ]
-      }));
+            })
+          ]
+        })
+      );
 
-      textOptionsAr.push(tag('div', {
-        className: 'CE_tool CE_controlers',
-        children: [
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [tag('div', {
-              children: Object.values(textStyle)
-            })]
-          })
-        ]
-      }));
+      textOptionsAr.push(
+        tag("div", {
+          className: "CE_tool CE_controlers",
+          children: [
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [
+                tag("div", {
+                  children: Object.values(textStyle)
+                })
+              ]
+            })
+          ]
+        })
+      );
 
-
-      textOptionsAr.push(tag('div', {
-        className: 'CE_tool CE_controlers',
-        children: [
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [
-              textOptions.addText
-            ]
-          })
-        ]
-      }));
-      newContainer.bind(this)('Text', textOptionsAr);
+      textOptionsAr.push(
+        tag("div", {
+          className: "CE_tool CE_controlers",
+          children: [
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [textOptions.addText]
+            })
+          ]
+        })
+      );
+      newContainer.bind(this)("Text", textOptionsAr);
     }
 
     function objectonclick() {
       let objectSettingsAr = [];
 
-      objectSettingsAr.push(tag('div', {
-        className: 'CE_tool',
-        children: [
-          tag('span', {
-            textContent: 'Opacity'
-          }),
-          object.opacity
-        ]
-      }));
+      objectSettingsAr.push(
+        tag("div", {
+          className: "CE_tool",
+          children: [
+            tag("span", {
+              textContent: "Opacity"
+            }),
+            object.opacity
+          ]
+        })
+      );
 
-      objectSettingsAr.push(tag('div', {
-        className: 'CE_tool CE_controlers',
-        children: [
-          tag('span', {
-            textContent: 'Drop shadow'
-          }),
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [
-              object.dropShadow
-            ]
-          }),
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [
-              tag('small', {
-                textContent: 'Set color'
-              }),
-              object.color
-            ]
-          }),
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [
-              tag('small', {
-                textContent: 'Set axis'
-              }),
-              tag('div', {
-                children: [
-                  object.offsetX,
-                  object.offsetY
-                ]
-              })
-            ]
-          }),
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [
-              tag('small', {
-                textContent: 'Set blur'
-              }),
-              tag('div', {
-                children: [
-                  object.blur
-                ]
-              })
-            ]
-          }),
-        ]
-      }));
+      objectSettingsAr.push(
+        tag("div", {
+          className: "CE_tool CE_controlers",
+          children: [
+            tag("span", {
+              textContent: "Drop shadow"
+            }),
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [object.dropShadow]
+            }),
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [
+                tag("small", {
+                  textContent: "Set color"
+                }),
+                object.color
+              ]
+            }),
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [
+                tag("small", {
+                  textContent: "Set axis"
+                }),
+                tag("div", {
+                  children: [object.offsetX, object.offsetY]
+                })
+              ]
+            }),
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [
+                tag("small", {
+                  textContent: "Set blur"
+                }),
+                tag("div", {
+                  children: [object.blur]
+                })
+              ]
+            })
+          ]
+        })
+      );
 
-      objectSettingsAr.push(tag('div', {
-        className: 'CE_tool CE_controlers',
-        children: [
-          tag('span', {
-            textContent: 'Stroke'
-          }),
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [
-              object.strokeToggle
-            ]
-          }),
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [
-              tag('small', {
-                textContent: 'Stroke width'
-              }),
-              tag('div', {
-                children: [
-                  object.strokeWidth
-                ]
-              })
-            ]
-          }),
-          tag('div', {
-            className: 'CE_controlers-tools',
-            children: [
-              tag('small', {
-                textContent: 'Set stroke color'
-              }),
-              object.strokeColor
-            ]
-          })
-        ]
-      }));
+      objectSettingsAr.push(
+        tag("div", {
+          className: "CE_tool CE_controlers",
+          children: [
+            tag("span", {
+              textContent: "Stroke"
+            }),
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [object.strokeToggle]
+            }),
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [
+                tag("small", {
+                  textContent: "Stroke width"
+                }),
+                tag("div", {
+                  children: [object.strokeWidth]
+                })
+              ]
+            }),
+            tag("div", {
+              className: "CE_controlers-tools",
+              children: [
+                tag("small", {
+                  textContent: "Set stroke color"
+                }),
+                object.strokeColor
+              ]
+            })
+          ]
+        })
+      );
 
-      newContainer.bind(this)('Object', objectSettingsAr, 'CE_col');
+      newContainer.bind(this)("Object", objectSettingsAr, "CE_col");
 
       object.opacity.setvalue(object.opacity.value);
     }
@@ -470,15 +479,14 @@ export function toolsContainer() {
        */
       let el = this;
 
-      let activeel = document.querSelector ('.CE_icon.active');
-      if (activeel) activeel.classList.remove('active');
-      el.classList.add('active');
+      let activeel = document.querySelector(".CE_icon.active");
+      if (activeel) activeel.classList.remove("active");
+      el.classList.add("active");
     }
   }
 
-
   function newContainer(title, tools, className) {
-    if (this && this.style) this.style.pointerEvents = 'none';
+    if (this && this.style) this.style.pointerEvents = "none";
     let container = freeContainer({
       parentElement: containerWrapper,
       drop: wrapper
@@ -490,18 +498,18 @@ export function toolsContainer() {
     container.setVisiblity(true);
     container.addItems(tools);
     container.closeBtn.onclick = () => {
-      this.style.pointerEvents = '';
+      this.style.pointerEvents = "";
       container.del();
-    }
+    };
   }
 
   /**
-   * 
-   * @param {String[]} options 
+   *
+   * @param {String[]} options
    */
   function arrayToOptions(options, selectElement) {
     for (let option of options) {
-      if (typeof option === 'number') option += '';
+      if (typeof option === "number") option += "";
       selectElement.addOption(option, option);
     }
   }
@@ -514,23 +522,19 @@ export function toolsContainer() {
    */
   function icon(iconname, text, pos) {
     if (text && pos) {
-      return tag('span', {
+      return tag("span", {
         textContent: text,
-        children: [
-          icon(iconname)
-        ]
-      })
+        children: [icon(iconname)]
+      });
     } else if (text) {
-      let el = tag('span', {
-        children: [
-          icon(iconname)
-        ]
+      let el = tag("span", {
+        children: [icon(iconname)]
       });
       el.appendChild(document.createTextNode(text));
       return el;
     } else {
-      return tag('span', {
-        className: 'CE_tool CE_icon ' + iconname
+      return tag("span", {
+        className: "CE_tool CE_icon " + iconname
       });
     }
   }
@@ -549,7 +553,7 @@ export function toolsContainer() {
 
     function form(ar) {
       for (let key in ar) {
-        ar[key] = icon(key)
+        ar[key] = icon(key);
       }
     }
   }
@@ -563,8 +567,8 @@ export function toolsContainer() {
       addPage: page.addPage,
       addText: textOptions.addText,
       backgroundColor: mainTools.backgroundColor,
-      openImage: imageOptions.openImage.querySelector('input'),
-      loadSVG: imageOptions.loadSVG.querySelector('input')
+      openImage: imageOptions.openImage.querySelector("input"),
+      loadSVG: imageOptions.loadSVG.querySelector("input")
     },
     textSettings: {
       ...textOptions,
@@ -577,5 +581,5 @@ export function toolsContainer() {
     objectSettings: {
       ...object
     }
-  }
+  };
 }
