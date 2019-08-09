@@ -1,25 +1,32 @@
 import "./fabric.min";
-import { freeContainer } from "./components/freeContainer";
-import { toolsContainer } from "./components/toolsContainer";
+import {
+  freeContainer
+} from "./components/freeContainer";
+import {
+  toolsContainer
+} from "./components/toolsContainer";
 
-import "./css/main/main.css";
-import "./css/freeContainer/style.css";
-import "./css/inputs/style.css";
-import "./css/contextmenu/style.css";
-import "./css/res/style.css";
-import "../node_modules/html-element-js/src/css/main.css";
+import "./css/main/main.scss";
+import "./css/freeContainer/style.scss";
+import "./css/inputs/style.scss";
+import "./css/contextmenu/style.scss";
+import "./css/res/style.scss";
 
-import { contextMenu } from "./components/contextmenu";
+import {
+  contextMenu
+} from "./components/contextmenu";
 import b64ToBlob from "blueimp-canvas-to-blob";
-import tag from "../node_modules/html-element-js/src/tag";
-import rangeSlider from "../node_modules/html-element-js/src/rangeSlider";
+import {
+  tag,
+  rangeSlider
+} from 'html-element-js';
 import * as picker from "a-color-picker";
 /**
  *
  * @param {Element} parentel
  * @param {Object} [opts]
  */
-export function CanvasEditor(parentel, opts = {}) {
+function CanvasEditor(parentel, opts = {}) {
   if (!parentel) return console.error("Parent element is undefined!");
 
   let fontLoader = tag("span", {
@@ -37,8 +44,11 @@ export function CanvasEditor(parentel, opts = {}) {
   let canvasContainer = tag("div", {
     id: "CE_canvasContainer"
   });
-  let objectFillColor = "#000";
-  let strokeColor = "#000";
+  const defaultConfig = {
+    fillColor: '#000',
+    defaultConfig: '#000',
+    fontFamily: ''
+  };
   let colorPickerContainer = null;
   let colorPicker = null;
   let canvasContextMenuOptions = {
@@ -89,6 +99,9 @@ export function CanvasEditor(parentel, opts = {}) {
     }),
     copy: tag("span", {
       textContent: "Copy"
+    }),
+    paste: tag("span", {
+      textContent: "Paste"
     }),
     deleteBtn: tag("span", {
       textContent: "Delete"
@@ -174,7 +187,7 @@ export function CanvasEditor(parentel, opts = {}) {
         children: [
           tag("span", {
             className: "CE_icon zoom-out",
-            onmousedown: function() {
+            onmousedown: function () {
               scale = parseFloat((scale + "").substr(0, 3));
               if (scale > 0.5) scale -= 0.1;
               zoom.setvalue(scale);
@@ -183,7 +196,7 @@ export function CanvasEditor(parentel, opts = {}) {
           zoom,
           tag("span", {
             className: "CE_icon zoom-in",
-            onmousedown: function() {
+            onmousedown: function () {
               scale = parseFloat((scale + "").substr(0, 3));
               if (scale < 2) scale += 0.1;
               zoom.setvalue(scale);
@@ -196,7 +209,7 @@ export function CanvasEditor(parentel, opts = {}) {
     mainWrapper.appendChild(canvasContainer);
     parentel.appendChild(mainWrapper);
 
-    zoom.onchange = function(value) {
+    zoom.onchange = function (value) {
       updateScaling(value);
     };
 
@@ -251,6 +264,24 @@ export function CanvasEditor(parentel, opts = {}) {
         console.error(error);
       }
     }
+
+    autoresize();
+  }
+
+  function autoresize() {
+    setTimeout(() => {
+      fixResolution(1);
+
+      function fixResolution(scale) {
+        const client = canvasContainer.getBoundingClientRect();
+        if (client.width >= (window.innerWidth - 40)) {
+          scale -= 0.1;
+          zoom.setvalue(scale);
+          fixResolution(scale);
+        }
+        return true;
+      }
+    }, 0);
   }
 
   function addText(value, props) {
@@ -260,11 +291,13 @@ export function CanvasEditor(parentel, opts = {}) {
       fontSize: 40,
       top: 100,
       left: 100,
-      fill: objectFillColor,
-      stroke: strokeColor
+      fill: defaultConfig.fillColor,
+      stroke: defaultConfig.strokeColor,
+      fontFamily: defaultConfig.fontFamily
     };
 
-    let text = new fabric.Textbox(value, props);
+    // let text = new fabric.Textbox(value, props);
+    let text = new fabric.IText(value, props);
     activeCanvas.add(text);
     activeCanvas.centerObject(text);
     activeCanvas.setActiveObject(text);
@@ -300,10 +333,10 @@ export function CanvasEditor(parentel, opts = {}) {
 
   function addRect(props) {
     props = props || {
-      fill: objectFillColor,
+      fill: defaultConfig.fillColor,
       width: 50,
       height: 50,
-      stroke: strokeColor
+      stroke: defaultConfig.strokeColor
     };
     let rect = new fabric.Rect(props);
     activeCanvas.add(rect);
@@ -313,9 +346,9 @@ export function CanvasEditor(parentel, opts = {}) {
 
   function addCircle(props) {
     props = props || {
-      fill: objectFillColor,
+      fill: defaultConfig.fillColor,
       radius: 25,
-      stroke: strokeColor
+      stroke: defaultConfig.strokeColor
     };
 
     let circle = new fabric.Circle(props);
@@ -326,10 +359,10 @@ export function CanvasEditor(parentel, opts = {}) {
 
   function addTriangle(props) {
     props = props || {
-      fill: objectFillColor,
+      fill: defaultConfig.fillColor,
       height: 50,
       width: 50,
-      strokeColor
+      stroke: defaultConfig.strokeColor
     };
 
     let triangle = new fabric.Triangle(props);
@@ -411,7 +444,12 @@ export function CanvasEditor(parentel, opts = {}) {
   }
 
   function initTools() {
-    let { tools, textSettings, pageSettings, objectSettings } = alltools;
+    let {
+      tools,
+      textSettings,
+      pageSettings,
+      objectSettings
+    } = alltools;
 
     (function initPrimitiveTools() {
       tools.addPage.addEventListener("click", () => addPage());
@@ -426,14 +464,15 @@ export function CanvasEditor(parentel, opts = {}) {
       tools.backgroundColor.addEventListener("click", e => {
         colorPickerContainer.setTitle("Color picker - fill");
         colorPickerContainer.setVisiblity(true);
-        colorPicker.onchange = function(e, color) {
+        colorPicker.onchange = function (e, color) {
           let activeObject = activeCanvas.getActiveObject();
-          objectFillColor = color;
+          if (!activeObject) return;
+          if (activeObject.fill === color) return;
           applyStyle(activeObject, "fill", color);
         };
       });
 
-      tools.grab.addEventListener("click", function() {
+      tools.grab.addEventListener("click", function () {
         canvasContainer.style.cursor = "grab";
         let children = canvasContainer.children;
         let start = {
@@ -503,7 +542,7 @@ export function CanvasEditor(parentel, opts = {}) {
         }
       });
 
-      tools.selection.addEventListener("click", function() {
+      tools.selection.addEventListener("click", function () {
         canvasContainer.style.cursor = "default";
         let children = canvasContainer.children;
         for (let child of children) {
@@ -515,11 +554,12 @@ export function CanvasEditor(parentel, opts = {}) {
     })();
 
     (function initTextSettings() {
-      textSettings.fontFamily.onchange = function(value) {
+      textSettings.fontFamily.onchange = function (value) {
         if (fontloaderTimeout) clearTimeout(fontloaderTimeout);
         let fontFamily = value;
+        defaultConfig.fontFamily = value;
         let activeObject = activeCanvas.getActiveObject();
-        if ((activeObject && activeObject.type !== "textbox") || !activeObject)
+        if ((activeObject && (activeObject.type !== "textbox" && activeObject.type !== "i-text")) || !activeObject)
           return;
         if (!fontLoader) {
           mainWrapper.appendChild(fontLoader);
@@ -539,17 +579,17 @@ export function CanvasEditor(parentel, opts = {}) {
           }, 100);
         }
       };
-      textSettings.fontSize.oninput = function() {
+      textSettings.fontSize.oninput = function () {
         let fontSize = this.value;
         let activeObject = activeCanvas.getActiveObject();
-        if (activeObject.type !== "textbox") return;
+        if (activeObject.type !== "textbox" && activeObject.type !== "i-text") return;
         applyStyle(activeObject, "fontSize", fontSize);
       };
-      textSettings.fontWeight.onchange = function(value) {
+      textSettings.fontWeight.onchange = function (value) {
         if (fontloaderTimeout) clearTimeout(fontloaderTimeout);
         let fontWeight = value;
         let activeObject = activeCanvas.getActiveObject();
-        if ((activeObject && activeObject.type !== "textbox") || !activeObject)
+        if ((activeObject && (activeObject.type !== "textbox" && activeObject.type !== "i-text")) || !activeObject)
           return;
         fontLoader.style.fontWeight = value;
         fontLoader.style.fontFamily = activeObject.fontFamily;
@@ -566,9 +606,9 @@ export function CanvasEditor(parentel, opts = {}) {
           }, 100);
         }
       };
-      textSettings.underline.addEventListener("click", function() {
+      textSettings.underline.addEventListener("click", function () {
         let activeObject = activeCanvas.getActiveObject();
-        if (activeObject.type !== "textbox") return;
+        if (activeObject.type !== "textbox" && activeObject.type !== "i-text") return;
         if (activeObject.underline) {
           this.classList.remove("active");
           applyStyle(activeObject, "underline", false);
@@ -577,9 +617,9 @@ export function CanvasEditor(parentel, opts = {}) {
           applyStyle(activeObject, "underline", true);
         }
       });
-      textSettings.italic.addEventListener("click", function() {
+      textSettings.italic.addEventListener("click", function () {
         let activeObject = activeCanvas.getActiveObject();
-        if (activeObject.type !== "textbox") return;
+        if (activeObject.type !== "textbox" && activeObject.type !== "i-text") return;
         if (activeObject.fontStyle === "italic") {
           this.classList.remove("active");
           applyStyle(activeObject, "fontStyle", "normal");
@@ -588,9 +628,9 @@ export function CanvasEditor(parentel, opts = {}) {
           applyStyle(activeObject, "fontStyle", "italic");
         }
       });
-      textSettings.strikethrough.addEventListener("click", function() {
+      textSettings.strikethrough.addEventListener("click", function () {
         let activeObject = activeCanvas.getActiveObject();
-        if (activeObject.type !== "textbox") return;
+        if (activeObject.type !== "textbox" && activeObject.type !== "i-text") return;
         if (activeObject.linethrough) {
           this.classList.remove("active");
           applyStyle(activeObject, "linethrough", false);
@@ -602,25 +642,25 @@ export function CanvasEditor(parentel, opts = {}) {
     })();
 
     (function initPageSettings() {
-      pageSettings.pageHeight.addEventListener("blur", function() {
+      pageSettings.pageHeight.addEventListener("blur", function () {
         let height = parseFloat(this.value);
         activeCanvas.setHeight(height);
         activeCanvas.renderAll();
         fixPagesContainerPosition();
       });
-      pageSettings.pageWidth.addEventListener("blur", function() {
+      pageSettings.pageWidth.addEventListener("blur", function () {
         let width = parseFloat(this.value);
         activeCanvas.setWidth(width);
         activeCanvas.renderAll();
         fixPagesContainerPosition();
       });
-      pageSettings.pageName.addEventListener("blur", function() {
+      pageSettings.pageName.addEventListener("blur", function () {
         activeCanvas.page.name = this.value;
       });
     })();
 
     (function initObjectSettings() {
-      objectSettings.opacity.onchange = function(value) {
+      objectSettings.opacity.onchange = function (value) {
         let activeObjects = activeCanvas.getActiveObjects();
         if (activeObjects.length === 0) return;
         else {
@@ -631,7 +671,7 @@ export function CanvasEditor(parentel, opts = {}) {
         activeCanvas.renderAll();
       };
 
-      objectSettings.dropShadow.onchange = function() {
+      objectSettings.dropShadow.onchange = function () {
         let activeObjects = activeCanvas.getActiveObjects();
 
         if (activeObjects.length === 0) return;
@@ -652,7 +692,7 @@ export function CanvasEditor(parentel, opts = {}) {
         activeCanvas.renderAll();
       };
 
-      objectSettings.offsetX.oninput = function() {
+      objectSettings.offsetX.oninput = function () {
         let activeObjects = activeCanvas.getActiveObjects();
 
         if (activeObjects.length === 0) return;
@@ -663,7 +703,7 @@ export function CanvasEditor(parentel, opts = {}) {
 
         activeCanvas.renderAll();
       };
-      objectSettings.offsetY.oninput = function() {
+      objectSettings.offsetY.oninput = function () {
         let activeObjects = activeCanvas.getActiveObjects();
 
         if (activeObjects.length === 0) return;
@@ -676,7 +716,7 @@ export function CanvasEditor(parentel, opts = {}) {
         activeCanvas.renderAll();
       };
 
-      objectSettings.blur.oninput = function() {
+      objectSettings.blur.oninput = function () {
         let activeObjects = activeCanvas.getActiveObjects();
 
         if (activeObjects.length === 0) return;
@@ -689,11 +729,11 @@ export function CanvasEditor(parentel, opts = {}) {
         activeCanvas.renderAll();
       };
 
-      objectSettings.color.onclick = function() {
+      objectSettings.color.onclick = function () {
         colorPickerContainer.setTitle("Color picker - shadow");
         colorPickerContainer.setVisiblity(true);
 
-        colorPicker.onchange = function(e, color) {
+        colorPicker.onchange = function (e, color) {
           let activeObjects = activeCanvas.getActiveObjects();
 
           if (activeObjects.length === 0) return;
@@ -710,14 +750,14 @@ export function CanvasEditor(parentel, opts = {}) {
       objectSettings.strokeColor.addEventListener("click", () => {
         colorPickerContainer.setTitle("Color picker - stroke");
         colorPickerContainer.setVisiblity(true);
-        colorPicker.onchange = function(e, color) {
+        colorPicker.onchange = function (e, color) {
           let activeObject = activeCanvas.getActiveObject();
-          strokeColor = color;
-          applyStyle(activeObject, "stroke", strokeColor);
+          defaultConfig.strokeColor = color;
+          applyStyle(activeObject, "stroke", defaultConfig.strokeColor);
         };
       });
 
-      objectSettings.strokeToggle.onchange = function() {
+      objectSettings.strokeToggle.onchange = function () {
         if (this.value) {
           let width =
             parseFloat(objectSettings.strokeWidth.value.substr(0, 3)) || 1;
@@ -727,7 +767,7 @@ export function CanvasEditor(parentel, opts = {}) {
         }
       };
 
-      objectSettings.strokeWidth.oninput = function() {
+      objectSettings.strokeWidth.oninput = function () {
         let width = parseFloat(this.value.substr(0, 3));
         applyStyle(activeCanvas.getActiveObject(), "strokeWidth", width);
       };
@@ -741,23 +781,24 @@ export function CanvasEditor(parentel, opts = {}) {
       copy,
       cut,
       deleteBtn,
-      lock
+      lock,
+      paste
     } = objectContextMenuOptions;
 
     objectContextMenu.childMenu(Object.values(arrangeOptions), arrange);
     objectContextMenu.childMenu(Object.values(alignOptions), align);
 
-    arrangeContextMenu.itemOnclick = alignContextMenu.itemOnclick = arrangeContextMenu.maskOnclick = alignContextMenu.maskOnclick = function() {
+    arrangeContextMenu.itemOnclick = alignContextMenu.itemOnclick = arrangeContextMenu.maskOnclick = alignContextMenu.maskOnclick = function () {
       objectContextMenu.hide();
     };
 
     canvasContextMenuOptions.delete.addEventListener("click", deleteCanvas);
     canvasContextMenuOptions.paste.addEventListener("click", pasteObject);
     canvasContextMenuOptions.unlockAll.addEventListener("click", unlockObjects);
-    canvasContextMenuOptions.background.addEventListener("click", function() {
+    canvasContextMenuOptions.background.addEventListener("click", function () {
       colorPickerContainer.setTitle("Color picker - background");
       colorPickerContainer.setVisiblity(true);
-      colorPicker.onchange = function(e, color) {
+      colorPicker.onchange = function (e, color) {
         activeCanvas.setBackgroundColor(
           color,
           activeCanvas.renderAll.bind(activeCanvas)
@@ -765,20 +806,21 @@ export function CanvasEditor(parentel, opts = {}) {
       };
     });
 
+    paste.addEventListener("click", pasteObject);
     copy.addEventListener("click", copyObject);
     cut.addEventListener("click", cutObject);
     deleteBtn.addEventListener("click", deleteObject);
     lock.addEventListener("click", lockObject);
 
     for (let key in arrangeOptions) {
-      arrangeOptions[key].addEventListener("click", function() {
+      arrangeOptions[key].addEventListener("click", function () {
         let activeObject = activeCanvas.getActiveObject();
         activeObject[key]();
       });
     }
 
     for (let key in alignOptions) {
-      alignOptions[key].addEventListener("click", function() {
+      alignOptions[key].addEventListener("click", function () {
         setObjectAlignment(key);
       });
     }
@@ -804,7 +846,7 @@ export function CanvasEditor(parentel, opts = {}) {
     if (!activeCanvas) return;
     let activeObject = activeCanvas.getActiveObject();
     copiedObject = null;
-    activeObject.clone(function(object) {
+    activeObject.clone(function (object) {
       copiedObject = object;
     });
   }
@@ -860,6 +902,8 @@ export function CanvasEditor(parentel, opts = {}) {
 
   function deleteObject() {
     let activeObject = activeCanvas.getActiveObject();
+    activeCanvas.discardActiveObject();
+    activeCanvas.renderAll();
     if (activeObject.type === "activeSelection") {
       activeCanvas.remove(...activeObject.getObjects());
     } else {
@@ -913,18 +957,23 @@ export function CanvasEditor(parentel, opts = {}) {
       if (length > 1 && activeObject.type === "activeSelection") {
         group.classList.remove("CE_disabled");
         group.textContent = "Group";
-        group.onclick = function() {
+        group.onclick = function () {
           activeObject.toGroup();
         };
       } else if (activeObject.type === "group") {
         group.classList.remove("CE_disabled");
         group.textContent = "Ungroup";
-        group.onclick = function() {
+        group.onclick = function () {
           activeObject.toActiveSelection();
         };
       } else {
         group.textContent = "Group";
         group.classList.add("CE_disabled");
+      }
+      if (copiedObject) {
+        objectContextMenuOptions.paste.classList.remove("CE_disabled");
+      } else {
+        objectContextMenuOptions.paste.classList.add("CE_disabled");
       }
 
       if (activeObject.lockUniScaling) {
@@ -992,7 +1041,7 @@ export function CanvasEditor(parentel, opts = {}) {
     function readerOnLoad(e) {
       let svg = e.target.result;
 
-      fabric.loadSVGFromString(svg, function(result, options) {
+      fabric.loadSVGFromString(svg, function (result, options) {
         if (activeCanvas.getObjects().length !== 0) {
           addPage();
         }
@@ -1042,7 +1091,7 @@ export function CanvasEditor(parentel, opts = {}) {
       delete textobj.type;
       let clonedtextobj = JSON.parse(JSON.stringify(textobj));
 
-      let textbox = new fabric.Textbox(text, clonedtextobj);
+      let textbox = new fabric.IText(text, clonedtextobj);
 
       deleteObject();
       activeObject = textbox;
@@ -1050,7 +1099,7 @@ export function CanvasEditor(parentel, opts = {}) {
       activeCanvas.setActiveObject(textbox);
     }
 
-    if (activeObject.type === "textbox") {
+    if (activeObject.type === "textbox" || activeObject.type === "i-text") {
       let fontSize = activeObject.fontSize;
       let fontFamily = activeObject.fontFamily;
       let fontWeight = activeObject.fontWeight;
@@ -1076,6 +1125,11 @@ export function CanvasEditor(parentel, opts = {}) {
       textSettings.fontFamily.setvalue(fontFamily);
       textSettings.fontWeight.setvalue(fontWeight);
       textSettings.fontSize.value = fontSize;
+
+      const color = activeObject.fill;
+      colorPicker.color = color;
+      defaultConfig.fillColor = color;
+      defaultConfig.fontFamily = fontFamily;
     }
 
     if (activeObject.strokeWidth > 0) {
@@ -1147,7 +1201,7 @@ export function CanvasEditor(parentel, opts = {}) {
   }
 
   function onFontScrollEnd(fun) {
-    alltools.textSettings.fontFamily.customSelect.onscroll = function(e) {
+    alltools.textSettings.fontFamily.customSelect.onscroll = function (e) {
       if (this.offsetHeight + this.scrollTop >= this.scrollHeight) {
         fun();
       }
@@ -1259,7 +1313,7 @@ export function CanvasEditor(parentel, opts = {}) {
       activeCanvas.page.name = page.name;
       activeCanvas.setWidth(page.data.width);
       activeCanvas.setHeight(page.data.height);
-      activeCanvas.loadFromJSON(page.data, function() {
+      activeCanvas.loadFromJSON(page.data, function () {
         activeCanvas.renderAll();
         let allObjects = activeCanvas.getObjects();
         for (let object of allObjects) {
@@ -1267,7 +1321,7 @@ export function CanvasEditor(parentel, opts = {}) {
             object.type &&
             (object.type === "textbox" ||
               object.type === "text" ||
-              object.type === "itext")
+              object.type === "i-text")
           ) {
             requireFonts.push(object.fontFamily);
           }
@@ -1296,6 +1350,9 @@ export function CanvasEditor(parentel, opts = {}) {
     addFont,
     onFontScrollEnd,
     getRequireFonts,
-    removeFont
+    removeFont,
+    autoresize
   };
 }
+
+export default CanvasEditor;

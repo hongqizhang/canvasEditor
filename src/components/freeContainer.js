@@ -1,4 +1,4 @@
-import tag from '../../node_modules/html-element-js/src/tag';
+import tag from 'html-element-js/dist/tag';
 
 /**
  * @typedef {Object} freeContainer

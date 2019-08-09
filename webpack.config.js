@@ -11,15 +11,14 @@ module.exports = {
     path: path.resolve(__dirname, "build"),
     filename: "canvasEditor.js",
     library: "CanvasEditor",
-    libraryExport: "CanvasEditor",
+    libraryExport: "default",
     libraryTarget: "umd"
   },
   plugins: [
     // new BundleAnalyzerPlugin()
   ],
   module: {
-    rules: [
-      {
+    rules: [{
         test: /\.m?js$/,
         exclude: /(node_modules|bower_components)/,
         use: {
@@ -30,15 +29,11 @@ module.exports = {
         }
       },
       {
-        test: /\.css$/,
+        test: /\.(sa|sc|c)ss$/,
         use: [
           "style-loader",
-          {
-            loader: "css-loader",
-            options: {
-              importLoaders: 1
-            }
-          },
+          "css-loader",
+          "sass-loader",
           "postcss-loader"
         ]
       },

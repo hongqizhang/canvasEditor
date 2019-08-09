@@ -1,10 +1,16 @@
-import { freeContainer } from "./freeContainer";
-import { contextMenu } from "./contextmenu";
+import {
+  freeContainer
+} from "./freeContainer";
+import {
+  contextMenu
+} from "./contextmenu";
 
-import tag from "../../node_modules/html-element-js/src/tag";
-import comboBox from "../../node_modules/html-element-js/src/comboBox";
-import rangeSlider from "../../node_modules/html-element-js/src/rangeSlider";
-import toggler from "../../node_modules/html-element-js/src/toggler";
+import {
+  tag,
+  comboBox,
+  rangeSlider,
+  toggleSwitch
+} from 'html-element-js';
 
 /**
  * @typedef {Object} tools
@@ -113,7 +119,7 @@ export function toolsContainer() {
       value: 1,
       step: 0.01
     }),
-    dropShadow: toggler({
+    dropShadow: toggleSwitch({
       size: 20
     }),
     offsetX: tag("input", {
@@ -134,7 +140,7 @@ export function toolsContainer() {
     color: tag("span", {
       className: "CE_icon backgroundColor"
     }),
-    strokeToggle: toggler({
+    strokeToggle: toggleSwitch({
       size: 20
     }),
     strokeWidth: tag("input", {
@@ -148,8 +154,16 @@ export function toolsContainer() {
     })
   };
   let textOptions = {
-    fontFamily: comboBox({ spead: 2, height: 30, maxheight: 300 }),
-    fontWeight: comboBox({ spead: 2, height: 30, maxheight: 300 }),
+    fontFamily: comboBox({
+      spead: 2,
+      height: 30,
+      maxheight: 300
+    }),
+    fontWeight: comboBox({
+      spead: 2,
+      height: 30,
+      maxheight: 300
+    }),
     fontSize: tag("input", {
       type: "number",
       value: 40
